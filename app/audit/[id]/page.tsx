@@ -1,8 +1,8 @@
 import React from 'react';
 import { prisma } from '../../../lib/db';
 import RadarChart from '../../../components/charts/RadarChart';
-import { Card, CardHeader, CardTitle, CardContent } from 'shadcn/ui/card';
-import { Badge } from 'shadcn/ui/badge';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 async function getAudit(id: string) {
   return prisma.audit.findUnique({
@@ -25,7 +25,7 @@ export default async function AuditDetailPage({ params }: { params: { id: string
     <div className="max-w-3xl mx-auto py-8 px-4 space-y-8">
       <Card>
         <CardHeader>
-          <CardTitle>Détail de l'audit</CardTitle>
+          <CardTitle>Détail de l&apos;audit</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col md:flex-row md:items-center md:gap-8 mb-4">

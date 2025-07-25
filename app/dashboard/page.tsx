@@ -239,7 +239,7 @@ export default async function DashboardPage() {
                       <div className="flex flex-col">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-bold text-lg">Étape {i + 1}</span>
-                          <Badge variant={item.priority === 'Haute' ? 'destructive' : item.priority === 'Moyenne' ? 'warning' : 'success'}>
+                          <Badge variant={item.priority === 'Haute' ? 'destructive' : item.priority === 'Moyenne' ? 'secondary' : 'default'}>
                             {item.priority}
                           </Badge>
                           <span className="text-sm text-muted-foreground">• {item.deadline}</span>
@@ -265,7 +265,7 @@ export default async function DashboardPage() {
           {/* Plan d'action détaillé */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Plan d'action détaillé</CardTitle>
+              <CardTitle>Plan d&apos;action détaillé</CardTitle>
               <div className="text-sm text-muted-foreground">
                 {actionPlan.length} actions identifiées
               </div>

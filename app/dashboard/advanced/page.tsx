@@ -219,8 +219,8 @@ export default function AdvancedDashboard() {
       {/* Onglets principaux */}
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
-          <TabsTrigger value="actions">Plan d'action</TabsTrigger>
+          <TabsTrigger value="overview">Vue d&apos;ensemble</TabsTrigger>
+          <TabsTrigger value="actions">Plan d&apos;action</TabsTrigger>
           <TabsTrigger value="roadmap">Feuille de route</TabsTrigger>
           <TabsTrigger value="team">Équipe</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
@@ -278,7 +278,7 @@ export default function AdvancedDashboard() {
         <TabsContent value="actions">
           <Card>
             <CardHeader>
-              <CardTitle>Plan d'Action Détaillé</CardTitle>
+              <CardTitle>Plan d&apos;Action Détaillé</CardTitle>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm">
                   <Search className="h-4 w-4 mr-2" />
@@ -292,8 +292,8 @@ export default function AdvancedDashboard() {
             <CardContent>
               <div className="text-center py-12 text-muted-foreground">
                 <Target className="h-12 w-12 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Plan d'action en cours de génération</h3>
-                <p>Le plan d'action détaillé sera affiché ici avec toutes les actions, sous-tâches et échéances.</p>
+                <h3 className="text-lg font-semibold mb-2">Plan d&apos;action en cours de génération</h3>
+                <p>Le plan d&apos;action détaillé sera affiché ici avec toutes les actions, sous-tâches et échéances.</p>
               </div>
             </CardContent>
           </Card>
@@ -317,13 +317,13 @@ export default function AdvancedDashboard() {
         <TabsContent value="team">
           <Card>
             <CardHeader>
-              <CardTitle>Gestion d'Équipe</CardTitle>
+              <CardTitle>Gestion d&apos;Équipe</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center py-12 text-muted-foreground">
                 <Users className="h-12 w-12 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">Équipe et Assignations</h3>
-                <p>Vue d'ensemble de l'équipe, charge de travail et assignations des actions.</p>
+                <p>Vue d&apos;ensemble de l&apos;équipe, charge de travail et assignations des actions.</p>
               </div>
             </CardContent>
           </Card>
