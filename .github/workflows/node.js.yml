@@ -10,24 +10,29 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false     # Exécute tous les jobs même si un échoue
+      fail-fast: false
       matrix:
         node-version: [18.x, 20.x, 22.x]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: pnpm               # Cache pnpm deps pour accélérer
+          cache: pnpm
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 8              # adapte la version pnpm selon ton projet
+          version: 8
+
+      - name: Ensure pnpm is installed
+        run: |
+          if ! command -v pnpm > /dev/null; then
+            npm install -g pnpm
+          fi
 
       - name: Cache pnpm store
         uses: actions/cache@v3
