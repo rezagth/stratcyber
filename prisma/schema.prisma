@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   // 'admin' | 'user'
+  audits    Audit[]
+  sessions  Session[]
+  chatHistories ChatHistory[]
+  createdAt DateTime @default(now())
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expires   DateTime
+  createdAt DateTime @default(now())
+}
+
+model Audit {
+  id          String          @id @default(uuid())
+  user        User            @relation(fields: [userId], references: [id])
+  userId      String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  responses   AuditResponse[]
+  report      Report?
+  score       Float?
+  maturity    String?
+  recommendations String?
+}
+
+model AuditResponse {
+  id        String   @id @default(uuid())
+  audit     Audit    @relation(fields: [auditId], references: [id])
+  auditId   String
+  question  String
+  category  String
+  answer    String
+  score     Float?
+}
+
+model Report {
+  id        String   @id @default(uuid())
+  audit     Audit    @relation(fields: [auditId], references: [id])
+  auditId   String   @unique
+  url       String
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+}
+
+model Resource {
+  id        String   @id @default(uuid())
+  type      String   // 'ebook' | 'video' | 'quiz'
+  title     String
+  url       String
+  uploadedAt DateTime @default(now())
+}
+
+model ChatHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  messages  String
+  createdAt DateTime @default(now())
+} 
