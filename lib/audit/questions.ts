@@ -5,7 +5,7 @@ export const auditQuestions: AuditQuestion[] = [
   {
     id: 'g1',
     category: 'Gouvernance',
-    question: "Existe-t-il une politique de sécurité de l'information formalisée et diffusée à tous les collaborateurs ?",
+    question: "Existe-t-il une politique de sécurité de l'information (PSI) formalisée et diffusée à tous les collaborateurs ?",
     description: "La politique doit être validée par la direction et communiquée à tous.",
     type: 'scale',
     weight: 2,

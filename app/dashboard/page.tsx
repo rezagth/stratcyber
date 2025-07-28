@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import { prisma } from '../../lib/db';
 import Link from 'next/link';
@@ -17,11 +18,29 @@ async function getAudits(userId: string) {
   });
 }
 
-export default async function DashboardPage() {
-  // TODO: remplacer par l'ID utilisateur réel (auth à intégrer)
-  const userId = 'demo-user-id';
-  const audits = await getAudits(userId);
-  const lastAudit = audits[0];
+
+
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
+import { Audit } from '@prisma/client';
+
+export default function DashboardPage() {
+  const { data: session } = useSession();
+  const [audits, setAudits] = useState<Audit[]>([]);
+  const [lastAudit, setLastAudit] = useState<Audit | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (session?.user?.id) {
+        const response = await fetch(`/api/audits?userId=${session.user.id}`);
+        const data = await response.json();
+        setAudits(data);
+        setLastAudit(data[0] || null);
+      }
+    };
+    
+    fetchData();
+  }, [session]);
   
   // Utiliser computeAuditResult pour obtenir les scores
   const auditResult = lastAudit ? computeAuditResult(
