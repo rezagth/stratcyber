@@ -2,13 +2,22 @@
 import { prisma } from '../../lib/db';
 import { AuditAnswer, AuditResult } from '../../types/audit';
 import { auditQuestions } from '../../lib/audit/questions';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../api/auth/[...nextauth]/route';
+
+async function getUserId() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    throw new Error('Non autorisé');
+  }
+  return session.user.id;
+}
 
 export async function saveAudit(
   answers: AuditAnswer[],
   result: AuditResult
 ) {
-  // Utilisateur fictif (à remplacer par l'auth réelle)
-  const userId = 'demo-user-id';
+  const userId = await getUserId();
   const audit = await prisma.audit.create({
     data: {
       userId,
