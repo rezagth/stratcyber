@@ -44,5 +44,5 @@ pnpm dev
 - Stratégie cybersécurité (audit, scoring, roadmap, PDF)
 - Conformité RGPD
 - GRC (ISO 27001, EBIOS)
-- Sensibilisation (vidéos, ebooks, quiz)
-- (à venir) Auth, IA, stockage 
+- (à venir) Sensibilisation (vidéos, ebooks, quiz)
+- Auth, IA, stockage 

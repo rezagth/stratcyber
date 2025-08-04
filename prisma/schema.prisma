@@ -38,6 +38,8 @@ model Audit {
   score       Float?
   maturity    String?
   recommendations String?
+  companyProfile String?      // <--- Ajoute cette ligne
+  actionPlan     String?      // <--- Et celle-ci
 }
 
 model AuditResponse {
