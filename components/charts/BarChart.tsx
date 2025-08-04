@@ -13,6 +13,19 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+// Brève description de chaque domaine pour tooltip
+const CATEGORY_DESCRIPTIONS: Record<string,string> = {
+  Gouvernance: 'Stratégie, politiques et pilotage de la sécurité',
+  Technique: 'Mesures et contrôles techniques (pare-feu, patching…)',
+  Organisationnel: 'Processus, procédures et responsabilités',
+  GRC: 'Gestion des risques et conformité',
+  Sensibilisation: 'Formation et culture cybersécurité',
+  RGPD: 'Protection des données personnelles',
+  Incidents: 'Gestion des incidents et continuité',
+  SupplyChain: 'Sécurité des fournisseurs et tiers',
+  Cloud: 'Bonnes pratiques dans le cloud',
+};
+
 export default function BarChart({ scores }: { scores: Record<string, number> }) {
   const labels = Object.keys(scores);
   const data = {
@@ -41,6 +54,16 @@ export default function BarChart({ scores }: { scores: Record<string, number> })
     },
     plugins: {
       legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (context: any) => {
+            const label = context.label || '';
+            const value = context.raw ?? 0;
+            const desc = CATEGORY_DESCRIPTIONS[label] ? ` – ${CATEGORY_DESCRIPTIONS[label]}` : '';
+            return `${label}: ${value}%${desc}`;
+          },
+        },
+      },
     },
     responsive: true,
     maintainAspectRatio: false,

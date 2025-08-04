@@ -1,6 +1,8 @@
-import { AuditQuestion } from '../../types/audit';
+import { AuditQuestion, CompanyProfile } from '../../types/audit';
+import { getQuestionsForProfile } from './questions-extended';
 
-export const auditQuestions: AuditQuestion[] = [
+// Questions de base - toujours posées
+export const baseQuestions: AuditQuestion[] = [
   // Gouvernance
   {
     id: 'g1',
@@ -168,3 +170,66 @@ export const auditQuestions: AuditQuestion[] = [
   weight: 2,
 }
 ];
+
+/**
+ * Génère les questions d'audit adaptées au profil de l'entreprise
+ */
+export function generateAdaptiveQuestions(profile: CompanyProfile): AuditQuestion[] {
+  // Questions de base toujours incluses
+  let questions = [...baseQuestions];
+  
+  // Ajouter les questions spécifiques aux réglementations applicables
+  const extendedQuestions = getQuestionsForProfile(profile.applicableRegulations, profile.sector);
+  questions = questions.concat(extendedQuestions);
+  
+  // Filtrer les doublons par ID
+  const uniqueQuestions = questions.filter((question, index, self) => 
+    index === self.findIndex(q => q.id === question.id)
+  );
+  
+  return uniqueQuestions;
+}
+
+/**
+ * Obtient toutes les questions pour un profil donné (fonction principale)
+ */
+export function getAuditQuestions(profile?: CompanyProfile): AuditQuestion[] {
+  if (!profile) {
+    return baseQuestions;
+  }
+  
+  return generateAdaptiveQuestions(profile);
+}
+
+/**
+ * Questions par catégorie pour l'affichage organisé
+ */
+export function getQuestionsByCategory(profile?: CompanyProfile): Record<string, AuditQuestion[]> {
+  const questions = getAuditQuestions(profile);
+  
+  return questions.reduce((acc, question) => {
+    if (!acc[question.category]) {
+      acc[question.category] = [];
+    }
+    acc[question.category].push(question);
+    return acc;
+  }, {} as Record<string, AuditQuestion[]>);
+}
+
+/**
+ * Calcule le nombre total de questions selon le profil
+ */
+export function getTotalQuestionCount(profile?: CompanyProfile): number {
+  return getAuditQuestions(profile).length;
+}
+
+/**
+ * Obtient les catégories applicables selon le profil
+ */
+export function getApplicableCategories(profile?: CompanyProfile): string[] {
+  const questionsByCategory = getQuestionsByCategory(profile);
+  return Object.keys(questionsByCategory);
+}
+
+// Export de compatibilité - utilise les questions de base par défaut
+export const auditQuestions = baseQuestions;
