@@ -16,6 +16,10 @@ model User {
   audits    Audit[]
   sessions  Session[]
   chatHistories ChatHistory[]
+  courseEnrollments CourseEnrollment[]
+  quizAttempts QuizAttempt[]
+  certifications Certification[]
+  progress  LearningProgress[]
   createdAt DateTime @default(now())
 }
 
@@ -38,8 +42,14 @@ model Audit {
   score       Float?
   maturity    String?
   recommendations String?
-  companyProfile String?      // <--- Ajoute cette ligne
-  actionPlan     String?      // <--- Et celle-ci
+  companyProfile String?      // Profil de l'entreprise (JSON)
+  actionPlan     String?      // Plan d'action généré (JSON)
+  roadmapData    String?      // Données de la roadmap (JSON)
+  milestones     StrategicMilestone[]
+  strategicActions StrategicAction[]
+  complianceScores ComplianceScore[]
+  legalRiskAssessment LegalRiskAssessment?
+  legalRiskScore   Float?      // Score de risque légal calculé
 }
 
 model AuditResponse {
@@ -69,10 +79,521 @@ model Resource {
   uploadedAt DateTime @default(now())
 }
 
+model Ebook {
+  id          String   @id @default(uuid())
+  title       String
+  author      String
+  content     String?
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model ChatHistory {
   id        String   @id @default(uuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   messages  String
   createdAt DateTime @default(now())
-} 
+}
+
+// Training Platform Models
+model Course {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  category    String   // 'cybersecurity' | 'compliance' | 'strategy'
+  level       String   // 'beginner' | 'intermediate' | 'advanced'
+  duration    Int      // in minutes
+  thumbnailUrl String?
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  modules     CourseModule[]
+  enrollments CourseEnrollment[]
+  quizzes     Quiz[]
+}
+
+model CourseModule {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  order       Int
+  type        String   // 'video' | 'document' | 'interactive' | 'quiz'
+  content     String?  // JSON content or URL
+  duration    Int?     // in minutes
+  
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  // Relations
+  progress    LearningProgress[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CourseEnrollment {
+  id          String   @id @default(uuid())
+  userId      String
+  courseId    String
+  enrolledAt  DateTime @default(now())
+  completedAt DateTime?
+  progress    Float    @default(0) // percentage 0-100
+  
+  user        User     @relation(fields: [userId], references: [id])
+  course      Course   @relation(fields: [courseId], references: [id])
+  
+  @@unique([userId, courseId])
+}
+
+model LearningProgress {
+  id        String   @id @default(uuid())
+  userId    String
+  moduleId  String
+  completed Boolean  @default(false)
+  timeSpent Int      @default(0) // in seconds
+  lastAccessedAt DateTime @default(now())
+  
+  user      User         @relation(fields: [userId], references: [id])
+  module    CourseModule @relation(fields: [moduleId], references: [id])
+  
+  @@unique([userId, moduleId])
+}
+
+model Quiz {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  courseId    String?
+  passingScore Int     @default(70) // percentage
+  timeLimit   Int?     // in minutes
+  maxAttempts Int      @default(3)
+  isActive    Boolean  @default(true)
+  
+  course      Course?  @relation(fields: [courseId], references: [id])
+  questions   QuizQuestion[]
+  attempts    QuizAttempt[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model QuizQuestion {
+  id          String   @id @default(uuid())
+  quizId      String
+  question    String
+  type        String   // 'multiple_choice' | 'true_false' | 'short_answer'
+  options     String?  // JSON array for multiple choice
+  correctAnswer String
+  explanation String?
+  order       Int
+  
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model QuizAttempt {
+  id          String   @id @default(uuid())
+  userId      String
+  quizId      String
+  answers     String   // JSON object with questionId: answer
+  score       Float
+  passed      Boolean
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+  
+  user        User     @relation(fields: [userId], references: [id])
+  quiz        Quiz     @relation(fields: [quizId], references: [id])
+}
+
+model Certification {
+  id          String   @id @default(uuid())
+  userId      String
+  title       String
+  description String?
+  category    String   // 'cybersecurity' | 'compliance' | 'strategy'
+  issuedAt    DateTime @default(now())
+  expiresAt   DateTime?
+  certificateUrl String?
+  
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model ComplianceFramework {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  category    String   // 'GDPR' | 'ISO27001' | 'SOC2' | 'NIST' etc.
+  requirements String  // JSON array of requirements
+  resources   String?  // JSON array of resource links
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SecurityAlert {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  severity    String   // 'low' | 'medium' | 'high' | 'critical'
+  category    String   // 'vulnerability' | 'threat' | 'incident'
+  source      String?
+  affectedSystems String? // JSON array
+  mitigationSteps String? // JSON array
+  isResolved  Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Compliance Documentation Platform
+model ComplianceDocument {
+  id            String   @id @default(uuid())
+  title         String
+  slug          String   @unique
+  content       String   // Rich text content
+  summary       String?
+  category      String   // 'RGPD' | 'NIS2' | 'DORA' | 'EBIOS' | 'ISO27001' | etc.
+  subcategory   String?
+  tags          String?  // JSON array
+  author        String?
+  version       String   @default("1.0")
+  status        String   @default("draft") // 'draft' | 'published' | 'archived'
+  lastReviewed  DateTime?
+  nextReview    DateTime?
+  isPublic      Boolean  @default(true)
+  
+  // Relations
+  sections      DocumentSection[]
+  templates     DocumentTemplate[]
+  actionPlans   ActionPlan[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model DocumentSection {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  order       Int
+  level       Int      @default(1) // 1=main, 2=sub, 3=subsub
+  
+  documentId  String
+  document    ComplianceDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model DocumentTemplate {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  content     String   // Template content with placeholders
+  category    String
+  
+  documentId  String?
+  document    ComplianceDocument? @relation(fields: [documentId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ActionPlan {
+  id            String   @id @default(uuid())
+  title         String
+  description   String?
+  category      String   // 'RGPD' | 'NIS2' | 'DORA' | etc.
+  priority      String   // 'low' | 'medium' | 'high' | 'critical'
+  status        String   @default("planned") // 'planned' | 'in_progress' | 'completed' | 'on_hold'
+  startDate     DateTime?
+  endDate       DateTime?
+  budget        Float?
+  responsible   String?  // Person/team responsible
+  
+  // Relations
+  documentId    String?
+  document      ComplianceDocument? @relation(fields: [documentId], references: [id])
+  tasks         ActionTask[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ActionTask {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  status      String   @default("todo") // 'todo' | 'in_progress' | 'completed'
+  priority    String   @default("medium")
+  dueDate     DateTime?
+  assignee    String?
+  
+  actionPlanId String
+  actionPlan   ActionPlan @relation(fields: [actionPlanId], references: [id], onDelete: Cascade)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ComplianceChecklist {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  category    String   // 'RGPD' | 'NIS2' | 'DORA' | etc.
+  
+  items       ChecklistItem[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ChecklistItem {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  requirement String?  // Legal requirement reference
+  isCompleted Boolean  @default(false)
+  evidence    String?  // Evidence/documentation
+  notes       String?
+  order       Int
+  
+  checklistId String
+  checklist   ComplianceChecklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RiskAssessment {
+  id            String   @id @default(uuid())
+  title         String
+  description   String?
+  methodology  String   // 'EBIOS' | 'ISO27005' | 'NIST' | etc.
+  scope         String?
+  
+  // Risk metrics
+  likelihood    Int?     // 1-5 scale
+  impact        Int?     // 1-5 scale
+  riskLevel     String?  // 'low' | 'medium' | 'high' | 'critical'
+  
+  // Mitigation
+  mitigationPlan String?
+  residualRisk   String?
+  
+  // Relations
+  threats       ThreatScenario[]
+  vulnerabilities Vulnerability[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ThreatScenario {
+  id            String   @id @default(uuid())
+  name          String
+  description   String
+  category      String   // 'cyber' | 'physical' | 'human' | etc.
+  likelihood    Int      // 1-5 scale
+  impact        Int      // 1-5 scale
+  
+  assessmentId  String
+  assessment    RiskAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Vulnerability {
+  id            String   @id @default(uuid())
+  name          String
+  description   String
+  category      String
+  severity      String   // 'low' | 'medium' | 'high' | 'critical'
+  cvssScore     Float?
+  status        String   @default("open") // 'open' | 'mitigated' | 'closed'
+  
+  assessmentId  String
+  assessment    RiskAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model PolicyDocument {
+  id          String   @id @default(uuid())
+  title       String
+  type        String   // 'policy' | 'procedure' | 'guideline'
+  category    String   // 'security' | 'privacy' | 'compliance'
+  content     String
+  version     String   @default("1.0")
+  status      String   @default("draft")
+  approver    String?
+  approvedDate DateTime?
+  reviewDate  DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model IncidentReport {
+  id            String   @id @default(uuid())
+  title         String
+  description   String
+  category      String   // 'security' | 'privacy' | 'operational'
+  severity      String   // 'low' | 'medium' | 'high' | 'critical'
+  status        String   @default("open") // 'open' | 'investigating' | 'resolved' | 'closed'
+  
+  // Timeline
+  detectedAt    DateTime
+  reportedAt    DateTime @default(now())
+  resolvedAt    DateTime?
+  
+  // Impact
+  affectedSystems String? // JSON array
+  dataImpacted    Boolean @default(false)
+  personalData    Boolean @default(false)
+  
+  // Response
+  responseActions String?
+  rootCause      String?
+  preventiveMeasures String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// Modèles stratégiques pour les plans d'action et roadmaps connectés aux audits
+model StrategicAction {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  category    String   // 'Technique' | 'Organisationnel' | 'Gouvernance' | 'GRC' | etc.
+  priority    String   // 'Critique' | 'Haute' | 'Moyenne' | 'Basse'
+  status      String   @default("Non commencé") // 'Non commencé' | 'En cours' | 'Terminé' | 'En retard'
+  
+  // Planning
+  startDate   DateTime?
+  dueDate     DateTime
+  estimatedDuration Int?  // en jours
+  
+  // Assignation
+  owner       String?  // Responsable principal
+  assignees   String?  // JSON array des assignés
+  
+  // Business
+  budget      Float?   // Budget estimé
+  businessImpact String?
+  technicalComplexity String? // 'Faible' | 'Moyenne' | 'Élevée'
+  
+  // Tracking
+  progress    Int      @default(0) // Pourcentage 0-100
+  blockers    String?  // JSON array des blocages
+  dependencies String? // JSON array des dépendances
+  resources   String?  // JSON array des ressources nécessaires
+  
+  // KPIs et succès
+  kpis        String?  // JSON array des indicateurs
+  successCriteria String? // JSON array des critères de succès
+  notes       String?
+  
+  // Relations
+  auditId     String
+  audit       Audit    @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  
+  // Relations avec les jalons
+  milestones  StrategicMilestone[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model StrategicMilestone {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  category    String   // Catégorie du jalon
+  
+  // Status et timing
+  status      String   @default("Non commencé") // 'Non commencé' | 'En cours' | 'Terminé'
+  dueDate     DateTime
+  progress    Int      @default(0) // Pourcentage 0-100
+  
+  // Relations
+  auditId     String
+  audit       Audit    @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  
+  // Actions associées
+  actions     StrategicAction[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RoadmapQuarter {
+  id          String   @id @default(uuid())
+  quarter     String   // 'Q1 2024', 'Q2 2024', etc.
+  year        Int
+  startDate   DateTime
+  endDate     DateTime
+  
+  // Budget et ressources
+  budget      Float?   // Budget alloué au trimestre
+  focusAreas  String?  // JSON array des domaines prioritaires
+  
+  // Objectifs et KPIs
+  objectives  String?  // JSON array des objectifs
+  kpis        String?  // JSON array des KPIs trimestre
+  
+  // Relations
+  userId      String
+  milestones  String?  // JSON array des ID des jalons
+  actions     String?  // JSON array des ID des actions
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ComplianceScore {
+  id          String   @id @default(uuid())
+  regulation  String   // 'RGPD' | 'NIS2' | 'DORA' | 'ISO27001' | etc.
+  score       Float    // Score de 0 à 100
+  status      String   // 'Critique' | 'À améliorer' | 'Conforme'
+  lastUpdated DateTime @default(now())
+  
+  // Détails de l'évaluation
+  details     String?  // JSON avec détails par domaine
+  recommendations String? // Recommandations spécifiques
+  nextReviewDate DateTime?
+  
+  // Relations
+  auditId     String
+  audit       Audit    @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model LegalRiskAssessment {
+  id          String   @id @default(uuid())
+  overallScore Float   // Score de risque global 0-100
+  riskLevel   String   // 'Faible' | 'Moyen' | 'Élevé' | 'Critique'
+  
+  // Détails par réglementation
+  regulationRisks String? // JSON avec risques détaillés par réglementation
+  criticalPoints String? // JSON array des points critiques
+  urgentActions String? // JSON array des actions urgentes
+  
+  // Prédictions et tendances
+  trendDirection String? // 'Amélioration' | 'Dégradation' | 'Stable'
+  projectedScore Float? // Score projeté dans 6 mois
+  
+  // Relations
+  auditId     String   @unique
+  audit       Audit    @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
