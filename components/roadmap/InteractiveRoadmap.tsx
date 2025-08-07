@@ -107,7 +107,7 @@ const TimelineItem = ({
                     <div>
                       <p className="text-xs text-muted-foreground">Échéance</p>
                       <p className="text-sm font-medium">
-                        {action.dueDate.toLocaleDateString('fr-FR')}
+                        {action.dueDate instanceof Date ? action.dueDate.toLocaleDateString('fr-FR') : new Date(action.dueDate).toLocaleDateString('fr-FR')}
                       </p>
                     </div>
                   </div>
@@ -247,7 +247,7 @@ const QuarterView = ({ quarter }: { quarter: RoadmapQuarter }) => {
                   <Progress value={milestone.progress} className="h-2" />
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Échéance: {milestone.dueDate.toLocaleDateString('fr-FR')}
+                  Échéance: {milestone.dueDate instanceof Date ? milestone.dueDate.toLocaleDateString('fr-FR') : new Date(milestone.dueDate).toLocaleDateString('fr-FR')}
                 </p>
               </CardContent>
             </Card>
@@ -273,7 +273,11 @@ export default function InteractiveRoadmap({ quarters, actions, milestones }: In
   };
 
   // Trier les actions par date de début
-  const sortedActions = [...actions].sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+  const sortedActions = [...actions].sort((a, b) => {
+    const dateA = a.startDate instanceof Date ? a.startDate : new Date(a.startDate);
+    const dateB = b.startDate instanceof Date ? b.startDate : new Date(b.startDate);
+    return dateA.getTime() - dateB.getTime();
+  });
 
   return (
     <div className="space-y-6">
