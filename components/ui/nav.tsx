@@ -21,22 +21,22 @@ export function Nav() {
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900"
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 hover:text-blue-600"
                 >
                   Tableau de bord
                 </Link>
-                {/* <Link
-                  href="/strategie"
-                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900"
+                <Link
+                  href="/dashboard/roadmap"
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 hover:text-blue-600"
                 >
-                  Stratégie
+                  Roadmap
                 </Link>
                 <Link
-                  href="/audit"
-                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900"
+                  href="/audit/dynamic"
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 hover:text-blue-600"
                 >
                   Audit
-                </Link> */}
+                </Link>
               </div>
             )}
           </div>
