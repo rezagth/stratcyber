@@ -6,7 +6,7 @@ const geist = Geist({
 });
 import './globals.css';
 import AuthSessionProvider from '@/components/auth/session-provider';
-import { Nav } from '@/components/ui/nav';
+import { IntegratedLayout } from '@/components/layout/integrated-layout';
 
 export const metadata = {
   title: 'StratCyber',
@@ -22,10 +22,9 @@ export default function RootLayout({
     <html lang="fr" className={geist.className}>
       <body>
         <AuthSessionProvider>
-          <Nav />
-          <main className="min-h-screen pt-16">
+          <IntegratedLayout>
             {children}
-          </main>
+          </IntegratedLayout>
         </AuthSessionProvider>
       </body>
     </html>

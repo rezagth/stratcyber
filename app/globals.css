@@ -120,3 +120,39 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  /* Transitions fluides pour la sidebar intégrée */
+  .sidebar-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Animation pour le contenu principal qui s'adapte */
+  .main-content-transition {
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Suppression du scroll bounce sur mobile */
+  .sidebar-overlay {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  
+  /* States pour les collapsibles dans la sidebar compacte */
+  .sidebar-compact .collapsible-content {
+    display: none;
+  }
+  
+  /* Hover effects pour la sidebar compacte */
+  .sidebar-compact-item {
+    @apply relative;
+  }
+  
+  .sidebar-compact-item:hover .compact-tooltip {
+    @apply opacity-100 visible;
+  }
+  
+  .compact-tooltip {
+    @apply absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded shadow-md z-50 whitespace-nowrap opacity-0 invisible transition-all duration-200 pointer-events-none;
+  }
+}
