@@ -1,0 +1,1144 @@
+{
+  "users": [
+    {
+      "id": "3aed831e-fa79-4025-997c-15df0f1f95e9",
+      "email": "test@test.com",
+      "password": "$2b$12$Bgmlpr/gxNBUFedgCWOyEeKYRWNARbpjlO8jfCnaip2HNQIivaoW6",
+      "name": "test",
+      "role": "user",
+      "createdAt": "2025-08-06T13:49:57.920Z"
+    }
+  ],
+  "sessions": [],
+  "audits": [
+    {
+      "id": "f887f4cf-7617-48c2-aab7-4b0c75678f79",
+      "userId": "3aed831e-fa79-4025-997c-15df0f1f95e9",
+      "createdAt": "2025-08-06T14:07:04.920Z",
+      "updatedAt": "2025-08-06T14:07:04.920Z",
+      "score": 42,
+      "maturity": "Moyenne",
+      "recommendations": "[\"Améliorer la gouvernance cybersécurité\",\"Mettre en place une solution EDR\",\"Former les équipes au phishing\"]",
+      "companyProfile": "{\"name\":\"TestCorp\",\"sector\":\"Services Financiers\",\"size\":\"PME\",\"employees\":50}",
+      "actionPlan": null,
+      "roadmapData": null,
+      "legalRiskScore": null
+    },
+    {
+      "id": "a8c6d773-6f02-4871-b33f-cdab1fd1e1d1",
+      "userId": "3aed831e-fa79-4025-997c-15df0f1f95e9",
+      "createdAt": "2025-08-06T14:07:48.534Z",
+      "updatedAt": "2025-08-06T14:07:48.534Z",
+      "score": 35,
+      "maturity": "Faible",
+      "recommendations": "[\"Mettre en place une politique de sécurité\",\"Déployer une solution de sauvegarde\",\"Sensibiliser les utilisateurs aux cybermenaces\",\"Implémenter une authentification multi-facteur\",\"Effectuer des audits de sécurité réguliers\"]",
+      "companyProfile": "{\"name\":\"Entreprise Test 2\",\"sector\":\"Commerce de Détail\",\"size\":\"TPE\",\"employees\":15,\"location\":\"Paris, France\",\"revenue\":\"500K€\"}",
+      "actionPlan": null,
+      "roadmapData": null,
+      "legalRiskScore": null
+    },
+    {
+      "id": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "userId": "3aed831e-fa79-4025-997c-15df0f1f95e9",
+      "createdAt": "2025-08-06T14:15:30.343Z",
+      "updatedAt": "2025-08-06T14:15:30.343Z",
+      "score": 11,
+      "maturity": "Faible",
+      "recommendations": "Nommer un DPO.\nDocumenter les traitements de données.\nÉvaluer la résilience des produits numériques.\nMettre en place un processus de divulgation des vulnérabilités.\nÉvaluer la sécurité de la chaîne d'approvisionnement.\nÉlaborer un plan de gestion des incidents de sécurité.\nFormer le personnel à la détection des incidents.\nMettre en place un système de veille sur les menaces.\nÉvaluer les risques liés aux fournisseurs.\nMettre en place des exigences de sécurité pour les fournisseurs.\nAuditer régulièrement les fournisseurs critiques.\nMettre en place une gouvernance des services cloud.\nÉvaluer la sécurité des fournisseurs de services cloud.\nChiffrer les données sensibles dans le cloud.",
+      "companyProfile": "{\"sector\":\"Autre\",\"size\":\"TPE\",\"isOIV\":false,\"isOSE\":false,\"isFinancial\":false,\"hasPersonalData\":true,\"hasCriticalInfra\":false,\"applicableRegulations\":[\"RGPD\"]}",
+      "actionPlan": "[{\"action\":\"Mettre en place une procédure de notification des violations de données dans les 72h à la CNIL.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Former le personnel à identifier et signaler les violations de données.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Élaborer un plan de réponse aux violations de données conformément à l'article 33 du RGPD.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Mettre en place un système de gestion des consentements conforme à l'article 7 du RGPD.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Réviser les formulaires de collecte de consentement pour assurer leur conformité.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Implémenter des mécanismes pour permettre aux personnes de retirer facilement leur consentement.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Mettre en place des procédures claires pour permettre aux personnes d'exercer leurs droits RGPD.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Former le personnel aux procédures de traitement des demandes des personnes concernées.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Implémenter un système de suivi des demandes d'exercice des droits dans les délais légaux.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Mettre en place des garanties appropriées pour les transferts internationaux de données.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Utiliser des clauses contractuelles types approuvées par la Commission européenne.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Évaluer les pays de destination pour s'assurer d'un niveau adéquat de protection.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Intégrer la protection de la vie privée dès la conception des nouveaux systèmes et processus.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Mettre en place des contrôles de sécurité par défaut dans les développements informatiques.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Former les équipes de développement aux principes de privacy by design.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Vérifier et auditer régulièrement les sous-traitants pour leur conformité RGPD.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Mettre à jour les contrats de sous-traitance pour inclure toutes les obligations RGPD.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Établir des clauses de responsabilité claires avec les sous-traitants en matière de protection des données.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Établir une politique claire de conservation des données avec des durées définies par type de données.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Implémenter des mécanismes de suppression automatique des données à l'expiration de leur durée de conservation.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Former le personnel aux règles de conservation des données et à l'importance du respect des délais.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Mettre en place un processus d'évaluation de la résilience cyber pour les produits numériques selon le CRA.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Identifier les vulnérabilités critiques dans les produits numériux développés.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Élaborer un plan de remédiation pour les vulnérabilités identifiées dans les produits.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Mettre en place des mesures de sécurité par défaut pour les produits numériques selon le CRA.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Établir des critères de sécurité minimum pour tous les produits.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Implémenter des mécanismes de sécurité pour protéger les données sensibles.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Mettre en place un processus de correction des vulnérabilités dans les délais requis selon le CRA.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Établir une équipe dédiée pour la gestion des vulnérabilités.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Implémenter un système de suivi pour s'assurer du respect des délais de correction.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Mettre en place un système de gestion de la sécurité pour les produits numériques selon le CRA.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Établir des politiques de sécurité pour les produits.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Implémenter des mécanismes de sécurité pour protéger les données sensibles.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Mettre en place un processus d'évaluation de la sécurité des fournisseurs de composants selon le CRA.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Identifier les fournisseurs critiques dans la chaîne d'approvisionnement.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Établir des critères de sécurité minimum pour tous les fournisseurs de composants.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Mettre en place des tests de pénétration réguliers pour les produits numériques selon le CRA.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Établir une équipe dédiée pour la réalisation des tests de pénétration.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Implémenter des mécanismes de sécurité pour protéger les données sensibles.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"}]",
+      "roadmapData": null,
+      "legalRiskScore": null
+    },
+    {
+      "id": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "userId": "3aed831e-fa79-4025-997c-15df0f1f95e9",
+      "createdAt": "2025-08-07T08:49:37.667Z",
+      "updatedAt": "2025-08-07T08:49:37.667Z",
+      "score": 100,
+      "maturity": "Élevée",
+      "recommendations": "",
+      "companyProfile": "{\"sector\":\"Autre\",\"size\":\"PME\",\"isOIV\":false,\"isOSE\":false,\"isFinancial\":false,\"hasPersonalData\":true,\"hasCriticalInfra\":false,\"applicableRegulations\":[\"RGPD\"]}",
+      "actionPlan": "[]",
+      "roadmapData": null,
+      "legalRiskScore": null
+    },
+    {
+      "id": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "userId": "3aed831e-fa79-4025-997c-15df0f1f95e9",
+      "createdAt": "2025-08-07T09:35:28.548Z",
+      "updatedAt": "2025-08-07T09:35:28.548Z",
+      "score": 11,
+      "maturity": "Faible",
+      "recommendations": "Nommer un DPO.\nDocumenter les traitements de données.\nÉvaluer la résilience des produits numériques.\nMettre en place un processus de divulgation des vulnérabilités.\nÉvaluer la sécurité de la chaîne d'approvisionnement.\nÉlaborer un plan de gestion des incidents de sécurité.\nFormer le personnel à la détection des incidents.\nMettre en place un système de veille sur les menaces.\nÉvaluer les risques liés aux fournisseurs.\nMettre en place des exigences de sécurité pour les fournisseurs.\nAuditer régulièrement les fournisseurs critiques.\nMettre en place une gouvernance des services cloud.\nÉvaluer la sécurité des fournisseurs de services cloud.\nChiffrer les données sensibles dans le cloud.",
+      "companyProfile": "{\"sector\":\"Autre\",\"size\":\"PME\",\"isOIV\":false,\"isOSE\":false,\"isFinancial\":false,\"hasPersonalData\":true,\"hasCriticalInfra\":false,\"applicableRegulations\":[\"RGPD\"]}",
+      "actionPlan": "[{\"action\":\"Mettre en place une procédure de notification des violations de données dans les 72h à la CNIL.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Former le personnel à identifier et signaler les violations de données.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Élaborer un plan de réponse aux violations de données conformément à l'article 33 du RGPD.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Mettre en place un système de gestion des consentements conforme à l'article 7 du RGPD.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Réviser les formulaires de collecte de consentement pour assurer leur conformité.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Implémenter des mécanismes pour permettre aux personnes de retirer facilement leur consentement.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Mettre en place des procédures claires pour permettre aux personnes d'exercer leurs droits RGPD.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Former le personnel aux procédures de traitement des demandes des personnes concernées.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Implémenter un système de suivi des demandes d'exercice des droits dans les délais légaux.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Mettre en place des garanties appropriées pour les transferts internationaux de données.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Utiliser des clauses contractuelles types approuvées par la Commission européenne.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Évaluer les pays de destination pour s'assurer d'un niveau adéquat de protection.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Intégrer la protection de la vie privée dès la conception des nouveaux systèmes et processus.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Mettre en place des contrôles de sécurité par défaut dans les développements informatiques.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Former les équipes de développement aux principes de privacy by design.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Vérifier et auditer régulièrement les sous-traitants pour leur conformité RGPD.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Mettre à jour les contrats de sous-traitance pour inclure toutes les obligations RGPD.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Établir des clauses de responsabilité claires avec les sous-traitants en matière de protection des données.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Établir une politique claire de conservation des données avec des durées définies par type de données.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Implémenter des mécanismes de suppression automatique des données à l'expiration de leur durée de conservation.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Former le personnel aux règles de conservation des données et à l'importance du respect des délais.\",\"category\":\"RGPD\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"DPO\",\"compliance\":[\"RGPD\"],\"status\":\"En cours\"},{\"action\":\"Mettre en place un processus d'évaluation de la résilience cyber pour les produits numériques selon le CRA.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Identifier les vulnérabilités critiques dans les produits numériux développés.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Élaborer un plan de remédiation pour les vulnérabilités identifiées dans les produits.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Mettre en place des mesures de sécurité par défaut pour les produits numériques selon le CRA.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Établir des critères de sécurité minimum pour tous les produits.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Implémenter des mécanismes de sécurité pour protéger les données sensibles.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Mettre en place un processus de correction des vulnérabilités dans les délais requis selon le CRA.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Établir une équipe dédiée pour la gestion des vulnérabilités.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Implémenter un système de suivi pour s'assurer du respect des délais de correction.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Mettre en place un système de gestion de la sécurité pour les produits numériques selon le CRA.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Établir des politiques de sécurité pour les produits.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Implémenter des mécanismes de sécurité pour protéger les données sensibles.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Mettre en place un processus d'évaluation de la sécurité des fournisseurs de composants selon le CRA.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Identifier les fournisseurs critiques dans la chaîne d'approvisionnement.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Établir des critères de sécurité minimum pour tous les fournisseurs de composants.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Mettre en place des tests de pénétration réguliers pour les produits numériques selon le CRA.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Établir une équipe dédiée pour la réalisation des tests de pénétration.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"},{\"action\":\"Implémenter des mécanismes de sécurité pour protéger les données sensibles.\",\"category\":\"CRA\",\"priority\":\"Haute\",\"deadline\":\"1 mois\",\"owner\":\"RSSI\",\"compliance\":[],\"status\":\"En cours\"}]",
+      "roadmapData": null,
+      "legalRiskScore": null
+    }
+  ],
+  "auditResponses": [
+    {
+      "id": "18b3ebb9-723d-4b43-9c10-4b04a65a6b40",
+      "auditId": "f887f4cf-7617-48c2-aab7-4b0c75678f79",
+      "question": "gov_policy",
+      "category": "Gouvernance",
+      "answer": "Non",
+      "score": 0
+    },
+    {
+      "id": "802f4a4d-7e32-4521-a4f7-71dc6345112d",
+      "auditId": "f887f4cf-7617-48c2-aab7-4b0c75678f79",
+      "question": "tech_antivirus",
+      "category": "Technique",
+      "answer": "Partiellement",
+      "score": 2
+    },
+    {
+      "id": "24e71d3c-051c-42dd-8bcd-1ee33ee717a4",
+      "auditId": "f887f4cf-7617-48c2-aab7-4b0c75678f79",
+      "question": "org_awareness",
+      "category": "Organisationnel",
+      "answer": "Oui",
+      "score": 4
+    },
+    {
+      "id": "c547b6cd-99e1-4089-8654-18bcfda548b8",
+      "auditId": "f887f4cf-7617-48c2-aab7-4b0c75678f79",
+      "question": "rgpd_dpo",
+      "category": "RGPD",
+      "answer": "Non",
+      "score": 0
+    },
+    {
+      "id": "3c715fd7-3429-418e-a67a-14cbe8892172",
+      "auditId": "f887f4cf-7617-48c2-aab7-4b0c75678f79",
+      "question": "nis2_incident",
+      "category": "NIS2",
+      "answer": "Partiellement",
+      "score": 2
+    },
+    {
+      "id": "3d7188cf-067b-47aa-b6cb-8272e3c7ddfc",
+      "auditId": "f887f4cf-7617-48c2-aab7-4b0c75678f79",
+      "question": "dora_testing",
+      "category": "DORA",
+      "answer": "Non",
+      "score": 1
+    },
+    {
+      "id": "26666975-30c7-47c8-9050-51573c0ff30c",
+      "auditId": "a8c6d773-6f02-4871-b33f-cdab1fd1e1d1",
+      "question": "gov_policy_security",
+      "category": "Gouvernance",
+      "answer": "Non",
+      "score": 0
+    },
+    {
+      "id": "bcb4ef64-c0fb-46f3-ac10-b2cbc16b754e",
+      "auditId": "a8c6d773-6f02-4871-b33f-cdab1fd1e1d1",
+      "question": "tech_firewall",
+      "category": "Technique",
+      "answer": "Non",
+      "score": 0
+    },
+    {
+      "id": "3c99d58f-9257-4cd2-878e-4d761273e0ee",
+      "auditId": "a8c6d773-6f02-4871-b33f-cdab1fd1e1d1",
+      "question": "tech_antivirus",
+      "category": "Technique",
+      "answer": "Partiellement",
+      "score": 2
+    },
+    {
+      "id": "437ebc3b-8c4e-4f60-abd2-e26b740ad1ff",
+      "auditId": "a8c6d773-6f02-4871-b33f-cdab1fd1e1d1",
+      "question": "org_formation",
+      "category": "Organisationnel",
+      "answer": "Non",
+      "score": 0
+    },
+    {
+      "id": "24bc1d98-0f76-43ae-9290-99583b6d2b4c",
+      "auditId": "a8c6d773-6f02-4871-b33f-cdab1fd1e1d1",
+      "question": "org_incident_response",
+      "category": "Organisationnel",
+      "answer": "Partiellement",
+      "score": 1
+    },
+    {
+      "id": "40df320f-c875-4438-9f04-4e609643879f",
+      "auditId": "a8c6d773-6f02-4871-b33f-cdab1fd1e1d1",
+      "question": "rgpd_data_mapping",
+      "category": "RGPD",
+      "answer": "Non",
+      "score": 0
+    },
+    {
+      "id": "de86e0e5-0409-4175-b049-b16e7780ef5e",
+      "auditId": "a8c6d773-6f02-4871-b33f-cdab1fd1e1d1",
+      "question": "rgpd_consent",
+      "category": "RGPD",
+      "answer": "Partiellement",
+      "score": 2
+    },
+    {
+      "id": "3f09cbdb-5bfe-494b-a5ba-79f49da91afb",
+      "auditId": "a8c6d773-6f02-4871-b33f-cdab1fd1e1d1",
+      "question": "nis2_risk_management",
+      "category": "NIS2",
+      "answer": "Non",
+      "score": 0
+    },
+    {
+      "id": "3c2a65ca-0720-4c25-ac20-5ae2681a96fb",
+      "auditId": "a8c6d773-6f02-4871-b33f-cdab1fd1e1d1",
+      "question": "nis2_supply_chain",
+      "category": "NIS2",
+      "answer": "Non",
+      "score": 0
+    },
+    {
+      "id": "d16fffa3-71c9-4dbb-9cdf-70994a45de46",
+      "auditId": "a8c6d773-6f02-4871-b33f-cdab1fd1e1d1",
+      "question": "dora_backup",
+      "category": "DORA",
+      "answer": "Partiellement",
+      "score": 2
+    },
+    {
+      "id": "218813cf-40f1-4646-bd1e-28a8546cbc96",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "rgpd1",
+      "category": "RGPD",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "3040bf91-501c-44bd-858d-65b22b02900a",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "rgpd2",
+      "category": "RGPD",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "7bb9fac5-6bab-4fff-8bfb-931aa3d655cd",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "rgpd3",
+      "category": "RGPD",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "d882f2a4-b343-48dc-9e70-fc401ded8e9d",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "rgpd4",
+      "category": "RGPD",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "602022d0-fab6-4bb7-b7bc-95822e8f9a31",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "rgpd5",
+      "category": "RGPD",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "8f5a93e3-c04a-4378-a70a-0234ac56b588",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "rgpd6",
+      "category": "RGPD",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "44dc0d9c-1da3-4ebf-8cbe-50f1942572fc",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "rgpd7",
+      "category": "RGPD",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "5c17a791-a5ff-4f46-be27-07b9368fcd99",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "rgpd8",
+      "category": "RGPD",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "eeae76c1-6452-4b4b-ad4d-45ac31a2bbb0",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "rgpd9",
+      "category": "RGPD",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "b39dab22-9dae-4554-b50b-7151d8d6b870",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "rgpd10",
+      "category": "RGPD",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "9938d40e-f1d8-44dd-adda-8e592938b867",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "inc_1",
+      "category": "Incidents",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "70540894-d838-4e60-b99c-51f541a9ad7f",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "inc_2",
+      "category": "Incidents",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "54138f39-0d77-4db4-b57d-225994206fa0",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "inc_3",
+      "category": "Incidents",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "9dd7eba4-215d-42c7-85d2-1fccacacf9f1",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "inc_4",
+      "category": "Incidents",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "fdb2fc7c-1310-41d5-bea2-d0eb8e1606cb",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "inc_5",
+      "category": "Incidents",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "42b74ed7-5399-4ca2-8258-f44cd2b30e0a",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "sc_1",
+      "category": "SupplyChain",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "25f7a82e-54ab-454e-9ba6-56f47cd371f0",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "sc_2",
+      "category": "SupplyChain",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "0af0bf90-d934-4d8a-9129-50cfd1d32491",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "sc_3",
+      "category": "SupplyChain",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "2a6c9f82-cfc2-4654-8f4a-9800a6c00a7f",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "sc_4",
+      "category": "SupplyChain",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "3cf4d6a9-e085-4669-b238-c207f1ffca28",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "cloud_1",
+      "category": "Cloud",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "24a3ff30-e53f-422e-9eea-272a6f03fabb",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "cloud_2",
+      "category": "Cloud",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "032f411f-ff28-4ef3-9d4e-c6794d1c528d",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "cloud_3",
+      "category": "Cloud",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "a6509495-bcc2-40ae-9d87-d87203e0d085",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "cloud_4",
+      "category": "Cloud",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "37e948c2-f0e9-4596-b4cd-3f1c0ba8e6b8",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "cra_1",
+      "category": "CRA",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "70a6d757-0ccc-431f-942c-0e02ab1e3171",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "cra_2",
+      "category": "CRA",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "d1076cb5-69b4-4bbf-82b9-5394c4fe711d",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "cra_3",
+      "category": "CRA",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "198f2b44-6c98-4d9b-9795-7554daf9732b",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "cra_4",
+      "category": "CRA",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "12f5b990-dc61-4f95-b941-446d32bd1807",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "cra_5",
+      "category": "CRA",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "1c985a62-fc72-4308-b9cd-9dfdcb4091a2",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "cra_6",
+      "category": "CRA",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "95243b87-d238-4cd9-8333-0844733fb706",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "cra_7",
+      "category": "CRA",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "bf3aa79a-5612-419d-bbd8-a84e742c47fa",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "cra_8",
+      "category": "CRA",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "f837e480-3581-489c-a171-dd49a4af2c26",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "cra_9",
+      "category": "CRA",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "98709b71-72df-4dde-8394-55b85fb19d69",
+      "auditId": "27b5bbcb-fc4d-4edb-9a4e-3653a3ca1b40",
+      "question": "cra_10",
+      "category": "CRA",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "01bede32-93cd-4513-b5b9-bbab963038f9",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "rgpd1",
+      "category": "RGPD",
+      "answer": "oui",
+      "score": 5
+    },
+    {
+      "id": "30bb71c2-a3dc-4d96-8809-19d60a7e904f",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "rgpd2",
+      "category": "RGPD",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "8145a638-9ad4-4a63-b769-233356be2813",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "rgpd3",
+      "category": "RGPD",
+      "answer": "oui",
+      "score": 5
+    },
+    {
+      "id": "c0d254c7-21b6-4746-94a1-3e4d13234277",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "rgpd4",
+      "category": "RGPD",
+      "answer": "oui",
+      "score": 5
+    },
+    {
+      "id": "ca24eba5-801b-4e6c-b8c6-d34d08cdd3d5",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "rgpd5",
+      "category": "RGPD",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "7bf45480-4e0b-4c2d-87da-d5e97b163135",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "rgpd6",
+      "category": "RGPD",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "50f06a0a-bb15-4e54-81c9-1e1a28ff0979",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "rgpd7",
+      "category": "RGPD",
+      "answer": "oui",
+      "score": 5
+    },
+    {
+      "id": "da2a2b41-eb91-4516-947e-efa7d6c74294",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "rgpd8",
+      "category": "RGPD",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "a418ce4f-ad9c-473a-a68a-3d119a1a78c1",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "rgpd9",
+      "category": "RGPD",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "e01eaabf-f14d-4200-af63-3dc3fe0669bc",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "rgpd10",
+      "category": "RGPD",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "d7624c28-a4b4-4ef0-9196-8e7fb405cc01",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "inc_1",
+      "category": "Incidents",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "1015b43c-60a2-47d2-81f2-87f18ef0c5d0",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "inc_2",
+      "category": "Incidents",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "d1f21246-0167-4958-9b4c-29d8fe01e1ec",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "inc_3",
+      "category": "Incidents",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "c5aa0010-7f2b-41b6-b211-477b36f2c652",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "inc_4",
+      "category": "Incidents",
+      "answer": "oui",
+      "score": 5
+    },
+    {
+      "id": "856b73db-9739-43b4-b73d-301f5ee1a24d",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "inc_5",
+      "category": "Incidents",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "3e14fa85-4611-4b59-922b-8d2d1b790056",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "sc_1",
+      "category": "SupplyChain",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "3d5f4542-d8c6-4357-9608-8bb2f0f1b0ee",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "sc_2",
+      "category": "SupplyChain",
+      "answer": "oui",
+      "score": 5
+    },
+    {
+      "id": "2f3967dd-a8a4-4e8d-8403-e646f8cb2b65",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "sc_3",
+      "category": "SupplyChain",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "7cd0bb31-fd4a-428c-8ce2-76d72170df9b",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "sc_4",
+      "category": "SupplyChain",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "3bd1b5ce-9b97-4d44-9ea2-bf3ab8a99e8e",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "cloud_1",
+      "category": "Cloud",
+      "answer": "oui",
+      "score": 5
+    },
+    {
+      "id": "b09a4862-b1bc-46ed-b11e-3a994c53ef0e",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "cloud_2",
+      "category": "Cloud",
+      "answer": "oui",
+      "score": 5
+    },
+    {
+      "id": "8b16cdb8-87af-4a63-8f29-385ae19c7235",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "cloud_3",
+      "category": "Cloud",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "473535de-f594-42ca-9fda-a8c1f1a6e123",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "cloud_4",
+      "category": "Cloud",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "7a1cf7b3-8a95-4d69-8101-87f2f336675b",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "cra_1",
+      "category": "CRA",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "db920d4f-c055-4c6b-9b9c-f169ec3e8dcf",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "cra_2",
+      "category": "CRA",
+      "answer": "oui",
+      "score": 5
+    },
+    {
+      "id": "080e2be0-ef04-48e9-94fc-2817351f20ee",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "cra_3",
+      "category": "CRA",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "f518a3f3-f376-43cd-8c98-62135bd68452",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "cra_4",
+      "category": "CRA",
+      "answer": "oui",
+      "score": 5
+    },
+    {
+      "id": "682a532f-b660-4664-bdf8-8c43241f1198",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "cra_5",
+      "category": "CRA",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "72212c88-ea7c-44fc-bb0d-d41cb2625d35",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "cra_6",
+      "category": "CRA",
+      "answer": "oui",
+      "score": 5
+    },
+    {
+      "id": "f45d20de-37e8-46c6-ab67-1e7b8e6ec7fe",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "cra_7",
+      "category": "CRA",
+      "answer": "5",
+      "score": 5
+    },
+    {
+      "id": "ffd7fd97-80c6-4ede-ba87-426c6f81b8c2",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "cra_8",
+      "category": "CRA",
+      "answer": "oui",
+      "score": 5
+    },
+    {
+      "id": "6727e68e-4b06-4a12-95d5-63f04e97d893",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "cra_9",
+      "category": "CRA",
+      "answer": "oui",
+      "score": 5
+    },
+    {
+      "id": "b47914c2-1244-4692-84fd-909d66c3c71c",
+      "auditId": "326fcc88-b36b-4bd2-8a64-385c34857fc2",
+      "question": "cra_10",
+      "category": "CRA",
+      "answer": "oui",
+      "score": 5
+    },
+    {
+      "id": "260e881c-7e73-46b7-bbc4-af67485aa464",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "rgpd1",
+      "category": "RGPD",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "a4588042-0ab6-4fc8-a7d9-e6f0dc17ee12",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "rgpd2",
+      "category": "RGPD",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "18457f21-f437-4937-8938-b94308d10bb6",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "rgpd3",
+      "category": "RGPD",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "811067ec-fc78-4b66-83cf-8a2f1432ed37",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "rgpd4",
+      "category": "RGPD",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "ba67880a-5fb6-4c4d-9010-c80a72af4ae5",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "rgpd5",
+      "category": "RGPD",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "61875795-42d8-424c-8eb3-bf312e8a7e9d",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "rgpd6",
+      "category": "RGPD",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "d4048a14-ce2b-4b98-8338-84781d3ea817",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "rgpd7",
+      "category": "RGPD",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "870b99f3-4257-4f6a-89c8-8af932aeb96f",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "rgpd8",
+      "category": "RGPD",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "f56904e6-606c-466d-b23a-8ff87467d819",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "rgpd9",
+      "category": "RGPD",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "26a58bdb-e792-4621-bd0d-d67c573bcf01",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "rgpd10",
+      "category": "RGPD",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "595dd60d-8ff8-460b-848d-062f4cde4e73",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "inc_1",
+      "category": "Incidents",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "50f0bd75-349f-4583-a346-2f424e413e77",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "inc_2",
+      "category": "Incidents",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "2bd375b7-280b-4efd-8698-648cd392f9fd",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "inc_3",
+      "category": "Incidents",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "94f702c2-1436-4124-90d1-3918984a838e",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "inc_4",
+      "category": "Incidents",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "63d0142d-1bd3-45f4-ab91-42a828e7c278",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "inc_5",
+      "category": "Incidents",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "28ab6493-c828-4446-9e85-076853da0178",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "sc_1",
+      "category": "SupplyChain",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "b77a9b31-d856-42cb-bb37-2d81b2d9d416",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "sc_2",
+      "category": "SupplyChain",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "8b468a35-ca60-407b-a4f3-1a77d75c0b57",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "sc_3",
+      "category": "SupplyChain",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "df192870-2e4f-48e0-a215-14735689f80a",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "sc_4",
+      "category": "SupplyChain",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "365226ad-3fb9-4737-9b08-1ba85b11c14c",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "cloud_1",
+      "category": "Cloud",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "823f7e19-0e5a-41f2-978d-757553d08aa0",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "cloud_2",
+      "category": "Cloud",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "71b95418-844c-4dad-afc0-be266d155963",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "cloud_3",
+      "category": "Cloud",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "44ba150c-5f4a-4c70-9023-7b2977b84481",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "cloud_4",
+      "category": "Cloud",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "1c392b3f-9b02-4b8a-85d8-032530cdcdf9",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "cra_1",
+      "category": "CRA",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "124c0e4d-df74-476b-acfd-36c7d44048be",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "cra_2",
+      "category": "CRA",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "4a2e16f7-7871-4727-87b9-8225f7034505",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "cra_3",
+      "category": "CRA",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "a9d2be9a-9686-444e-b9cb-048d90cefce6",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "cra_4",
+      "category": "CRA",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "82cf16cf-d853-4f0e-b604-d2a41547f9bf",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "cra_5",
+      "category": "CRA",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "9a2e76c9-18ba-4909-969e-fa69d70d8181",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "cra_6",
+      "category": "CRA",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "c217694b-993a-4513-a504-c66e98f048f4",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "cra_7",
+      "category": "CRA",
+      "answer": "1",
+      "score": 1
+    },
+    {
+      "id": "09a10531-2f8f-4afe-8114-60c4ba44e5ba",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "cra_8",
+      "category": "CRA",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "ecf326c7-4125-4651-a40c-e74b0355353e",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "cra_9",
+      "category": "CRA",
+      "answer": "non",
+      "score": 0
+    },
+    {
+      "id": "f29344d7-73d9-442e-a032-6934fe447336",
+      "auditId": "59d5d003-8b11-4351-85f9-752029540e8e",
+      "question": "cra_10",
+      "category": "CRA",
+      "answer": "non",
+      "score": 0
+    }
+  ],
+  "reports": [],
+  "resources": [],
+  "ebooks": [
+    {
+      "id": "666e8680-7811-4b26-b0a4-e2b3d92dd042",
+      "title": "Sécurité des Accès et Authentification",
+      "author": "StratCyber Formation",
+      "description": "Guide complet sur la sécurité des accès et l'authentification forte en entreprise",
+      "content": "{\"markdown\":\"# Sécurité des Accès et Authentification\\r\\n\\r\\n**Auteur**: StratCyber Formation  \\r\\n**Catégorie**: Fondamentaux  \\r\\n**Difficulté**: Débutant  \\r\\n**Durée estimée**: 2h 30min  \\r\\n**Tags**: #Accès #Authentification #Contrôle #Sécurité\\r\\n\\r\\n## Table des matières\\r\\n\\r\\n1. [Introduction](#introduction)\\r\\n2. [Principes fondamentaux de la gestion des accès](#principes-fondamentaux)\\r\\n3. [Authentification forte et multifacteur](#authentification-forte)\\r\\n4. [Contrôle d'accès basé sur les rôles](#controle-acces-rbac)\\r\\n5. [Gestion du cycle de vie des identités](#cycle-vie-identites)\\r\\n6. [Surveillance et audit des accès](#surveillance-audit)\\r\\n7. [Plan d'action pratique](#plan-action)\\r\\n8. [Quiz de validation](#quiz)\\r\\n\\r\\n---\\r\\n\\r\\n## Introduction\\r\\n\\r\\nLa sécurité des accès constitue le premier rempart de votre système d'information. Dans un contexte où les cyberattaques se multiplient et se sophistiquent, la maîtrise de l'authentification et du contrôle d'accès devient cruciale pour toute organisation.\\r\\n\\r\\n### Pourquoi ce guide ?\\r\\n\\r\\n- **68% des violations** de données impliquent des identifiants compromis\\r\\n- **81% des attaques** exploitent des mots de passe faibles ou volés  \\r\\n- **Le coût moyen** d'une violation liée aux accès : 4,5M€\\r\\n\\r\\n### Ce que vous allez apprendre\\r\\n\\r\\n✅ Les principes fondamentaux de la gestion des accès  \\r\\n✅ Comment mettre en place une authentification forte  \\r\\n✅ Les meilleures pratiques de contrôle d'accès  \\r\\n✅ Comment surveiller et auditer les accès  \\r\\n✅ Un plan d'action concret pour votre organisation  \\r\\n\\r\\n---\\r\\n\\r\\n## Principes fondamentaux de la gestion des accès {#principes-fondamentaux}\\r\\n\\r\\n### Le principe du moindre privilège\\r\\n\\r\\n**Définition**: Chaque utilisateur ne dispose que des droits strictement nécessaires à l'accomplissement de ses tâches.\\r\\n\\r\\n#### Mise en pratique :\\r\\n\\r\\n1. **Analyse des besoins**\\r\\n   - Cartographier les rôles et responsabilités\\r\\n   - Identifier les ressources nécessaires par fonction\\r\\n   - Documenter les accès légitimes\\r\\n\\r\\n2. **Attribution granulaire**\\r\\n   ```\\r\\n   Exemple pratique :\\r\\n   - Comptable : Accès lecture/écriture sur les fichiers financiers uniquement\\r\\n   - RH : Accès aux données personnelles dans le SIRH uniquement  \\r\\n   - IT : Accès administrateur sur l'infrastructure, lecture sur les données métier\\r\\n   ```\\r\\n\\r\\n3. **Révision régulière**\\r\\n   - Audit trimestriel des droits\\r\\n   - Révision lors des changements de poste\\r\\n   - Suppression automatique des comptes inactifs\\r\\n\\r\\n### Séparation des tâches (SoD)\\r\\n\\r\\n**Objectif**: Empêcher qu'une seule personne puisse compromettre un processus critique.\\r\\n\\r\\n#### Exemples concrets :\\r\\n\\r\\n**Dans la finance :**\\r\\n- Personne A : Saisie des factures\\r\\n- Personne B : Validation des paiements\\r\\n- Personne C : Exécution des virements\\r\\n\\r\\n**Dans l'IT :**\\r\\n- Admin système : Gestion infrastructure\\r\\n- Admin sécurité : Gestion des politiques\\r\\n- Auditeur : Contrôle et reporting\\r\\n\\r\\n### Authentification défense en profondeur\\r\\n\\r\\n#### Les 3 facteurs d'authentification :\\r\\n\\r\\n1. **Ce que vous savez** (mot de passe, PIN)\\r\\n2. **Ce que vous avez** (token, smartphone)\\r\\n3. **Ce que vous êtes** (biométrie, comportement)\\r\\n\\r\\n---\\r\\n\\r\\n## Authentification forte et multifacteur {#authentification-forte}\\r\\n\\r\\n### Pourquoi l'authentification multifacteur (MFA) ?\\r\\n\\r\\n**Statistiques clés :**\\r\\n- Réduit les risques de compromission de **99,9%**\\r\\n- Protection contre **99,9%** des attaques automatisées\\r\\n- ROI moyen de **300%** sur 3 ans\\r\\n\\r\\n### Types de MFA recommandés\\r\\n\\r\\n#### 1. TOTP (Time-based One-Time Password)\\r\\n```\\r\\nAvantages :\\r\\n✅ Gratuit et facile à déployer\\r\\n✅ Fonctionne hors ligne\\r\\n✅ Applications : Google Authenticator, Authy, Microsoft Authenticator\\r\\n\\r\\nInconvénients :\\r\\n❌ Vulnérable au phishing sophistiqué\\r\\n❌ Peut être perdu avec le téléphone\\r\\n```\\r\\n\\r\\n#### 2. Push notifications\\r\\n```\\r\\nAvantages :\\r\\n✅ Expérience utilisateur fluide\\r\\n✅ Informations contextuelles (localisation, appareil)\\r\\n✅ Difficult à intercepter\\r\\n\\r\\nInconvénients :\\r\\n❌ Nécessite une connexion internet\\r\\n❌ Fatigue d'authentification possible\\r\\n```\\r\\n\\r\\n#### 3. Clés de sécurité hardware (FIDO2/WebAuthn)\\r\\n```\\r\\nAvantages :\\r\\n✅ Protection maximale contre le phishing\\r\\n✅ Pas de batterie, très fiable\\r\\n✅ Standard ouvert\\r\\n\\r\\nInconvénients :\\r\\n❌ Coût initial plus élevé\\r\\n❌ Peut être perdu physiquement\\r\\n```\\r\\n\\r\\n### Plan de déploiement MFA\\r\\n\\r\\n#### Phase 1 : Préparation (2 semaines)\\r\\n- [ ] Audit des applications et services\\r\\n- [ ] Choix de la solution MFA\\r\\n- [ ] Formation des équipes IT\\r\\n- [ ] Communication aux utilisateurs\\r\\n\\r\\n#### Phase 2 : Pilote (2 semaines)  \\r\\n- [ ] Déploiement sur un groupe test (IT, Direction)\\r\\n- [ ] Tests et ajustements\\r\\n- [ ] Recueil des retours d'expérience\\r\\n- [ ] Affinement des procédures\\r\\n\\r\\n#### Phase 3 : Déploiement général (4-8 semaines)\\r\\n- [ ] Déploiement par vagues (priorité aux comptes privilégiés)\\r\\n- [ ] Support utilisateur renforcé\\r\\n- [ ] Monitoring des incidents\\r\\n- [ ] Documentation des bonnes pratiques\\r\\n\\r\\n### Gestion des mots de passe\\r\\n\\r\\n#### Politique de mots de passe robuste\\r\\n\\r\\n```\\r\\nExigences recommandées :\\r\\n- Longueur minimale : 12 caractères\\r\\n- Pas de restrictions de complexité arbitraires\\r\\n- Pas d'expiration forcée (sauf compromission)\\r\\n- Vérification contre les dictionnaires de mots de passe compromis\\r\\n- Utilisation encouragée de gestionnaires de mots de passe\\r\\n```\\r\\n\\r\\n#### Gestionnaires de mots de passe recommandés\\r\\n\\r\\n**Pour l'entreprise :**\\r\\n- Bitwarden Business\\r\\n- 1Password Business  \\r\\n- Keeper Business\\r\\n\\r\\n**Pour les particuliers :**\\r\\n- Bitwarden\\r\\n- KeePass\\r\\n- 1Password\\r\\n\\r\\n---\\r\\n\\r\\n## Contrôle d'accès basé sur les rôles (RBAC) {#controle-acces-rbac}\\r\\n\\r\\n### Architecture RBAC\\r\\n\\r\\n```\\r\\nUtilisateur → Rôle → Permissions → Ressources\\r\\n\\r\\nExemple :\\r\\nJean Dupont → Responsable Comptable → [Lecture/Écriture Finance] → [SAP, Excel Budgets]\\r\\n```\\r\\n\\r\\n### Définition des rôles types\\r\\n\\r\\n#### Rôles administratifs\\r\\n- **Admin Système** : Gestion infrastructure\\r\\n- **Admin Sécurité** : Politiques et contrôles\\r\\n- **Admin Base de Données** : Gestion des données\\r\\n- **Admin Réseau** : Infrastructure réseau\\r\\n\\r\\n#### Rôles métier\\r\\n- **Manager** : Équipe + données départementales\\r\\n- **Utilisateur Standard** : Données personnelles + partagées\\r\\n- **Invité** : Accès limité et temporaire\\r\\n- **Service Account** : Applications automatisées\\r\\n\\r\\n### Matrice des droits\\r\\n\\r\\n| Ressource | Admin Sys | Admin Sec | Manager | User | Invité |\\r\\n|-----------|-----------|-----------|---------|------|--------|\\r\\n| Serveurs | RW | R | - | - | - |\\r\\n| Logs sécurité | R | RW | - | - | - |\\r\\n| Données équipe | R | R | RW | R | - |\\r\\n| Données personnelles | - | R | R | RW | - |\\r\\n| Internet | RW | RW | RW | RW | R |\\r\\n\\r\\n**Légende :** R=Lecture, W=Écriture, RW=Lecture+Écriture, -=Aucun accès\\r\\n\\r\\n---\\r\\n\\r\\n## Gestion du cycle de vie des identités {#cycle-vie-identites}\\r\\n\\r\\n### Processus d'arrivée (Joiner)\\r\\n\\r\\n#### Checklist d'arrivée\\r\\n- [ ] Création du compte utilisateur\\r\\n- [ ] Attribution du rôle selon le poste\\r\\n- [ ] Provisioning des accès nécessaires\\r\\n- [ ] Remise des équipements (laptop, badge, tokens)\\r\\n- [ ] Formation sécurité obligatoire\\r\\n- [ ] Signature de la charte informatique\\r\\n- [ ] Test des accès avec l'utilisateur\\r\\n\\r\\n#### Délais recommandés\\r\\n- **J-3** : Préparation technique\\r\\n- **J0** : Activation et formation\\r\\n- **J+1** : Vérification fonctionnelle\\r\\n\\r\\n### Processus de changement (Mover)\\r\\n\\r\\n#### Changement de poste\\r\\n- [ ] Révision des rôles et permissions\\r\\n- [ ] Suppression des anciens accès\\r\\n- [ ] Attribution des nouveaux accès\\r\\n- [ ] Validation avec le nouveau manager\\r\\n- [ ] Documentation du changement\\r\\n\\r\\n#### Changement temporaire (mission, remplacement)\\r\\n- [ ] Accès temporaires avec date d'expiration\\r\\n- [ ] Validation du manager et du remplacé\\r\\n- [ ] Révision automatique à l'échéance\\r\\n\\r\\n### Processus de départ (Leaver)\\r\\n\\r\\n#### Checklist de départ\\r\\n- [ ] **H-1** : Planification de la désactivation\\r\\n- [ ] **H0** : Désactivation immédiate des comptes\\r\\n- [ ] **H+1** : Récupération des équipements\\r\\n- [ ] **J+1** : Transfert/archivage des données\\r\\n- [ ] **J+7** : Suppression définitive des comptes\\r\\n- [ ] **J+30** : Audit de la procédure\\r\\n\\r\\n---\\r\\n\\r\\n## Surveillance et audit des accès {#surveillance-audit}\\r\\n\\r\\n### Indicateurs clés (KPI)\\r\\n\\r\\n#### Métriques de sécurité\\r\\n- **Taux d'adoption MFA** : > 95%\\r\\n- **Tentatives d'authentification échouées** : < 5% du total\\r\\n- **Comptes dormants** : < 5% du total\\r\\n- **Accès privilégiés** : < 10% des utilisateurs\\r\\n- **Temps de désactivation départ** : < 4 heures\\r\\n\\r\\n#### Métriques d'efficacité\\r\\n- **Temps de provisioning** : < 2 heures\\r\\n- **Incidents liés aux accès** : < 2 par mois\\r\\n- **Durée de résolution des problèmes d'accès** : < 30 minutes\\r\\n- **Satisfaction utilisateur** : > 4/5\\r\\n\\r\\n### Outils de monitoring\\r\\n\\r\\n#### Solutions SIEM recommandées\\r\\n- **PME** : Wazuh (gratuit), AlienVault OSSIM\\r\\n- **Moyennes entreprises** : Splunk, QRadar\\r\\n- **Grandes entreprises** : ArcSight, LogRhythm\\r\\n\\r\\n#### Logs à surveiller\\r\\n```\\r\\n- Authentifications réussies/échouées\\r\\n- Élévations de privilèges  \\r\\n- Accès aux ressources sensibles\\r\\n- Modifications des permissions\\r\\n- Connexions depuis des lieux inhabituels\\r\\n- Tentatives d'accès hors horaires\\r\\n```\\r\\n\\r\\n### Alertes critiques\\r\\n\\r\\n#### Configuration d'alertes\\r\\n```yaml\\r\\nAlerte Critique:\\r\\n  - Tentatives de connexion admin échouées > 3\\r\\n  - Accès privilégié hors horaires\\r\\n  - Connexion depuis pays à risque\\r\\n  - Modification des groupes d'administration\\r\\n  \\r\\nAlerte Important:\\r\\n  - Connexions multiples simultanées\\r\\n  - Accès à des ressources inhabituelles  \\r\\n  - Échecs d'authentification répétés\\r\\n  \\r\\nAlerte Information:\\r\\n  - Première connexion d'un nouvel utilisateur\\r\\n  - Connexion depuis un nouvel appareil\\r\\n```\\r\\n\\r\\n---\\r\\n\\r\\n## Plan d'action pratique {#plan-action}\\r\\n\\r\\n### Évaluation de votre maturité actuelle\\r\\n\\r\\n#### Questionnaire d'auto-évaluation\\r\\n\\r\\n**Authentification** (Score sur 20)\\r\\n- [ ] MFA activée sur tous les comptes privilégiés (5 pts)\\r\\n- [ ] MFA activée sur tous les comptes utilisateurs (5 pts)  \\r\\n- [ ] Politique de mots de passe robuste (3 pts)\\r\\n- [ ] Gestionnaire de mots de passe déployé (3 pts)\\r\\n- [ ] Formation utilisateurs réalisée (2 pts)\\r\\n- [ ] Tests de phishing réguliers (2 pts)\\r\\n\\r\\n**Contrôle d'accès** (Score sur 20)\\r\\n- [ ] Principe du moindre privilège appliqué (5 pts)\\r\\n- [ ] RBAC implémenté (4 pts)\\r\\n- [ ] Séparation des tâches respectée (3 pts)\\r\\n- [ ] Révision des droits trimestrielle (3 pts)\\r\\n- [ ] Processus joiner/mover/leaver documenté (3 pts)\\r\\n- [ ] Gestion des comptes de service (2 pts)\\r\\n\\r\\n**Surveillance** (Score sur 20)\\r\\n- [ ] Logs centralisés et surveillés (5 pts)\\r\\n- [ ] Alertes automatisées configurées (4 pts)\\r\\n- [ ] Tableau de bord des accès (3 pts)\\r\\n- [ ] Audit des accès privilégiés (3 pts)\\r\\n- [ ] Reporting mensuel (3 pts)\\r\\n- [ ] Tests d'intrusion réguliers (2 pts)\\r\\n\\r\\n#### Interprétation des scores\\r\\n- **50-60** : Excellence - Maintenir et améliorer\\r\\n- **40-49** : Bon niveau - Quelques ajustements  \\r\\n- **30-39** : Acceptable - Efforts nécessaires\\r\\n- **< 30** : Critique - Action immédiate requise\\r\\n\\r\\n### Roadmap de déploiement\\r\\n\\r\\n#### Phase 1 - Fondations (Mois 1-2)\\r\\n**Priorité Critique**\\r\\n- [ ] Inventaire de tous les comptes utilisateurs\\r\\n- [ ] Activation MFA sur les comptes administrateurs\\r\\n- [ ] Politique de mots de passe renforcée\\r\\n- [ ] Formation équipe IT\\r\\n\\r\\n**Budget estimé** : 5 000€ - 10 000€  \\r\\n**Ressources** : 1 ETP IT pendant 2 semaines\\r\\n\\r\\n#### Phase 2 - Déploiement (Mois 3-4)  \\r\\n**Priorité Haute**\\r\\n- [ ] Déploiement MFA généralisé\\r\\n- [ ] Implémentation RBAC\\r\\n- [ ] Processus joiner/mover/leaver\\r\\n- [ ] Formation utilisateurs\\r\\n\\r\\n**Budget estimé** : 15 000€ - 25 000€  \\r\\n**Ressources** : 0.5 ETP IT pendant 2 mois\\r\\n\\r\\n#### Phase 3 - Surveillance (Mois 5-6)\\r\\n**Priorité Moyenne**\\r\\n- [ ] Solution SIEM ou logs centralisés\\r\\n- [ ] Tableaux de bord et KPI\\r\\n- [ ] Automatisation des processus\\r\\n- [ ] Tests et audits\\r\\n\\r\\n**Budget estimé** : 10 000€ - 20 000€  \\r\\n**Ressources** : 0.3 ETP IT + prestataire externe\\r\\n\\r\\n### Actions immédiates (Cette semaine)\\r\\n\\r\\n1. **Lundi** : Audit des comptes administrateurs\\r\\n2. **Mardi** : Activation MFA pour les admins  \\r\\n3. **Mercredi** : Installation gestionnaire de mots de passe\\r\\n4. **Jeudi** : Formation équipe IT sur les bonnes pratiques\\r\\n5. **Vendredi** : Communication aux utilisateurs du plan\\r\\n\\r\\n### Ressources et outils\\r\\n\\r\\n#### Solutions recommandées par budget\\r\\n\\r\\n**Budget < 5K€/an**\\r\\n- MFA : Microsoft Authenticator + Azure AD Basic\\r\\n- Monitoring : Wazuh (gratuit)\\r\\n- Formation : Ressources internes + guides gratuits\\r\\n\\r\\n**Budget 5-20K€/an** \\r\\n- MFA : Duo Security ou Okta Starter\\r\\n- SIEM : Splunk Free ou LogRhythm Community\\r\\n- Formation : E-learning spécialisé\\r\\n\\r\\n**Budget > 20K€/an**\\r\\n- IAM : Okta, Azure AD Premium, CyberArk\\r\\n- SIEM : Splunk Enterprise, QRadar\\r\\n- Formation : Accompagnement consultant + certifications\\r\\n\\r\\n---\\r\\n\\r\\n## Quiz de validation {#quiz}\\r\\n\\r\\n### Questions à choix multiples\\r\\n\\r\\n**1. Quel pourcentage de réduction des risques apporte la MFA ?**\\r\\n- a) 50%\\r\\n- b) 80% \\r\\n- c) 99.9%\\r\\n- d) 75%\\r\\n\\r\\n**2. Le principe du moindre privilège signifie :**\\r\\n- a) Donner tous les droits aux utilisateurs importants\\r\\n- b) Attribuer uniquement les droits nécessaires à chaque fonction\\r\\n- c) Limiter le nombre d'utilisateurs administrateurs à 2\\r\\n- d) Interdire l'accès internet aux utilisateurs\\r\\n\\r\\n**3. Dans un système RBAC, l'ordre correct est :**\\r\\n- a) Ressources → Rôles → Permissions → Utilisateurs\\r\\n- b) Utilisateurs → Permissions → Rôles → Ressources\\r\\n- c) Utilisateurs → Rôles → Permissions → Ressources\\r\\n- d) Rôles → Utilisateurs → Ressources → Permissions\\r\\n\\r\\n**4. Combien de temps maximum pour désactiver un compte lors d'un départ ?**\\r\\n- a) 24 heures\\r\\n- b) 1 semaine\\r\\n- c) 4 heures  \\r\\n- d) 1 heure\\r\\n\\r\\n**5. Quelle métrique indique un bon niveau de sécurité des accès ?**\\r\\n- a) Taux d'adoption MFA > 95%\\r\\n- b) 50% des utilisateurs ont des droits admin\\r\\n- c) Les mots de passe expirent chaque mois\\r\\n- d) Aucun logging des accès\\r\\n\\r\\n### Questions ouvertes\\r\\n\\r\\n**6. Décrivez en 3 étapes comment vous implanteriez la MFA dans votre organisation.**\\r\\n\\r\\n**7. Donnez 3 exemples concrets d'application du principe de séparation des tâches.**\\r\\n\\r\\n**8. Quels sont les 5 logs les plus importants à surveiller pour la sécurité des accès ?**\\r\\n\\r\\n### Cas pratique\\r\\n\\r\\n**Situation :** Vous êtes RSSI d'une PME de 150 personnes. Un audit révèle que :\\r\\n- Aucune MFA n'est déployée\\r\\n- 80% des utilisateurs ont des droits administrateurs locaux\\r\\n- Les mots de passe n'expirent jamais\\r\\n- Aucun monitoring des accès n'existe\\r\\n- Les anciens employés gardent leurs accès 2 semaines en moyenne\\r\\n\\r\\n**Mission :** Rédigez un plan d'action prioritaire sur 6 mois avec budget et ressources.\\r\\n\\r\\n---\\r\\n\\r\\n## Solutions du quiz\\r\\n\\r\\n**QCM :** 1-c, 2-b, 3-c, 4-c, 5-a\\r\\n\\r\\n**Questions ouvertes - Exemples de réponses :**\\r\\n\\r\\n6. Étapes MFA :\\r\\n   - Choix de la solution et pilote sur l'équipe IT\\r\\n   - Formation et communication aux utilisateurs  \\r\\n   - Déploiement par vagues (privilégiés puis généralisé)\\r\\n\\r\\n7. Séparation des tâches :\\r\\n   - Finance : saisie ≠ validation ≠ paiement\\r\\n   - Code : développement ≠ test ≠ déploiement\\r\\n   - Sécurité : monitoring ≠ investigation ≠ décision\\r\\n\\r\\n8. Logs critiques :\\r\\n   - Authentifications échouées\\r\\n   - Élévations de privilèges\\r\\n   - Accès aux fichiers sensibles\\r\\n   - Connexions administrateur\\r\\n   - Modifications de permissions\\r\\n\\r\\n---\\r\\n\\r\\n*© 2024 StratCyber. Ce document est sous licence Creative Commons Attribution 4.0. Vous pouvez le redistribuer et le modifier en citant la source.*\\r\\n\\r\\n**Version** : 1.0  \\r\\n**Dernière mise à jour** : 7 janvier 2024  \\r\\n**Auteur** : Équipe StratCyber  \\r\\n**Validation** : ANSSI, ISO 27001, NIST Framework\\r\\n\",\"chapters\":[{\"title\":\"Introduction\",\"content\":\"La sécurité des accès constitue le premier rempart de votre système d'information...\",\"practicalExamples\":[\"Statistiques d'attaques\",\"Coûts des violations\"],\"actionItems\":[\"Évaluer vos pratiques actuelles\",\"Identifier les points faibles\"]},{\"title\":\"Principes fondamentaux de la gestion des accès\",\"content\":\"Le principe du moindre privilège est essentiel pour limiter les risques...\",\"practicalExamples\":[\"Attribution granulaire\",\"Séparation des tâches\"],\"actionItems\":[\"Cartographier les rôles\",\"Mettre en place les revues trimestrielles\"]},{\"title\":\"Authentification forte et multifacteur\",\"content\":\"L'authentification multifacteur réduit les risques de compromission de 99,9%...\",\"practicalExamples\":[\"TOTP\",\"Push notifications\",\"Clés FIDO2\"],\"actionItems\":[\"Déployer la MFA\",\"Former les utilisateurs\"]},{\"title\":\"Plan d'action pratique\",\"content\":\"Voici les étapes pratiques pour améliorer votre niveau de sécurité...\",\"practicalExamples\":[\"Questionnaire d'auto-évaluation\",\"Roadmap de déploiement\"],\"actionItems\":[\"Inventaire des comptes\",\"Activer la MFA\",\"Mettre en place le RBAC\"]}]}",
+      "url": null,
+      "category": "Fondamentaux",
+      "difficulty": "Débutant",
+      "duration": "2h 30min",
+      "pages": 25,
+      "rating": 4.8,
+      "downloads": 0,
+      "tags": "[\"Accès\",\"Authentification\",\"Contrôle\",\"Sécurité\"]",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+      "isPublished": true,
+      "createdAt": "2025-08-07T09:46:23.797Z",
+      "updatedAt": "2025-08-07T09:46:23.797Z"
+    },
+    {
+      "id": "f5776f25-6bc1-4170-926b-0b09d7edbcf3",
+      "title": "Sécurité des Données et Chiffrement",
+      "author": "StratCyber Formation",
+      "description": "Guide complet sur la protection des données sensibles et les techniques de chiffrement modernes",
+      "content": "{\"markdown\":\"# Sécurité des Données et Chiffrement\\n\\n## Introduction\\n\\nLa protection des données est essentielle dans le contexte actuel des cybermenaces. Ce guide vous présente les meilleures pratiques.\\n\\n## Classification des données\\n\\nApprenez à classifier vos données selon leur niveau de sensibilité pour appliquer les protections adaptées.\\n\\n## Techniques de chiffrement\\n\\nDécouvrez les algorithmes modernes et leur application pratique dans votre infrastructure.\\n\\n## Conformité RGPD\\n\\nComprenez les exigences légales et mettez en place les mesures techniques appropriées.\",\"chapters\":[{\"title\":\"Introduction\",\"content\":\"La protection des données est essentielle dans le contexte actuel des cybermenaces...\",\"practicalExamples\":[\"Statistiques de fuites de données\",\"Impacts réglementaires\"],\"actionItems\":[\"Évaluer les données critiques\",\"Identifier les flux de données\"]},{\"title\":\"Classification des données\",\"content\":\"Une bonne classification est la base d'une stratégie efficace de protection...\",\"practicalExamples\":[\"Données publiques/internes/confidentielles/restreintes\"],\"actionItems\":[\"Établir une politique de classification\",\"Former les équipes\"]},{\"title\":\"Chiffrement en pratique\",\"content\":\"Les technologies modernes de chiffrement offrent une protection robuste...\",\"practicalExamples\":[\"Chiffrement symétrique/asymétrique\",\"Gestion des clés\"],\"actionItems\":[\"Chiffrer les données sensibles\",\"Mettre en place la gestion des clés\"]}]}",
+      "url": null,
+      "category": "Conformité",
+      "difficulty": "Intermédiaire",
+      "duration": "3h 15min",
+      "pages": 32,
+      "rating": 4.6,
+      "downloads": 0,
+      "tags": "[\"Données\",\"Chiffrement\",\"RGPD\",\"Conformité\"]",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1563207153-f403bf289096?ixlib=rb-1.2.1&auto=format&fit=crop&w=1051&q=80",
+      "isPublished": true,
+      "createdAt": "2025-08-07T09:46:23.806Z",
+      "updatedAt": "2025-08-07T09:46:23.806Z"
+    },
+    {
+      "id": "815b1299-1b40-43af-ad44-4fc9c77b3fca",
+      "title": "Sécurité Réseau et Protection du Périmètre",
+      "author": "StratCyber Formation",
+      "description": "Guide avancé sur la sécurisation des infrastructures réseau et la défense périmétrique",
+      "content": "{\"markdown\":\"# Sécurité Réseau et Protection du Périmètre\\n\\n## Architecture sécurisée\\n\\nDécouvrez les principes d'une architecture réseau robuste et résiliente.\\n\\n## Défense en profondeur\\n\\nMettez en place une stratégie multi-couche pour protéger vos actifs critiques.\\n\\n## Détection d'intrusion\\n\\nDéployez des solutions efficaces pour identifier les menaces en temps réel.\",\"chapters\":[{\"title\":\"Architecture réseau sécurisée\",\"content\":\"Une architecture bien conçue constitue la première ligne de défense...\",\"practicalExamples\":[\"Segmentation réseau\",\"DMZ\",\"Zero Trust\"],\"actionItems\":[\"Documenter l'architecture\",\"Mettre en place la segmentation\"]},{\"title\":\"Pare-feu nouvelle génération\",\"content\":\"Les NGFW offrent des capacités avancées de filtrage et d'inspection...\",\"practicalExamples\":[\"Inspection SSL\",\"Filtrage applicatif\"],\"actionItems\":[\"Configurer les règles de filtrage\",\"Mettre à jour les signatures\"]},{\"title\":\"Détection et réponse\",\"content\":\"Les systèmes IDS/IPS permettent d'identifier et de bloquer les attaques...\",\"practicalExamples\":[\"Analyse comportementale\",\"Corrélation d'événements\"],\"actionItems\":[\"Déployer des sondes\",\"Configurer les alertes\"]}]}",
+      "url": null,
+      "category": "Réseau",
+      "difficulty": "Avancé",
+      "duration": "4h 00min",
+      "pages": 40,
+      "rating": 4.9,
+      "downloads": 0,
+      "tags": "[\"Réseau\",\"Firewall\",\"IDS\",\"Zero Trust\"]",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+      "isPublished": true,
+      "createdAt": "2025-08-07T09:46:23.816Z",
+      "updatedAt": "2025-08-07T09:46:23.816Z"
+    },
+    {
+      "id": "8313be40-1576-441f-9c43-771bd9e2c24b",
+      "title": "Gestion des Incidents de Sécurité",
+      "author": "StratCyber Formation",
+      "description": "Guide complet pour la gestion des incidents de sécurité, de la détection à la récupération complète",
+      "content": "{\"markdown\":\"# Gestion des Incidents de Sécurité\\r\\n\\r\\n**Auteur**: StratCyber Formation  \\r\\n**Catégorie**: Gestion  \\r\\n**Difficulté**: Intermédiaire  \\r\\n**Durée estimée**: 2h 45min  \\r\\n**Tags**: #Incidents #Réponse #Processus #CSIRT\\r\\n\\r\\n## Table des matières\\r\\n\\r\\n1. [Introduction](#introduction)\\r\\n2. [Plan de réponse aux incidents](#plan-reponse-incidents)\\r\\n3. [Équipe de réponse (CSIRT)](#equipe-reponse-csirt)\\r\\n4. [Processus de gestion d'incident](#processus-gestion-incident)\\r\\n5. [Investigation et forensic](#investigation-forensic)\\r\\n6. [Communication de crise](#communication-crise)\\r\\n7. [Récupération et continuité](#recuperation-continuite)\\r\\n8. [Apprentissage et amélioration](#apprentissage-amelioration)\\r\\n9. [Quiz de validation](#quiz)\\r\\n\\r\\n---\\r\\n\\r\\n## Introduction\\r\\n\\r\\nLa gestion des incidents de sécurité est devenue une compétence critique pour toute organisation. Face à l'augmentation des cyberattaques, avoir un plan structuré et une équipe préparée fait la différence entre une interruption mineure et une catastrophe majeure.\\r\\n\\r\\n### Statistiques alarmantes\\r\\n\\r\\n- **Temps moyen de détection** : 287 jours\\r\\n- **Temps moyen de confinement** : 80 jours\\r\\n- **Coût d'un incident majeur** : 4,45M$ en moyenne\\r\\n- **93% des entreprises** victimes d'une violation dans les 5 ans\\r\\n\\r\\n### Ce que vous allez maîtriser\\r\\n\\r\\n✅ Créer un plan de réponse efficace  \\r\\n✅ Constituer et former votre équipe CSIRT  \\r\\n✅ Gérer les incidents de A à Z  \\r\\n✅ Conduire une investigation forensique  \\r\\n✅ Communiquer en situation de crise  \\r\\n✅ Assurer la continuité d'activité  \\r\\n\\r\\n---\\r\\n\\r\\n## Plan de réponse aux incidents {#plan-reponse-incidents}\\r\\n\\r\\n### Structure du plan\\r\\n\\r\\n#### Document maître\\r\\n```yaml\\r\\n1. Objectifs et portée\\r\\n   • Définition des types d'incidents couverts\\r\\n   • Objectifs de temps de réponse (SLA)\\r\\n   • Périmètre d'application\\r\\n\\r\\n2. Organisation de crise\\r\\n   • Rôles et responsabilités\\r\\n   • Chaîne de commandement\\r\\n   • Processus d'escalade\\r\\n\\r\\n3. Procédures opérationnelles\\r\\n   • Détection et signalement\\r\\n   • Classification et priorisation\\r\\n   • Confinement et éradication\\r\\n   • Récupération et retour d'expérience\\r\\n\\r\\n4. Ressources et outils\\r\\n   • Contacts d'urgence\\r\\n   • Outils techniques\\r\\n   • Documentation de référence\\r\\n```\\r\\n\\r\\n### Classification des incidents\\r\\n\\r\\n#### Matrice de criticité\\r\\n```\\r\\nNiveau 1 - CRITIQUE (< 1h)\\r\\n• Compromission massive des systèmes\\r\\n• Fuite de données personnelles à grande échelle\\r\\n• Arrêt total des services critiques\\r\\n• Attaque en cours avec impact imminent\\r\\n\\r\\nNiveau 2 - MAJEUR (< 4h)  \\r\\n• Compromission d'un système critique\\r\\n• Fuite de données confidentielles limitée\\r\\n• Dégradation significative des services\\r\\n• Tentative d'intrusion sophistiquée\\r\\n\\r\\nNiveau 3 - MODÉRÉ (< 24h)\\r\\n• Incident sur système non critique\\r\\n• Tentative d'accès non autorisé\\r\\n• Anomalie de sécurité détectée\\r\\n• Violation de politique mineure\\r\\n\\r\\nNiveau 4 - MINEUR (< 72h)\\r\\n• Événements suspects à investiguer\\r\\n• Violations de procédures internes\\r\\n• Problèmes de conformité ponctuels\\r\\n```\\r\\n\\r\\n### Processus d'activation\\r\\n\\r\\n#### Déclenchement automatique\\r\\n```yaml\\r\\nAlertes système:\\r\\n  • SIEM/SOC : corrélation d'événements\\r\\n  • Antivirus : détection de malware\\r\\n  • DLP : tentative d'exfiltration\\r\\n  • IDS/IPS : attaque réseau détectée\\r\\n  • Monitoring : anomalie de performance\\r\\n\\r\\nSeuils d'activation:\\r\\n  • Nombre d'événements par heure\\r\\n  • Criticité des systèmes impactés\\r\\n  • Score de risque calculé\\r\\n```\\r\\n\\r\\n#### Signalement humain\\r\\n```yaml\\r\\nSources de signalement:\\r\\n  • Utilisateurs finaux\\r\\n  • Équipes techniques\\r\\n  • Partenaires externes\\r\\n  • Autorités (ANSSI, police)\\r\\n\\r\\nCanaux de signalement:\\r\\n  • Hotline dédiée 24/7\\r\\n  • Email sécurisé\\r\\n  • Portail web interne\\r\\n  • Application mobile\\r\\n```\\r\\n\\r\\n---\\r\\n\\r\\n## Équipe de réponse (CSIRT) {#equipe-reponse-csirt}\\r\\n\\r\\n### Structure organisationnelle\\r\\n\\r\\n#### Rôles principaux\\r\\n```yaml\\r\\nResponsable CSIRT (Incident Commander):\\r\\n  • Coordination générale de la réponse\\r\\n  • Décisions stratégiques\\r\\n  • Interface avec la direction\\r\\n  • Communication externe\\r\\n\\r\\nAnalyste Sécurité Senior:\\r\\n  • Investigation technique approfondie\\r\\n  • Analyse forensique\\r\\n  • Évaluation de l'impact\\r\\n  • Recommandations techniques\\r\\n\\r\\nAnalyste Réseau:\\r\\n  • Analyse du trafic réseau\\r\\n  • Identification des vecteurs d'attaque\\r\\n  • Mise en place des mesures de confinement réseau\\r\\n  • Configuration firewall/IPS\\r\\n\\r\\nAdministrateur Système:\\r\\n  • Mesures de confinement système\\r\\n  • Collecte des preuves techniques\\r\\n  • Restauration des services\\r\\n  • Monitoring des systèmes critiques\\r\\n\\r\\nSpécialiste Communication:\\r\\n  • Communication interne\\r\\n  • Relations presse si nécessaire\\r\\n  • Interface avec les autorités\\r\\n  • Documentation des actions\\r\\n```\\r\\n\\r\\n#### Organisation étendue\\r\\n```yaml\\r\\nÉquipe juridique:\\r\\n  • Aspects légaux et réglementaires\\r\\n  • Notification aux autorités (CNIL, ANSSI)\\r\\n  • Gestion des aspects contractuels\\r\\n  • Protection des preuves légales\\r\\n\\r\\nRH/Management:\\r\\n  • Communication aux employés\\r\\n  • Gestion du personnel en crise\\r\\n  • Interface avec la direction\\r\\n  • Aspects disciplinaires si nécessaire\\r\\n\\r\\nRelations externes:\\r\\n  • Partenaires et fournisseurs\\r\\n  • Clients impactés\\r\\n  • Autorités de régulation\\r\\n  • Prestataires spécialisés\\r\\n```\\r\\n\\r\\n### Formation et préparation\\r\\n\\r\\n#### Programme de formation\\r\\n```yaml\\r\\nFormation initiale (40h):\\r\\n  • Méthodologies de réponse aux incidents\\r\\n  • Outils forensiques et d'investigation\\r\\n  • Aspects légaux et réglementaires\\r\\n  • Communication de crise\\r\\n  • Certification (ex: GCIH, GCFA)\\r\\n\\r\\nFormation continue (16h/an):\\r\\n  • Nouvelles menaces et techniques d'attaque\\r\\n  • Évolution des outils et technologies\\r\\n  • Retours d'expérience d'incidents\\r\\n  • Exercices pratiques et simulations\\r\\n\\r\\nExercices de simulation:\\r\\n  • Table-top exercises: Trimestriel\\r\\n  • Simulations techniques: Semestriel  \\r\\n  • Exercice grandeur nature: Annuel\\r\\n  • Red team exercises: Selon besoin\\r\\n```\\r\\n\\r\\n---\\r\\n\\r\\n## Processus de gestion d'incident {#processus-gestion-incident}\\r\\n\\r\\n### Phase 1 : Détection et Signalement\\r\\n\\r\\n#### Détection\\r\\n```yaml\\r\\nSources de détection:\\r\\n  • Monitoring automatisé (SIEM, SOC)\\r\\n  • Alertes systèmes et applications\\r\\n  • Signalement utilisateurs\\r\\n  • Veille externe (threat intelligence)\\r\\n  • Contrôles de sécurité réguliers\\r\\n\\r\\nTemps de détection cible:\\r\\n  • Incidents critiques: < 15 minutes\\r\\n  • Incidents majeurs: < 1 heure\\r\\n  • Incidents modérés: < 4 heures\\r\\n```\\r\\n\\r\\n#### Signalement initial\\r\\n```yaml\\r\\nInformations à collecter:\\r\\n  □ Horodatage de l'événement\\r\\n  □ Nature de l'incident suspecté\\r\\n  □ Systèmes potentiellement impactés\\r\\n  □ Utilisateurs concernés\\r\\n  □ Actions déjà entreprises\\r\\n  □ Contact du signalant\\r\\n\\r\\nTemplate de signalement:\\r\\n  • Formulaire standardisé\\r\\n  • Classification préliminaire\\r\\n  • Niveau d'urgence estimé\\r\\n  • Preuves disponibles\\r\\n```\\r\\n\\r\\n### Phase 2 : Classification et Priorisation\\r\\n\\r\\n#### Évaluation initiale\\r\\n```yaml\\r\\nCritères d'évaluation:\\r\\n  • Impact métier (chiffre d'affaires, réputation)\\r\\n  • Nombre d'utilisateurs/systèmes affectés\\r\\n  • Type de données compromises\\r\\n  • Durée de l'interruption estimée\\r\\n  • Risque d'escalade\\r\\n\\r\\nMatrice de priorisation:\\r\\n  Impact/Probabilité → Faible/Moyen/Fort/Critique\\r\\n  Délai d'action → Immédiat/4h/24h/72h\\r\\n  Ressources requises → 1 personne/équipe/externe\\r\\n```\\r\\n\\r\\n### Phase 3 : Confinement\\r\\n\\r\\n#### Confinement immédiat\\r\\n```yaml\\r\\nActions rapides (<30 min):\\r\\n  • Isolation du système compromis\\r\\n  • Blocage des comptes suspectés\\r\\n  • Sauvegarde des preuves volatiles\\r\\n  • Documentation des actions\\r\\n\\r\\nConfinement réseau:\\r\\n  • Isolation VLAN des systèmes infectés\\r\\n  • Blocage IP/domaines malveillants\\r\\n  • Règles firewall d'urgence\\r\\n  • Déconnexion temporaire si nécessaire\\r\\n```\\r\\n\\r\\n#### Confinement étendu\\r\\n```yaml\\r\\nActions moyennes (2-4h):\\r\\n  • Analyse approfondie de l'impact\\r\\n  • Extension du périmètre de confinement\\r\\n  • Mise à jour des systèmes de détection\\r\\n  • Communication aux parties prenantes\\r\\n\\r\\nMesures préventives:\\r\\n  • Renforcement des contrôles d'accès\\r\\n  • Surveillance renforcée des systèmes critiques\\r\\n  • Mise à jour des signatures antivirus/IPS\\r\\n  • Sensibilisation ciblée des utilisateurs\\r\\n```\\r\\n\\r\\n### Phase 4 : Investigation et Éradication\\r\\n\\r\\n#### Collecte de preuves\\r\\n```yaml\\r\\nPreuves volatiles (ordre de volatilité):\\r\\n  1. Registres et cache processeur\\r\\n  2. Contenu de la mémoire vive (RAM)\\r\\n  3. État du réseau et connexions\\r\\n  4. Processus en cours d'exécution\\r\\n  5. Système de fichiers\\r\\n  6. Logs et audit trails\\r\\n\\r\\nOutils forensiques:\\r\\n  • Images disque: dd, FTK Imager\\r\\n  • Analyse mémoire: Volatility, Rekall\\r\\n  • Analyse réseau: Wireshark, tcpdump\\r\\n  • Timeline: Plaso, log2timeline\\r\\n  • Mobile: Cellebrite, XRY\\r\\n```\\r\\n\\r\\n### Phase 5 : Récupération\\r\\n\\r\\n#### Plan de récupération\\r\\n```yaml\\r\\nPriorités de restauration:\\r\\n  1. Services critiques métier\\r\\n  2. Systèmes de sécurité\\r\\n  3. Infrastructure de base\\r\\n  4. Services de support\\r\\n  5. Applications non critiques\\r\\n\\r\\nÉtapes de récupération:\\r\\n  • Validation de l'éradication complète\\r\\n  • Tests des systèmes restaurés\\r\\n  • Surveillance renforcée post-incident\\r\\n  • Validation métier des services\\r\\n  • Communication de fin d'incident\\r\\n```\\r\\n\\r\\n---\\r\\n\\r\\n## Investigation et forensic {#investigation-forensic}\\r\\n\\r\\n### Méthodologie forensique\\r\\n\\r\\n#### Approche structurée\\r\\n```yaml\\r\\n1. Préparation:\\r\\n   • Préservation de la chaîne de preuves\\r\\n   • Documentation des actions\\r\\n   • Outils calibrés et certifiés\\r\\n   • Autorisations légales\\r\\n\\r\\n2. Identification:\\r\\n   • Inventaire des preuves potentielles\\r\\n   • Priorisation selon la volatilité\\r\\n   • Évaluation de la faisabilité\\r\\n   • Stratégie de collecte\\r\\n\\r\\n3. Collection:\\r\\n   • Copie bit-à-bit des supports\\r\\n   • Hachage cryptographique (MD5/SHA)\\r\\n   • Documentation détaillée\\r\\n   • Étiquetage et stockage sécurisé\\r\\n\\r\\n4. Analyse:\\r\\n   • Reconstruction de la chronologie\\r\\n   • Identification des artéfacts\\r\\n   • Corrélation des événements\\r\\n   • Validation des hypothèses\\r\\n\\r\\n5. Présentation:\\r\\n   • Rapport technique détaillé\\r\\n   • Résumé exécutif\\r\\n   • Recommandations d'amélioration\\r\\n   • Support pour actions légales\\r\\n```\\r\\n\\r\\n### Outils d'investigation\\r\\n\\r\\n#### Suite forensique complète\\r\\n```yaml\\r\\nDistributions spécialisées:\\r\\n  • CAINE (Computer Aided INvestigative Environment)\\r\\n  • DEFT (Digital Evidence & Forensics Toolkit)\\r\\n  • Kali Linux (outils de sécurité)\\r\\n  • SANS SIFT (SANS Investigative Forensics Toolkit)\\r\\n\\r\\nOutils commerciaux:\\r\\n  • EnCase Forensic (Guidance Software)\\r\\n  • FTK (AccessData Forensic Toolkit)\\r\\n  • X-Ways Forensics\\r\\n  • Cellebrite Mobile Forensics\\r\\n\\r\\nOutils open source:\\r\\n  • Autopsy (interface graphique Sleuth Kit)\\r\\n  • Volatility (analyse mémoire)\\r\\n  • Wireshark (analyse réseau)\\r\\n  • YARA (détection de malware)\\r\\n```\\r\\n\\r\\n### Analyse des différents types d'incidents\\r\\n\\r\\n#### Malware et ransomware\\r\\n```yaml\\r\\nIndicateurs à rechercher:\\r\\n  • Fichiers modifiés/chiffrés\\r\\n  • Processus anormaux en mémoire\\r\\n  • Communications réseau suspectes\\r\\n  • Modifications du registre Windows\\r\\n  • Tâches planifiées malveillantes\\r\\n\\r\\nTechniques d'analyse:\\r\\n  • Sandbox dynamique (Cuckoo, Joe Sandbox)\\r\\n  • Analyse statique (IDA Pro, Ghidra)\\r\\n  • Recherche d'IOC (Indicators of Compromise)\\r\\n  • Corrélation threat intelligence\\r\\n```\\r\\n\\r\\n#### Intrusion et mouvement latéral\\r\\n```yaml\\r\\nArtifacts de persistance:\\r\\n  • Services Windows modifiés\\r\\n  • Tâches planifiées\\r\\n  • Clés de registre d'autorun\\r\\n  • Scripts de démarrage\\r\\n  • Backdoors WMI\\r\\n\\r\\nTraces de mouvement latéral:\\r\\n  • Authentifications anormales\\r\\n  • Utilisation d'outils d'administration\\r\\n  • Transferts de fichiers suspects\\r\\n  • Élévation de privilèges\\r\\n  • Discovery et reconnaissance interne\\r\\n```\\r\\n\\r\\n---\\r\\n\\r\\n## Communication de crise {#communication-crise}\\r\\n\\r\\n### Stratégie de communication\\r\\n\\r\\n#### Principes fondamentaux\\r\\n```yaml\\r\\nTransparence contrôlée:\\r\\n  • Communiquer les faits vérifiés\\r\\n  • Éviter la spéculation\\r\\n  • Reconnaître les incertitudes\\r\\n  • Mise à jour régulière\\r\\n\\r\\nCohérence des messages:\\r\\n  • Message unifié toutes parties prenantes\\r\\n  • Porte-parole unique designé\\r\\n  • Validation préalable des communications\\r\\n  • Adaptation selon l'audience\\r\\n```\\r\\n\\r\\n### Communication interne\\r\\n\\r\\n#### Équipes techniques\\r\\n```yaml\\r\\nFormat technique détaillé:\\r\\n  • Nature précise de l'incident\\r\\n  • Systèmes impactés et statut\\r\\n  • Actions en cours et planifiées\\r\\n  • Mesures de protection à appliquer\\r\\n  • Mise à jour horaire pendant la crise\\r\\n\\r\\nCanaux privilegiés:\\r\\n  • Chat sécurisé équipe technique\\r\\n  • Conférences téléphoniques régulières\\r\\n  • Tableau de bord temps réel\\r\\n  • Documentation collaborative\\r\\n```\\r\\n\\r\\n#### Direction et management\\r\\n```yaml\\r\\nFormat exécutif synthétique:\\r\\n  • Impact métier et financier\\r\\n  • Évaluation des risques\\r\\n  • Actions critiques en cours\\r\\n  • Décisions requises\\r\\n  • Timeline de résolution estimée\\r\\n\\r\\nFréquence adaptée:\\r\\n  • Incidents critiques: Toutes les heures\\r\\n  • Incidents majeurs: Toutes les 4h\\r\\n  • Rapport de synthèse quotidien\\r\\n  • Débriefing de fin d'incident\\r\\n```\\r\\n\\r\\n### Communication externe\\r\\n\\r\\n#### Clients et partenaires\\r\\n```yaml\\r\\nMessage type:\\r\\n  \\\"Nous avons détecté un incident de sécurité le [date] à [heure].\\r\\n   Nos équipes techniques travaillent activement à la résolution.\\r\\n   [Impact sur les services si applicable]\\r\\n   Nous vous tiendrons informés de l'évolution.\\r\\n   Contact: incident@societe.com\\\"\\r\\n\\r\\nCanaux de diffusion:\\r\\n  • Site web - page statut\\r\\n  • Réseaux sociaux officiels\\r\\n  • Email aux contacts clés\\r\\n  • Hotline dédiée\\r\\n```\\r\\n\\r\\n#### Autorités et régulateurs\\r\\n```yaml\\r\\nNotifications obligatoires:\\r\\n  • CNIL (72h max pour RGPD)\\r\\n  • ANSSI (selon secteur d'activité)\\r\\n  • Commissaire aux comptes\\r\\n  • Autorités sectorielles\\r\\n\\r\\nContenu minimum:\\r\\n  • Nature de l'incident\\r\\n  • Données potentiellement compromises\\r\\n  • Nombre de personnes concernées\\r\\n  • Mesures prises et à prendre\\r\\n  • Point de contact dédié\\r\\n```\\r\\n\\r\\n---\\r\\n\\r\\n## Récupération et continuité {#recuperation-continuite}\\r\\n\\r\\n### Plan de continuité d'activité (PCA)\\r\\n\\r\\n#### Objectifs de continuité\\r\\n```yaml\\r\\nDéfinitions clés:\\r\\n  • RTO (Recovery Time Objective): Temps max acceptable d'interruption\\r\\n  • RPO (Recovery Point Objective): Perte de données max acceptable\\r\\n  • MTPD (Maximum Tolerable Period of Disruption): Limite absolue\\r\\n\\r\\nClassification des services:\\r\\n  • Critiques: RTO < 4h, RPO < 1h\\r\\n  • Importants: RTO < 24h, RPO < 4h\\r\\n  • Standard: RTO < 72h, RPO < 24h\\r\\n  • Support: RTO < 1 semaine, RPO < 48h\\r\\n```\\r\\n\\r\\n### Stratégies de récupération\\r\\n\\r\\n#### Solutions techniques\\r\\n```yaml\\r\\nSauvegarde et restauration:\\r\\n  • Sauvegardes régulières testées\\r\\n  • Sites de sauvegarde sécurisés\\r\\n  • Procédures de restauration documentées\\r\\n  • Tests de restauration planifiés\\r\\n\\r\\nHaute disponibilité:\\r\\n  • Clusters de serveurs\\r\\n  • Réplication de données\\r\\n  • Basculement automatique\\r\\n  • Sites de secours (warm/hot sites)\\r\\n\\r\\nCloud et virtualisation:\\r\\n  • Infrastructure as Code (IaC)\\r\\n  • Snapshots automatiques\\r\\n  • Multi-région deployment\\r\\n  • Auto-scaling et self-healing\\r\\n```\\r\\n\\r\\n#### Solutions organisationnelles\\r\\n```yaml\\r\\nÉquipes de crise:\\r\\n  • Personnel de continuité formé\\r\\n  • Sites de travail alternatifs\\r\\n  • Équipements de secours\\r\\n  • Communications alternatives\\r\\n\\r\\nProcessus métier:\\r\\n  • Procédures d'urgence simplifiées\\r\\n  • Workflows manuels de backup\\r\\n  • Fournisseurs alternatifs\\r\\n  • Clients et partenaires informés\\r\\n```\\r\\n\\r\\n### Tests et validation\\r\\n\\r\\n#### Programme de tests\\r\\n```yaml\\r\\nTests techniques:\\r\\n  • Restauration de sauvegardes: Mensuel\\r\\n  • Basculement vers site de secours: Trimestriel\\r\\n  • Récupération complète: Semestriel\\r\\n  • Test de bout en bout: Annuel\\r\\n\\r\\nTests organisationnels:\\r\\n  • Activation équipe de crise: Trimestriel\\r\\n  • Communication d'urgence: Semestriel\\r\\n  • Coordination avec partenaires: Annuel\\r\\n  • Exercice grandeur nature: Annuel\\r\\n```\\r\\n\\r\\n---\\r\\n\\r\\n## Apprentissage et amélioration {#apprentissage-amelioration}\\r\\n\\r\\n### Post-incident review\\r\\n\\r\\n#### Processus de débriefing\\r\\n```yaml\\r\\nTimeline reconstruction:\\r\\n  1. Chronologie détaillée des événements\\r\\n  2. Actions entreprises et délais\\r\\n  3. Décisions clés et justifications\\r\\n  4. Ressources mobilisées\\r\\n  5. Communications effectuées\\r\\n\\r\\nAnalyse des performances:\\r\\n  • Temps de détection vs objectifs\\r\\n  • Efficacité des mesures de confinement\\r\\n  • Qualité de la communication\\r\\n  • Coordination des équipes\\r\\n  • Utilisation des outils et procédures\\r\\n```\\r\\n\\r\\n#### Identification des améliorations\\r\\n```yaml\\r\\nCatégories d'amélioration:\\r\\n  • Technique: Outils, monitoring, automatisation\\r\\n  • Processus: Procédures, escalade, communication\\r\\n  • Organisationnel: Formation, rôles, ressources\\r\\n  • Stratégique: Politique, budget, gouvernance\\r\\n\\r\\nPriorisation:\\r\\n  • Impact sur la réduction des risques\\r\\n  • Complexité de mise en œuvre\\r\\n  • Coût/bénéfice de l'amélioration\\r\\n  • Urgence selon les leçons apprises\\r\\n```\\r\\n\\r\\n### Mise à jour des procédures\\r\\n\\r\\n#### Cycle d'amélioration continue\\r\\n```yaml\\r\\n1. Identification (Post-incident, audits):\\r\\n   • Gaps identifiés dans les processus\\r\\n   • Nouvelles menaces découvertes\\r\\n   • Évolution technologique\\r\\n   • Retours d'expérience externes\\r\\n\\r\\n2. Planification des améliorations:\\r\\n   • Roadmap des améliorations\\r\\n   • Budget et ressources allouées\\r\\n   • Timeline de déploiement\\r\\n   • Responsables des actions\\r\\n\\r\\n3. Implémentation:\\r\\n   • Mise à jour de la documentation\\r\\n   • Formation des équipes\\r\\n   • Tests des nouveaux processus\\r\\n   • Communication des changements\\r\\n\\r\\n4. Validation:\\r\\n   • Exercices de simulation\\r\\n   • Tests de performance\\r\\n   • Feedback des utilisateurs\\r\\n   • Métriques de succès\\r\\n```\\r\\n\\r\\n---\\r\\n\\r\\n## Quiz de validation {#quiz}\\r\\n\\r\\n### Questions de compréhension\\r\\n\\r\\n**1. Quel est le délai de notification à la CNIL en cas de violation de données personnelles ?**\\r\\n- a) 24 heures\\r\\n- b) 48 heures\\r\\n- c) 72 heures\\r\\n- d) 1 semaine\\r\\n\\r\\n**2. Dans quelle ordre doit-on collecter les preuves numériques ?**\\r\\n- a) Par importance pour l'enquête\\r\\n- b) Par ordre de volatilité (du plus volatil au moins volatil)\\r\\n- c) Par facilité d'accès\\r\\n- d) Par taille des fichiers\\r\\n\\r\\n**3. Que signifie RTO dans un plan de continuité ?**\\r\\n- a) Recovery Time Objective\\r\\n- b) Rapid Technical Operation\\r\\n- c) Risk Treatment Option\\r\\n- d) Real Time Operation\\r\\n\\r\\n**4. Quelle est la première action lors de la détection d'un incident critique ?**\\r\\n- a) Analyser l'origine de l'attaque\\r\\n- b) Notifier la direction\\r\\n- c) Contenir la propagation\\r\\n- d) Collecter les preuves\\r\\n\\r\\n### Cas pratique\\r\\n\\r\\n**Situation :** Vendredi 14h, votre système de détection alerte sur une activité anormale. Plusieurs serveurs montrent des connexions suspectes vers des IPs externes. Les utilisateurs rapportent des lenteurs réseau.\\r\\n\\r\\n**Questions :**\\r\\n1. Classifiez cet incident et justifiez votre réponse\\r\\n2. Quelles sont vos 3 premières actions ?\\r\\n3. Qui devez-vous alerter immédiatement ?\\r\\n4. Quelles preuves devez-vous collecter en priorité ?\\r\\n\\r\\n### Exercice de timeline\\r\\n\\r\\nReconstituez la chronologie d'incident à partir des éléments suivants :\\r\\n- 09:15 - Alerte antivirus sur poste utilisateur\\r\\n- 09:45 - Détection connexions réseau suspectes  \\r\\n- 10:30 - Isolation du poste infecté\\r\\n- 08:45 - Email de phishing reçu par l'utilisateur\\r\\n- 11:00 - Découverte de fichiers chiffrés sur serveur de fichiers\\r\\n- 09:30 - Utilisateur ouvre pièce jointe malveillante\\r\\n\\r\\n### Solutions\\r\\n\\r\\n**QCM :** 1-c, 2-b, 3-a, 4-c\\r\\n\\r\\n**Cas pratique :**\\r\\n1. Incident Majeur (niveau 2) - Compromission potentielle multi-systèmes avec impact service\\r\\n2. Actions : Contenir (isoler serveurs), Alerter (équipe CSIRT + management), Collecter (preuves volatiles)\\r\\n3. Alerter : CSIRT, RSSI, Direction IT, Communication selon matrice d'escalade\\r\\n4. Preuves : RAM serveurs, logs connexions, trafic réseau, processus actifs\\r\\n\\r\\n**Timeline reconstituée :**\\r\\n08:45 → 09:30 → 09:15 → 09:45 → 10:30 → 11:00\\r\\n\\r\\n---\\r\\n\\r\\n*© 2024 StratCyber. Guide de gestion d'incidents sous licence Creative Commons Attribution 4.0.*\\r\\n\\r\\n**Version :** 1.0  \\r\\n**Dernière révision :** 7 janvier 2024  \\r\\n**Standards :** NIST SP 800-61, ISO 27035, ENISA Guidelines\\r\\n\",\"chapters\":[{\"title\":\"Plan de réponse aux incidents\",\"content\":\"Structure et organisation du plan de réponse pour une gestion efficace des incidents...\",\"practicalExamples\":[\"Classification des incidents\",\"Processus d'activation\"],\"actionItems\":[\"Créer le plan de réponse\",\"Définir les niveaux de criticité\"]},{\"title\":\"Équipe de réponse (CSIRT)\",\"content\":\"Constitution et formation d'une équipe de réponse aux incidents performante...\",\"practicalExamples\":[\"Rôles et responsabilités\",\"Programme de formation\"],\"actionItems\":[\"Constituer l'équipe CSIRT\",\"Planifier les formations\"]},{\"title\":\"Processus de gestion d'incident\",\"content\":\"Processus complet de A à Z pour gérer efficacement un incident de sécurité...\",\"practicalExamples\":[\"Détection et signalement\",\"Confinement et éradication\"],\"actionItems\":[\"Mettre en place la détection\",\"Préparer les procédures\"]},{\"title\":\"Investigation et forensic\",\"content\":\"Techniques d'investigation numérique pour comprendre l'origine et l'impact...\",\"practicalExamples\":[\"Collecte de preuves\",\"Outils forensiques\"],\"actionItems\":[\"Acquérir les outils\",\"Former aux techniques\"]},{\"title\":\"Communication de crise\",\"content\":\"Stratégies de communication interne et externe en situation de crise...\",\"practicalExamples\":[\"Messages types\",\"Canaux de communication\"],\"actionItems\":[\"Préparer les templates\",\"Identifier les porte-paroles\"]}]}",
+      "url": null,
+      "category": "Gestion",
+      "difficulty": "Intermédiaire",
+      "duration": "2h 45min",
+      "pages": 35,
+      "rating": 4.7,
+      "downloads": 0,
+      "tags": "[\"Incidents\",\"Réponse\",\"Processus\",\"CSIRT\"]",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+      "isPublished": true,
+      "createdAt": "2025-08-07T09:48:56.290Z",
+      "updatedAt": "2025-08-07T09:48:56.290Z"
+    }
+  ],
+  "readingSessions": [],
+  "ebookQuizzes": [
+    {
+      "id": "f2d4e99f-2210-4336-a1d7-1c141515cb25",
+      "ebookId": "666e8680-7811-4b26-b0a4-e2b3d92dd042",
+      "title": "Quiz sur la sécurité des accès",
+      "description": "Testez vos connaissances sur l'authentification et la gestion des accès",
+      "questions": "[{\"id\":\"q1\",\"question\":\"Quel pourcentage de réduction des risques apporte la MFA ?\",\"options\":[\"50%\",\"80%\",\"99.9%\",\"75%\"],\"correctAnswer\":\"99.9%\",\"explanation\":\"La MFA réduit les risques de compromission de 99.9% selon les études récentes.\"},{\"id\":\"q2\",\"question\":\"Le principe du moindre privilège signifie :\",\"options\":[\"Donner tous les droits aux utilisateurs importants\",\"Attribuer uniquement les droits nécessaires à chaque fonction\",\"Limiter le nombre d'utilisateurs administrateurs à 2\",\"Interdire l'accès internet aux utilisateurs\"],\"correctAnswer\":\"Attribuer uniquement les droits nécessaires à chaque fonction\",\"explanation\":\"Ce principe fondamental de sécurité consiste à ne donner que les accès strictement nécessaires.\"},{\"id\":\"q3\",\"question\":\"Dans un système RBAC, l'ordre correct est :\",\"options\":[\"Ressources → Rôles → Permissions → Utilisateurs\",\"Utilisateurs → Permissions → Rôles → Ressources\",\"Utilisateurs → Rôles → Permissions → Ressources\",\"Rôles → Utilisateurs → Ressources → Permissions\"],\"correctAnswer\":\"Utilisateurs → Rôles → Permissions → Ressources\",\"explanation\":\"L'utilisateur reçoit un rôle qui définit ses permissions sur les ressources.\"},{\"id\":\"q4\",\"question\":\"Quelle est la meilleure pratique pour la gestion des mots de passe ?\",\"options\":[\"Expiration tous les 30 jours avec complexité élevée\",\"Phrases de passe longues sans expiration forcée\",\"Rotation aléatoire générée par l'administrateur\",\"Utilisation du même mot de passe partout pour facilité\"],\"correctAnswer\":\"Phrases de passe longues sans expiration forcée\",\"explanation\":\"Les recherches montrent que les phrases de passe longues sont plus sécurisées et mémorisables.\"},{\"id\":\"q5\",\"question\":\"Quel est le délai recommandé pour désactiver les accès d'un employé quittant l'entreprise ?\",\"options\":[\"Dans les 24 heures\",\"Immédiatement à l'heure exacte du départ\",\"Dans la semaine suivant le départ\",\"À la fin du mois\"],\"correctAnswer\":\"Immédiatement à l'heure exacte du départ\",\"explanation\":\"Les accès doivent être désactivés immédiatement pour éviter tout risque de sécurité.\"}]",
+      "passingScore": 80,
+      "createdAt": "2025-08-07T09:46:23.802Z",
+      "updatedAt": "2025-08-07T09:46:23.802Z"
+    },
+    {
+      "id": "85dba044-e4fe-451b-806f-877dce2bbfda",
+      "ebookId": "f5776f25-6bc1-4170-926b-0b09d7edbcf3",
+      "title": "Quiz sur la sécurité des données",
+      "description": "Testez vos connaissances sur la protection des données et le chiffrement",
+      "questions": "[{\"id\":\"q1\",\"question\":\"Quelle méthode de chiffrement utilise la même clé pour chiffrer et déchiffrer ?\",\"options\":[\"Chiffrement symétrique\",\"Chiffrement asymétrique\",\"Hachage\",\"Chiffrement quantique\"],\"correctAnswer\":\"Chiffrement symétrique\",\"explanation\":\"Le chiffrement symétrique utilise une clé unique pour les deux opérations.\"},{\"id\":\"q2\",\"question\":\"Quelle est la taille minimale recommandée pour une clé RSA ?\",\"options\":[\"512 bits\",\"1024 bits\",\"2048 bits\",\"4096 bits\"],\"correctAnswer\":\"2048 bits\",\"explanation\":\"2048 bits est le minimum recommandé actuellement, avec 4096 bits pour les données très sensibles.\"},{\"id\":\"q3\",\"question\":\"Selon le RGPD, comment doivent être traitées les données personnelles ?\",\"options\":[\"Toujours chiffrées sans exception\",\"Selon une approche basée sur les risques\",\"Uniquement avec consentement écrit\",\"Jamais stockées plus de 30 jours\"],\"correctAnswer\":\"Selon une approche basée sur les risques\",\"explanation\":\"Le RGPD recommande une approche proportionnée basée sur l'analyse des risques.\"}]",
+      "passingScore": 70,
+      "createdAt": "2025-08-07T09:46:23.811Z",
+      "updatedAt": "2025-08-07T09:46:23.811Z"
+    },
+    {
+      "id": "2f54b377-78e4-4d43-a736-5999f2879ef0",
+      "ebookId": "8313be40-1576-441f-9c43-771bd9e2c24b",
+      "title": "Quiz sur la gestion des incidents",
+      "description": "Testez vos connaissances sur la réponse aux incidents de sécurité",
+      "questions": "[{\"id\":\"q1\",\"question\":\"Quel est le délai de notification à la CNIL en cas de violation de données personnelles ?\",\"options\":[\"24 heures\",\"48 heures\",\"72 heures\",\"1 semaine\"],\"correctAnswer\":\"72 heures\",\"explanation\":\"Le RGPD impose un délai maximum de 72 heures pour notifier une violation à l'autorité de contrôle.\"},{\"id\":\"q2\",\"question\":\"Dans quel ordre doit-on collecter les preuves numériques ?\",\"options\":[\"Par importance pour l'enquête\",\"Par ordre de volatilité (du plus volatil au moins volatil)\",\"Par facilité d'accès\",\"Par taille des fichiers\"],\"correctAnswer\":\"Par ordre de volatilité (du plus volatil au moins volatil)\",\"explanation\":\"Les preuves les plus volatiles (RAM, cache) doivent être collectées en premier car elles disparaissent rapidement.\"},{\"id\":\"q3\",\"question\":\"Que signifie RTO dans un plan de continuité ?\",\"options\":[\"Recovery Time Objective\",\"Rapid Technical Operation\",\"Risk Treatment Option\",\"Real Time Operation\"],\"correctAnswer\":\"Recovery Time Objective\",\"explanation\":\"RTO définit le temps maximum acceptable pour restaurer un service après un incident.\"},{\"id\":\"q4\",\"question\":\"Quelle est la première action lors de la détection d'un incident critique ?\",\"options\":[\"Analyser l'origine de l'attaque\",\"Notifier la direction\",\"Contenir la propagation\",\"Collecter les preuves\"],\"correctAnswer\":\"Contenir la propagation\",\"explanation\":\"Le confinement rapide permet de limiter l'impact et d'empêcher la propagation de l'incident.\"},{\"id\":\"q5\",\"question\":\"Quelle est la fréquence recommandée pour les exercices de simulation d'incidents ?\",\"options\":[\"Annuelle uniquement\",\"Table-top trimestriel, simulation technique semestrielle\",\"Uniquement en cas d'incident réel\",\"Mensuelle pour tous les types\"],\"correctAnswer\":\"Table-top trimestriel, simulation technique semestrielle\",\"explanation\":\"Une fréquence adaptée permet de maintenir la préparation sans surcharger les équipes.\"}]",
+      "passingScore": 75,
+      "createdAt": "2025-08-07T09:48:56.297Z",
+      "updatedAt": "2025-08-07T09:48:56.297Z"
+    }
+  ],
+  "ebookQuizAttempts": [],
+  "chatHistories": [],
+  "courses": [],
+  "courseModules": [],
+  "courseEnrollments": [],
+  "learningProgress": [],
+  "quizzes": [],
+  "quizQuestions": [],
+  "quizAttempts": [],
+  "certifications": [],
+  "complianceFrameworks": [],
+  "securityAlerts": [],
+  "complianceDocuments": [],
+  "documentSections": [],
+  "documentTemplates": [],
+  "actionPlans": [],
+  "actionTasks": [],
+  "complianceChecklists": [],
+  "checklistItems": [],
+  "riskAssessments": [],
+  "threatScenarios": [],
+  "vulnerabilities": [],
+  "policyDocuments": [],
+  "incidentReports": [],
+  "strategicActions": [],
+  "strategicMilestones": [],
+  "roadmapQuarters": [],
+  "complianceScores": [],
+  "legalRiskAssessments": []
+}
