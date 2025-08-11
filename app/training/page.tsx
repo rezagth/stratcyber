@@ -11,12 +11,28 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import {
-  BookOpen,
-  Plus,
+import { Progress } from '@/components/ui/progress';
+import { 
+  BookOpen, 
+  Play, 
+  Clock, 
+  Users, 
+  Star, 
   Search,
+  Filter,
   Download,
   Eye,
+  Shield,
+  Lock,
+  Globe,
+  Server,
+  AlertTriangle,
+  FileText,
+  Award,
+  TrendingUp,
+  Plus,
+  Brain,
+  CheckCircle
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -25,37 +41,74 @@ interface Ebook {
   id: string;
   title: string;
   author: string;
+  description?: string;
   content?: string;
-  url: string;
+  url?: string;
+  category: string;
+  difficulty: string;
+  duration?: string;
+  pages?: number;
+  rating: number;
+  downloads: number;
+  tags?: string[];
+  thumbnailUrl?: string;
+  isPublished: boolean;
   createdAt: string;
   updatedAt: string;
+  // Relations (si incluses)
+  readingSessions?: any[];
+  quizzes?: any[];
 }
+
+interface ReadingSession {
+  id: string;
+  progress: number;
+  currentPage: number;
+  completed: boolean;
+  timeSpent: number;
+}
+
+const CATEGORIES = ['Tous', 'Fondamentaux', 'Réseau', 'Gestion', 'Cloud', 'Conformité', 'Tests'];
+const DIFFICULTIES = ['Tous', 'Débutant', 'Intermédiaire', 'Avancé'];
 
 export default function TrainingPage() {
   const { data: session, status } = useSession();
   const [ebooks, setEbooks] = useState<Ebook[]>([]);
+  const [filteredEbooks, setFilteredEbooks] = useState<Ebook[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Tous');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('Tous');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Debounced search term
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
-
-  // Pagination states (example with simple page size)
-  const PAGE_SIZE = 9;
-  const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-      setPage(1); // reset page on new search
-    }, 300);
-    return () => clearTimeout(handler);
-  }, [searchTerm]);
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     fetchEbooks();
   }, []);
+
+  // Filtrage des ebooks
+  useEffect(() => {
+    let filtered = ebooks.filter(ebook => ebook.isPublished);
+
+    if (searchTerm) {
+      filtered = filtered.filter(ebook => 
+        ebook.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ebook.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ebook.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (ebook.tags && ebook.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())))
+      );
+    }
+
+    if (selectedCategory !== 'Tous') {
+      filtered = filtered.filter(ebook => ebook.category === selectedCategory);
+    }
+
+    if (selectedDifficulty !== 'Tous') {
+      filtered = filtered.filter(ebook => ebook.difficulty === selectedDifficulty);
+    }
+
+    setFilteredEbooks(filtered);
+  }, [searchTerm, selectedCategory, selectedDifficulty, ebooks]);
 
   const fetchEbooks = async () => {
     setLoading(true);
@@ -72,18 +125,62 @@ export default function TrainingPage() {
     }
   };
 
-  // Filtrage sur le terme debounced
-  const filteredEbooks = ebooks.filter(
-    (ebook) =>
-      ebook.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-      ebook.author.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-  );
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'Débutant': return 'bg-green-100 text-green-800';
+      case 'Intermédiaire': return 'bg-yellow-100 text-yellow-800';
+      case 'Avancé': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
-  // Pagination slice
-  const paginatedEbooks = filteredEbooks.slice(0, PAGE_SIZE * page);
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'Fondamentaux': return Shield;
+      case 'Réseau': return Globe;
+      case 'Gestion': return Users;
+      case 'Cloud': return Server;
+      case 'Conformité': return Lock;
+      case 'Tests': return AlertTriangle;
+      default: return BookOpen;
+    }
+  };
 
   const formatDate = (dateStr: string) =>
     new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' }).format(new Date(dateStr));
+
+  const generatePersonalizedEbooks = async () => {
+    setGenerating(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/training/generate-ebooks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erreur lors de la génération');
+      }
+      
+      const result = await response.json();
+      console.log('Ebooks générés:', result);
+      
+      // Recharger la liste des ebooks
+      await fetchEbooks();
+      
+      // Afficher un message de succès
+      alert(`${result.ebooks?.length || 0} ebooks personnalisés ont été générés avec succès !`);
+      
+    } catch (err) {
+      console.error('Erreur:', err);
+      setError(err instanceof Error ? err.message : 'Erreur lors de la génération des ebooks');
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   if (status === 'loading' || loading) {
     return (
@@ -110,203 +207,248 @@ export default function TrainingPage() {
   }
 
   return (
-    <main className="container mx-auto px-4 py-8" role="main">
-      <header className="mb-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Centre de Formation</h1>
-            <p className="text-gray-600">Explorez notre bibliothèque d'ebooks de cybersécurité</p>
-          </div>
+    <div className="container mx-auto p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold flex items-center gap-3">
+            <BookOpen className="h-8 w-8 text-blue-600" />
+            Formation Cybersécurité
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Bibliothèque d'ebooks spécialisés en sécurité informatique
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Badge variant="outline" className="text-sm">
+            {filteredEbooks.length} ebooks disponibles
+          </Badge>
+          <Button 
+            onClick={generatePersonalizedEbooks}
+            disabled={generating}
+            className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+            size="sm"
+          >
+            {generating ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+            ) : (
+              <Brain className="h-4 w-4 mr-2" />
+            )}
+            {generating ? 'Génération...' : 'Générer mes ebooks'}
+          </Button>
           {session?.user?.role === 'admin' && (
-            <Link href="/training/create" passHref>
-              <Button as="a" className="flex items-center gap-2" aria-label="Ajouter un ebook">
-                <Plus className="h-4 w-4" />
+            <Link href="/training/create">
+              <Button variant="outline" size="sm">
+                <Plus className="h-4 w-4 mr-2" />
                 Ajouter un ebook
               </Button>
             </Link>
           )}
         </div>
+      </div>
 
-        {/* Barre de recherche */}
-        <div className="relative mb-6">
-          <Search
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"
-            aria-hidden="true"
-          />
-          <Input
-            type="text"
-            placeholder="Rechercher par titre ou auteur..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-            aria-label="Rechercher un ebook par titre ou auteur"
-            autoComplete="off"
-          />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              aria-label="Réinitialiser la recherche"
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-600 underline"
-              type="button"
-            >
-              Réinitialiser
-            </button>
-          )}
-        </div>
-
-        {/* Gestion des erreurs */}
-        {error && (
-          <div
-            className="mb-4 p-4 bg-red-100 text-red-700 rounded"
-            role="alert"
-            aria-live="assertive"
-          >
-            {error}
-            <button
-              onClick={() => {
-                setError(null);
-                setSearchTerm('');
-                fetchEbooks();
-              }}
-              className="ml-4 underline focus:outline-none focus:ring-2 focus:ring-blue-500"
-              aria-label="Réessayer le chargement des ebooks"
-              type="button"
-            >
-              Réessayer
-            </button>
-          </div>
-        )}
-
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" aria-label="Statistiques ebooks">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Ebooks</CardTitle>
-              <BookOpen className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold" aria-live="polite">
-                {ebooks.length}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Disponibles</CardTitle>
-              <Eye className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold" aria-live="polite">
-                {filteredEbooks.length}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Téléchargés</CardTitle>
-              <Download className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold" aria-live="polite">
-                0
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </header>
-
-      {/* Liste des ebooks */}
-      {filteredEbooks.length === 0 ? (
+      {/* Statistiques rapides */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <BookOpen className="h-12 w-12 text-gray-400 mb-4" aria-hidden="true" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2" role="status" aria-live="polite">
-              {debouncedSearchTerm ? 'Aucun résultat trouvé' : 'Aucun ebook disponible'}
-            </h3>
-            <p className="text-gray-500 text-center">
-              {debouncedSearchTerm
-                ? 'Essayez de modifier votre recherche'
-                : "Les ebooks apparaîtront ici une fois ajoutés"}
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Ebooks</p>
+                <p className="text-2xl font-bold">{ebooks.filter(e => e.isPublished).length}</p>
+              </div>
+              <BookOpen className="h-8 w-8 text-blue-500" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Complétés</p>
+                <p className="text-2xl font-bold text-green-600">0</p>
+              </div>
+              <Award className="h-8 w-8 text-green-500" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">En cours</p>
+                <p className="text-2xl font-bold text-orange-600">0</p>
+              </div>
+              <TrendingUp className="h-8 w-8 text-orange-500" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Quiz passés</p>
+                <p className="text-2xl font-bold">0</p>
+              </div>
+              <Brain className="h-8 w-8 text-purple-500" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filtres et recherche */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex flex-col lg:flex-row gap-4">
+            {/* Barre de recherche */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                placeholder="Rechercher un ebook..."
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            {/* Filtre par catégorie */}
+            <select 
+              className="px-3 py-2 text-sm border rounded-md"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              {CATEGORIES.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+
+            {/* Filtre par difficulté */}
+            <select 
+              className="px-3 py-2 text-sm border rounded-md"
+              value={selectedDifficulty}
+              onChange={(e) => setSelectedDifficulty(e.target.value)}
+            >
+              {DIFFICULTIES.map(diff => (
+                <option key={diff} value={diff}>{diff}</option>
+              ))}
+            </select>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Gestion des erreurs */}
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded" role="alert">
+          {error}
+          <button
+            onClick={() => {
+              setError(null);
+              fetchEbooks();
+            }}
+            className="ml-4 underline"
+          >
+            Réessayer
+          </button>
+        </div>
+      )}
+
+      {/* Grille des ebooks */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredEbooks.map((ebook) => {
+          const IconComponent = getCategoryIcon(ebook.category);
+          return (
+            <Card key={ebook.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+              {/* Thumbnail */}
+              <div className="relative h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                <IconComponent className="h-16 w-16 text-white opacity-80" />
+                <div className="absolute top-3 right-3">
+                  <Badge className={getDifficultyColor(ebook.difficulty)}>
+                    {ebook.difficulty}
+                  </Badge>
+                </div>
+              </div>
+
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <CardTitle className="text-lg line-clamp-2">{ebook.title}</CardTitle>
+                  <div className="flex items-center gap-1 text-sm text-yellow-500">
+                    <Star className="h-4 w-4 fill-current" />
+                    {ebook.rating}
+                  </div>
+                </div>
+                <p className="text-sm text-gray-600 line-clamp-3">{ebook.description || 'Aucune description disponible.'}</p>
+              </CardHeader>
+
+              <CardContent className="pt-0 space-y-4">
+                {/* Tags */}
+                <div className="flex flex-wrap gap-1">
+                  {ebook.tags?.slice(0, 3).map((tag, index) => (
+                    <Badge key={index} variant="outline" className="text-xs">
+                      {tag}
+                    </Badge>
+                  )) || (
+                    <Badge variant="outline" className="text-xs">
+                      {ebook.category}
+                    </Badge>
+                  )}
+                </div>
+
+                {/* Métadonnées */}
+                <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
+                  <div className="flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    {ebook.duration || '2h 00min'}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <FileText className="h-3 w-3" />
+                    {ebook.pages || 50} pages
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Download className="h-3 w-3" />
+                    {ebook.downloads} téléchargements
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Users className="h-3 w-3" />
+                    {ebook.author}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-2">
+                  <Link href={`/training/ebook/${ebook.id}`} className="flex-1">
+                    <Button className="w-full text-sm">
+                      <Eye className="h-4 w-4 mr-2" />
+                      Lire
+                    </Button>
+                  </Link>
+                  {ebook.url && (
+                    <a href={ebook.url} target="_blank" rel="noopener noreferrer" download>
+                      <Button variant="outline" size="sm" className="px-3">
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </a>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Message si aucun résultat */}
+      {filteredEbooks.length === 0 && (
+        <Card>
+          <CardContent className="text-center py-12">
+            <BookOpen className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <h3 className="text-lg font-semibold mb-2">Aucun ebook trouvé</h3>
+            <p className="text-gray-600">
+              Essayez de modifier vos critères de recherche ou de filtrage.
             </p>
           </CardContent>
         </Card>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" aria-live="polite">
-            {paginatedEbooks.map((ebook) => (
-              <Card
-                key={ebook.id}
-                className="hover:shadow-lg transition-shadow"
-                role="article"
-                aria-label={`Ebook : ${ebook.title} par ${ebook.author}`}
-              >
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg mb-2">{ebook.title}</CardTitle>
-                      <CardDescription className="text-sm">
-                        Par {ebook.author}
-                      </CardDescription>
-                    </div>
-                    <Badge variant="secondary" className="ml-2" aria-label="Type : Ebook">
-                      Ebook
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {ebook.content && (
-                      <p className="text-sm text-gray-600 line-clamp-3" aria-label="Aperçu du contenu">
-                        {ebook.content.substring(0, 120)}...
-                      </p>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <time
-                        className="text-xs text-gray-500"
-                        dateTime={ebook.createdAt}
-                        aria-label={`Ajouté le ${formatDate(ebook.createdAt)}`}
-                      >
-                        Ajouté le {formatDate(ebook.createdAt)}
-                      </time>
-                    </div>
-                    <div className="flex gap-2">
-                      <Link href={`/training/ebook/${ebook.id}`} passHref>
-                        <Button as="a" size="sm" aria-label={`Voir les détails de ${ebook.title}`}>
-                          Voir
-                        </Button>
-                      </Link>
-                      <a
-                        href={ebook.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`Télécharger ${ebook.title}`}
-                        download
-                      >
-                        <Button size="sm" variant="outline">
-                          Télécharger
-                        </Button>
-                      </a>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Pagination simple */}
-          {paginatedEbooks.length < filteredEbooks.length && (
-            <div className="flex justify-center mt-8">
-              <Button
-                onClick={() => setPage(page + 1)}
-                aria-label="Charger plus d'ebooks"
-                variant="secondary"
-              >
-                Charger plus
-              </Button>
-            </div>
-          )}
-        </>
       )}
-    </main>
+    </div>
   );
 }

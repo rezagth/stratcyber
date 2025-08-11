@@ -20,6 +20,8 @@ model User {
   quizAttempts QuizAttempt[]
   certifications Certification[]
   progress  LearningProgress[]
+  readingSessions ReadingSession[]
+  ebookQuizAttempts EbookQuizAttempt[]
   createdAt DateTime @default(now())
 }
 
@@ -83,10 +85,71 @@ model Ebook {
   id          String   @id @default(uuid())
   title       String
   author      String
-  content     String?
-  url         String
+  description String?
+  content     String?  // Contenu structuré de l'ebook (JSON)
+  url         String?  // URL de téléchargement
+  category    String   // 'Fondamentaux' | 'Réseau' | 'Gestion' | 'Cloud' | 'Conformité' | 'Tests'
+  difficulty  String   // 'Débutant' | 'Intermédiaire' | 'Avancé'
+  duration    String?  // Durée estimée de lecture
+  pages       Int?     // Nombre de pages
+  rating      Float    @default(0)
+  downloads   Int      @default(0)
+  tags        String?  // JSON array des tags
+  thumbnailUrl String?
+  isPublished Boolean  @default(false)
+  
+  // Relations
+  readingSessions ReadingSession[]
+  quizzes     EbookQuiz[]
+  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// Sessions de lecture pour suivre le progrès
+model ReadingSession {
+  id          String   @id @default(uuid())
+  userId      String
+  ebookId     String
+  currentPage Int      @default(1)
+  progress    Float    @default(0) // Pourcentage 0-100
+  timeSpent   Int      @default(0) // en secondes
+  completed   Boolean  @default(false)
+  lastReadAt  DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id])
+  ebook       Ebook    @relation(fields: [ebookId], references: [id])
+  
+  @@unique([userId, ebookId])
+}
+
+// Quiz spécifiques aux ebooks
+model EbookQuiz {
+  id          String   @id @default(uuid())
+  ebookId     String
+  title       String
+  description String?
+  questions   String   // JSON array des questions
+  passingScore Int     @default(70)
+  
+  ebook       Ebook    @relation(fields: [ebookId], references: [id], onDelete: Cascade)
+  attempts    EbookQuizAttempt[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model EbookQuizAttempt {
+  id          String   @id @default(uuid())
+  userId      String
+  quizId      String
+  answers     String   // JSON object avec les réponses
+  score       Float
+  passed      Boolean
+  completedAt DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id])
+  quiz        EbookQuiz @relation(fields: [quizId], references: [id])
 }
 
 model ChatHistory {
