@@ -1,0 +1,10 @@
+#!/bin/sh
+# Git Hook: post-checkout
+# Se déclenche automatiquement après un checkout (changement de branche)
+
+echo "🔄 Changement de branche détecté - Configuration automatique..."
+
+# Exécuter le script de configuration
+node ./scripts/setup-env.js
+
+echo "✅ Configuration automatique terminée!"
