@@ -13,7 +13,8 @@
     "setup-env": "node scripts/setup-env.js",
     "setup-hooks": "node scripts/setup-hooks.js",
     "switch-to-dev": "git checkout dev && npm run setup-env",
-    "switch-to-master": "git checkout master && npm run setup-env"
+    "switch-to-master": "git checkout master && npm run setup-env",
+    "safe-commit": "node scripts/safe-commit.js"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
