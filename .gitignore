@@ -48,3 +48,9 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# Configuration multi-environnement automatique
+# Ces fichiers sont modifiés automatiquement par les scripts
+dev.db
+dev-test.db
+*.db-journal
