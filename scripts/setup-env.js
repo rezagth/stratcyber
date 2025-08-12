@@ -46,8 +46,8 @@ switch (currentBranch) {
     console.log('🗃️  Base de données: SQLite locale (./dev.db)');
     break;
     
-  case 'main':
-    console.log('🚀 Configuration pour la branche MAIN (PostgreSQL Neon)');
+  case 'master':
+    console.log('🚀 Configuration pour la branche MASTER (PostgreSQL Neon)');
     
     // Copie du fichier .env.production
     const prodEnvPath = path.join(process.cwd(), '.env.production');
@@ -72,7 +72,7 @@ switch (currentBranch) {
     
   default:
     console.error(`⚠️  Branche non reconnue: ${currentBranch}`);
-    console.error('Branches supportées: "dev" (SQLite) ou "main" (PostgreSQL)');
+    console.error('Branches supportées: "dev" (SQLite) ou "master" (PostgreSQL)');
     process.exit(1);
 }
 
