@@ -22,8 +22,8 @@ switch ($currentBranch) {
         
         Write-Host "🗃️  Base de donnees: SQLite locale (./dev.db)" -ForegroundColor Cyan
     }
-    "main" {
-        Write-Host "🚀 Configuration pour la branche MAIN (PostgreSQL Neon)" -ForegroundColor Red
+    "master" {
+        Write-Host "🚀 Configuration pour la branche MASTER (PostgreSQL Neon)" -ForegroundColor Red
         
         # Copie du bon fichier .env
         Copy-Item ".env.production" ".env" -Force
@@ -39,7 +39,7 @@ switch ($currentBranch) {
     }
     default {
         Write-Host "⚠️  Branche non reconnue: $currentBranch" -ForegroundColor Red
-        Write-Host "Branches supportees: 'dev' (SQLite) ou 'main' (PostgreSQL)"
+        Write-Host "Branches supportees: 'dev' (SQLite) ou 'master' (PostgreSQL)"
         exit 1
     }
 }
