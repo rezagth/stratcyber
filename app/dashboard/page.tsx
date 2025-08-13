@@ -596,7 +596,14 @@ const priorityFiltered = actionPlan.filter(a => {
           {/* Feuille de route (timeline) */}
           <Card>
             <CardHeader>
-              <CardTitle>Feuille de route priorisée</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>Feuille de route priorisée</CardTitle>
+                <Link href="/dashboard/roadmap">
+                  <Button variant="outline" size="sm">
+                    Voir la roadmap interactive →
+                  </Button>
+                </Link>
+              </div>
             </CardHeader>
             <CardContent>
               {actionPlan.length === 0 ? (
@@ -624,8 +631,8 @@ const priorityFiltered = actionPlan.filter(a => {
                   ))}
                   {actionPlan.length > 5 && (
                     <div className="text-center mt-4">
-                      <Link href="/strategie" className="text-blue-600 hover:underline">
-                        Voir toutes les {actionPlan.length} actions
+                      <Link href="/dashboard/roadmap" className="text-blue-600 hover:underline">
+                        Voir toutes les {actionPlan.length} actions dans la roadmap interactive
                       </Link>
                     </div>
                   )}
@@ -643,6 +650,11 @@ const priorityFiltered = actionPlan.filter(a => {
                   Plan d&apos;action personnalisé
                 </span>
                 <div className="flex gap-2">
+                  <Link href="/dashboard/roadmap">
+                    <Button variant="outline" size="sm">
+                      Roadmap interactive
+                    </Button>
+                  </Link>
                   <Button variant="outline" size="sm" onClick={handleExport}>
                     <Download className="h-4 w-4 mr-2" />
                     Exporter CSV
