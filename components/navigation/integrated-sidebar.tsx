@@ -50,6 +50,12 @@ const navigationItems = [
     title: 'Tableau de bord',
     url: '/dashboard',
     icon: LayoutDashboard,
+    items: [
+      {
+        title: 'Roadmap',
+        url: '/dashboard/roadmap',
+      },
+    ],
   },
   {
     title: 'Audit',
@@ -57,16 +63,16 @@ const navigationItems = [
     items: [
       {
         title: 'Audit Dynamique',
-        url: '/audit/dynamic',
+        url: '/strategie',
       },
       {
         title: 'Historique',
-        url: '/dashboard',
+        url: '/audit/historique',
       },
     ],
   },
   {
-    title: 'Conformité',
+    title: 'Documentation',
     icon: ShieldCheck,
     items: [
       {
@@ -96,20 +102,20 @@ const navigationItems = [
     icon: BookOpen,
     items: [
       {
-        title: 'Parcours',
+        title: 'Ebooks',
         url: '/training',
       },
-      {
-        title: 'Créer',
-        url: '/training/create',
-      },
+      // {
+      //   title: 'Créer',
+      //   url: '/training/create',
+      // },
     ],
   },
-  {
-    title: 'Stratégie',
-    url: '/strategie',
-    icon: Target,
-  },
+  // {
+  //   title: 'Stratégie',
+  //   url: '/strategie',
+  //   icon: Target,
+  // },
 ]
 
 export function IntegratedSidebar({ 
@@ -163,7 +169,7 @@ export function IntegratedSidebar({
               {showLabels && (
                 <div className="flex flex-col">
                   <span className="text-sm font-bold">StratCyber</span>
-                  <span className="text-xs text-muted-foreground">Cybersécurité</span>
+                  <span className="text-xs text-muted-foreground">Platforme de Cybersécurité</span>
                 </div>
               )}
             </Link>
