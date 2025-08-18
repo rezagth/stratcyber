@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, Download, Shield } from 'lucide-react';
+import { AlertCircle, Download, Shield, FileText, Eye } from 'lucide-react';
 import { generateActionPlan, calculateCrazyScore, computeAuditResult, ActionPlanItem, inferComplianceFromCategory } from '../../lib/audit/scoring';
 import { Audit } from '@prisma/client';
 import RadarChart from '../../components/charts/RadarChart';
@@ -105,6 +105,7 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [complianceFilter, setComplianceFilter] = useState<'ALL' | 'CRITICAL' | 'LOW_SCORE'>('ALL');
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
+  const [generatingPdf, setGeneratingPdf] = useState<string | null>(null);
 
   const itemsPerPage = 10;
 
@@ -184,6 +185,51 @@ export default function DashboardPage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  // PDF report generation
+  const handleGeneratePdfReport = async (auditId: string) => {
+    try {
+      setGeneratingPdf(auditId);
+      
+      // Appel à l'API pour générer le rapport PDF
+      const response = await fetch(`/api/audit/${auditId}/export/comprehensive-pdf`);
+      
+      if (!response.ok) {
+        throw new Error('Erreur lors de la génération du rapport');
+      }
+      
+      // Récupérer le contenu HTML
+      const htmlContent = await response.text();
+      
+      // Créer un blob et télécharger
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `rapport-audit-${auditId}.html`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+    } catch (error) {
+      console.error('Erreur génération PDF:', error);
+      alert('Erreur lors de la génération du rapport. Veuillez réessayer.');
+    } finally {
+      setGeneratingPdf(null);
+    }
+  };
+
+  // Ouvrir le rapport dans un nouvel onglet
+  const handleViewPdfReport = async (auditId: string) => {
+    try {
+      const url = `/api/audit/${auditId}/export/comprehensive-pdf`;
+      window.open(url, '_blank');
+    } catch (error) {
+      console.error('Erreur ouverture rapport:', error);
+      alert('Erreur lors de l\'ouverture du rapport.');
+    }
   };
 
   const crazyScore = auditResult ? calculateCrazyScore(auditResult) : null;
@@ -815,23 +861,113 @@ const priorityFiltered = actionPlan.filter(a => {
           {/* Historique des audits */}
           <Card>
             <CardHeader>
-              <CardTitle>Historique des Audits</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-blue-600" />
+                Historique des Audits
+              </CardTitle>
+              <p className="text-sm text-muted-foreground mt-2">
+                Consultez vos audits précédents et générez des rapports détaillés
+              </p>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2">
-                {audits.map((audit) => (
-                  <li key={audit.id} className="flex items-center justify-between p-3 border rounded">
+              {audits.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                  <p>Aucun audit disponible</p>
+                  <p className="text-sm">Commencez par réaliser votre premier audit de cybersécurité</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {audits.map((audit) => {
+                    const auditDate = new Date(audit.createdAt);
+                    const isGenerating = generatingPdf === audit.id;
+                    
+                    return (
+                      <div key={audit.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="text-lg font-semibold">
+                              Audit du {auditDate.toLocaleDateString('fr-FR', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
+                            </div>
+                            <Badge variant={audit.score && audit.score >= 70 ? 'default' : audit.score && audit.score >= 50 ? 'secondary' : 'destructive'}>
+                              {audit.maturity || 'En cours'}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <Shield className="h-4 w-4" />
+                              Score: {audit.score?.toFixed(0) || 'N/A'}%
+                            </span>
+                            <span>
+                              {audit.responses?.length || 0} réponses
+                            </span>
+                            <span>
+                              Créé à {auditDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex gap-2 ml-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleViewPdfReport(audit.id)}
+                            className="flex items-center gap-2"
+                          >
+                            <Eye className="h-4 w-4" />
+                            Aperçu
+                          </Button>
+                          
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => handleGeneratePdfReport(audit.id)}
+                            disabled={isGenerating}
+                            className="flex items-center gap-2"
+                          >
+                            {isGenerating ? (
+                              <>
+                                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                Génération...
+                              </>
+                            ) : (
+                              <>
+                                <Download className="h-4 w-4" />
+                                Rapport PDF
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              
+              {audits.length > 0 && (
+                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
                     <div>
-                      <div className="font-medium">Audit du {new Date(audit.createdAt).toLocaleDateString('fr-FR')}</div>
-                      <div className="text-sm text-muted-foreground">Score: {audit.score?.toFixed(0) || 'N/A'}%</div>
+                      <h4 className="font-medium text-blue-900 mb-1">À propos des rapports PDF</h4>
+                      <p className="text-sm text-blue-700">
+                        Les rapports générés incluent une analyse complète de votre audit avec :
+                      </p>
+                      <ul className="text-sm text-blue-700 mt-2 space-y-1">
+                        <li>• Analyse détaillée des résultats par domaine</li>
+                        <li>• Plan d'action personnalisé avec budgets et échéances</li>
+                        <li>• Feuille de route stratégique sur 24 mois</li>
+                        <li>• Analyse de conformité réglementaire (RGPD, NIS2, ISO 27001...)</li>
+                        <li>• Recommandations priorisées et KPIs de suivi</li>
+                      </ul>
                     </div>
-                    <div className="flex gap-2">
-                      <Link href={`/audit/${audit.id}`} className="btn btn-sm btn-primary">Détail</Link>
-                      <Link href={`/audit/${audit.id}/pdf`} className="btn btn-sm btn-secondary">PDF</Link>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </>
