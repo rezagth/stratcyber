@@ -861,9 +861,16 @@ const priorityFiltered = actionPlan.filter(a => {
           {/* Historique des audits */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-blue-600" />
-                Historique des Audits
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-blue-600" />
+                  Historique des Audits
+                </div>
+                <Link href="/dashboard/audits">
+                  <Button variant="outline" size="sm">
+                    Voir tout l'historique →
+                  </Button>
+                </Link>
               </CardTitle>
               <p className="text-sm text-muted-foreground mt-2">
                 Consultez vos audits précédents et générez des rapports détaillés
