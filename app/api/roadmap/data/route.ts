@@ -7,6 +7,7 @@ import { getActionStatuses } from '../actions/route';
 interface ActionPlan {
   id: string;
   title: string;
+  action: string;  // Ajout du champ action pour le contenu détaillé
   description: string;
   category: string;
   priority: 'Critique' | 'Haute' | 'Moyenne' | 'Faible';
@@ -87,6 +88,7 @@ function generateActionsFromResponses(responses: any[]): ActionPlan[] {
       actions.push({
         id: `critical-${category.toLowerCase().replace(/\s+/g, '-')}`,
         title: `Amélioration critique - ${category}`,
+        action: `Mettre en place des mesures de sécurité critiques pour ${category}`,
         description: `Mise en place urgente des mesures de sécurité pour ${category}. Score actuel: ${avgScorePercent}%`,
         category: category,
         priority: 'Critique',
@@ -103,6 +105,7 @@ function generateActionsFromResponses(responses: any[]): ActionPlan[] {
       actions.push({
         id: `followup-${category.toLowerCase().replace(/\s+/g, '-')}`,
         title: `Suivi et contrôle - ${category}`,
+        action: `Établir un suivi et contrôle régulier pour ${category}`,
         description: `Mise en place d'un suivi régulier et de contrôles pour ${category}`,
         category: category,
         priority: 'Haute',
@@ -118,6 +121,7 @@ function generateActionsFromResponses(responses: any[]): ActionPlan[] {
       actions.push({
         id: `high-${category.toLowerCase().replace(/\s+/g, '-')}`,
         title: `Renforcement - ${category}`,
+        action: `Renforcer les processus de sécurité pour ${category}`,
         description: `Optimisation des processus de sécurité pour ${category}. Score actuel: ${avgScorePercent}%`,
         category: category,
         priority: 'Haute',
@@ -133,6 +137,7 @@ function generateActionsFromResponses(responses: any[]): ActionPlan[] {
       actions.push({
         id: `medium-${category.toLowerCase().replace(/\s+/g, '-')}`,
         title: `Amélioration continue - ${category}`,
+        action: `Améliorer continuellement les pratiques de sécurité pour ${category}`,
         description: `Perfectionnement des pratiques de sécurité pour ${category}. Score actuel: ${avgScorePercent}%`,
         category: category,
         priority: 'Moyenne',
@@ -146,70 +151,285 @@ function generateActionsFromResponses(responses: any[]): ActionPlan[] {
       });
     }
 
-    // Actions spécifiques basées sur les réponses individuelles (plus d'actions par réponse)
-    lowScoreResponses.forEach((response: any, index: number) => {
-      const scorePercent = Math.round(((response.score || 0) / 5) * 100);
-      const priority = (response.score || 0) < 1.5 ? 'Critique' : 
-                      (response.score || 0) < 2.5 ? 'Haute' : 'Moyenne';
-      
-      // Action principale pour chaque réponse faible
+    // Actions spécifiques détaillées pour chaque catégorie
+    const categoryActions = {
+      'RGPD': [
+        {
+          action: "Mettre en place une procédure de notification des violations de données dans les 72h à la CNIL",
+          description: "Établir un processus formalisé pour détecter, évaluer et notifier les violations de données personnelles conformément à l'article 33 du RGPD",
+          priority: "Critique" as const,
+          estimatedHours: 24,
+          owner: "DPO",
+          budget: 3000
+        },
+        {
+          action: "Former le personnel à identifier et signaler les violations de données",
+          description: "Programme de formation pour sensibiliser l'ensemble du personnel aux obligations RGPD et aux procédures de signalement",
+          priority: "Haute" as const,
+          estimatedHours: 16,
+          owner: "DPO",
+          budget: 2000
+        },
+        {
+          action: "Élaborer un plan de réponse aux violations de données conformément à l'article 33 du RGPD",
+          description: "Créer un plan d'action détaillé pour gérer les incidents de sécurité affectant les données personnelles",
+          priority: "Critique" as const,
+          estimatedHours: 20,
+          owner: "DPO",
+          budget: 2500
+        },
+        {
+          action: "Mettre en place des procédures claires pour permettre aux personnes d'exercer leurs droits RGPD",
+          description: "Formaliser les processus pour traiter les demandes d'accès, de rectification, d'effacement et de portabilité des données",
+          priority: "Haute" as const,
+          estimatedHours: 18,
+          owner: "DPO",
+          budget: 1800
+        },
+        {
+          action: "Créer et maintenir le registre des traitements de données personnelles",
+          description: "Documenter tous les traitements de données personnelles conformément à l'article 30 du RGPD",
+          priority: "Critique" as const,
+          estimatedHours: 32,
+          owner: "DPO",
+          budget: 4000
+        }
+      ],
+      'NIS2': [
+        {
+          action: "Mettre en place un système de gestion des incidents de sécurité conforme à la directive NIS2",
+          description: "Établir un processus de détection, signalement et réponse aux incidents de cybersécurité selon les exigences NIS2",
+          priority: "Critique" as const,
+          estimatedHours: 40,
+          owner: "RSSI",
+          budget: 8000
+        },
+        {
+          action: "Renforcer la sécurité de la chaîne d'approvisionnement numérique",
+          description: "Évaluer et sécuriser les fournisseurs critiques selon les exigences NIS2",
+          priority: "Haute" as const,
+          estimatedHours: 32,
+          owner: "RSSI",
+          budget: 6000
+        },
+        {
+          action: "Établir des mesures de cybersécurité proportionnées aux risques",
+          description: "Déployer les mesures techniques et organisationnelles requises par NIS2",
+          priority: "Critique" as const,
+          estimatedHours: 48,
+          owner: "RSSI",
+          budget: 12000
+        }
+      ],
+      'Incidents': [
+        {
+          action: "Développer et tester le plan de réponse aux incidents cybersécurité",
+          description: "Créer un plan complet de gestion des incidents incluant les procédures d'escalade et de communication",
+          priority: "Critique" as const,
+          estimatedHours: 30,
+          owner: "RSSI",
+          budget: 5000
+        },
+        {
+          action: "Former l'équipe de réponse aux incidents (CSIRT)",
+          description: "Formation spécialisée pour l'équipe de réponse aux incidents sur les techniques d'investigation et de remédiation",
+          priority: "Haute" as const,
+          estimatedHours: 24,
+          owner: "RSSI",
+          budget: 4000
+        },
+        {
+          action: "Mettre en place la surveillance continue des systèmes critiques",
+          description: "Déployer des outils de détection et monitoring 24h/24 pour identifier rapidement les incidents",
+          priority: "Critique" as const,
+          estimatedHours: 40,
+          owner: "RSSI",
+          budget: 15000
+        }
+      ],
+      'Cloud': [
+        {
+          action: "Sécuriser l'architecture cloud selon les bonnes pratiques de sécurité",
+          description: "Audit et renforcement de la sécurité des environnements cloud (AWS, Azure, GCP) avec mise en place de contrôles appropriés",
+          priority: "Haute" as const,
+          estimatedHours: 35,
+          owner: "Architecte Cloud",
+          budget: 8000
+        },
+        {
+          action: "Implémenter la gestion des identités et accès dans le cloud (IAM)",
+          description: "Mise en place d'une gestion centralisée des identités avec authentification multi-facteurs et contrôle d'accès granulaire",
+          priority: "Critique" as const,
+          estimatedHours: 28,
+          owner: "Administrateur Système",
+          budget: 6000
+        },
+        {
+          action: "Établir la stratégie de chiffrement des données dans le cloud",
+          description: "Chiffrement des données au repos et en transit avec gestion sécurisée des clés de chiffrement",
+          priority: "Critique" as const,
+          estimatedHours: 32,
+          owner: "Architecte Sécurité",
+          budget: 7000
+        }
+      ],
+      'Technique': [
+        {
+          action: "Déployer une solution de protection avancée contre les menaces (EDR/XDR)",
+          description: "Installation et configuration d'outils de détection et réponse étendues pour une protection proactive",
+          priority: "Critique" as const,
+          estimatedHours: 40,
+          owner: "RSSI",
+          budget: 25000
+        },
+        {
+          action: "Renforcer la sécurité du réseau avec segmentation et micro-segmentation",
+          description: "Isolation des segments réseau critiques et mise en place de contrôles d'accès granulaires",
+          priority: "Haute" as const,
+          estimatedHours: 35,
+          owner: "Administrateur Réseau",
+          budget: 12000
+        },
+        {
+          action: "Mettre à jour et durcir la sécurité des systèmes d'exploitation",
+          description: "Application des correctifs de sécurité et configuration sécurisée des serveurs et postes de travail",
+          priority: "Haute" as const,
+          estimatedHours: 30,
+          owner: "Administrateur Système",
+          budget: 8000
+        }
+      ],
+      'Gouvernance': [
+        {
+          action: "Élaborer et approuver la politique de sécurité de l'information",
+          description: "Rédaction d'une politique globale de sécurité alignée sur les standards internationaux (ISO 27001)",
+          priority: "Critique" as const,
+          estimatedHours: 40,
+          owner: "RSSI",
+          budget: 6000
+        },
+        {
+          action: "Mettre en place le comité de pilotage cybersécurité",
+          description: "Création d'un comité de direction pour superviser la stratégie cybersécurité et les investissements",
+          priority: "Haute" as const,
+          estimatedHours: 20,
+          owner: "Direction",
+          budget: 3000
+        },
+        {
+          action: "Établir le processus de gestion des risques cybersécurité",
+          description: "Mise en place d'une méthodologie d'évaluation et traitement des risques cyber",
+          priority: "Critique" as const,
+          estimatedHours: 35,
+          owner: "RSSI",
+          budget: 8000
+        }
+      ],
+      'Sensibilisation': [
+        {
+          action: "Développer un programme complet de sensibilisation à la cybersécurité",
+          description: "Création de supports et organisation de formations pour sensibiliser tous les collaborateurs",
+          priority: "Haute" as const,
+          estimatedHours: 32,
+          owner: "RH + RSSI",
+          budget: 5000
+        },
+        {
+          action: "Lancer des campagnes de simulation de phishing ciblées",
+          description: "Tests réguliers de phishing simulé pour mesurer et améliorer la vigilance des utilisateurs",
+          priority: "Moyenne" as const,
+          estimatedHours: 16,
+          owner: "RSSI",
+          budget: 3000
+        },
+        {
+          action: "Former les équipes métier aux bonnes pratiques de sécurité",
+          description: "Sessions de formation spécialisées par métier (RH, Finance, Commercial) sur les risques spécifiques",
+          priority: "Haute" as const,
+          estimatedHours: 24,
+          owner: "RSSI",
+          budget: 4000
+        }
+      ],
+      'SupplyChain': [
+        {
+          action: "Évaluer et certifier la sécurité des fournisseurs critiques",
+          description: "Audit de sécurité des principaux fournisseurs avec mise en place de critères de sécurité",
+          priority: "Critique" as const,
+          estimatedHours: 40,
+          owner: "Achats + RSSI",
+          budget: 10000
+        },
+        {
+          action: "Intégrer des clauses de cybersécurité dans les contrats fournisseurs",
+          description: "Révision des contrats avec intégration d'exigences de sécurité et de notification d'incidents",
+          priority: "Haute" as const,
+          estimatedHours: 24,
+          owner: "Juridique + RSSI",
+          budget: 5000
+        },
+        {
+          action: "Surveiller en continu les risques de la chaîne d'approvisionnement",
+          description: "Mise en place d'outils de surveillance des fournisseurs et veille sur les menaces supply chain",
+          priority: "Haute" as const,
+          estimatedHours: 30,
+          owner: "RSSI",
+          budget: 8000
+        }
+      ]
+    };
+    
+    // Ajouter les actions spécifiques pour la catégorie
+    const specificActions = categoryActions[category as keyof typeof categoryActions] || [];
+    specificActions.forEach((actionData, index) => {
       actions.push({
-        id: `specific-${response.id}`,
-        title: `Action ciblée: ${response.question.substring(0, 50)}...`,
-        description: `Correction spécifique basée sur la réponse: "${response.answer}". Score: ${scorePercent}%`,
+        id: `${category.toLowerCase().replace(/\s+/g, '-')}-${index + 1}`,
+        title: actionData.action.substring(0, 60) + "...",
+        action: actionData.action,
+        description: actionData.description,
         category: category,
-        priority: priority,
+        priority: actionData.priority,
         status: 'Non démarré',
         progress: 0,
-        dueDate: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(),
-        owner: 'Responsable métier',
-        estimatedHours: 16,
-        businessImpact: `Correction directe d'une vulnérabilité identifiée`,
-        budget: 2000
+        dueDate: new Date(Date.now() + (30 + index * 15) * 24 * 60 * 60 * 1000).toISOString(),
+        owner: actionData.owner,
+        estimatedHours: actionData.estimatedHours,
+        businessImpact: `Amélioration de la sécurité ${category}`,
+        budget: actionData.budget
       });
-      
-      // Action de formation/sensibilisation associée
-      if ((response.score || 0) < 2.5) {
-        actions.push({
-          id: `training-${response.id}`,
-          title: `Formation spécifique - ${response.question.substring(0, 40)}...`,
-          description: `Formation du personnel sur les points faibles identifiés`,
-          category: category,
-          priority: 'Moyenne',
-          status: 'Non démarré',
-          progress: 0,
-          dueDate: new Date(Date.now() + 75 * 24 * 60 * 60 * 1000).toISOString(),
-          owner: 'RH + RSSI',
-          estimatedHours: 8,
-          businessImpact: `Amélioration des compétences sur un point critique`,
-          budget: 1500
-        });
-      }
-      
-      // Action de contrôle/audit pour les scores très faibles
-      if ((response.score || 0) < 2) {
-        actions.push({
-          id: `audit-${response.id}`,
-          title: `Contrôle renforcé - ${response.question.substring(0, 40)}...`,
-          description: `Mise en place de contrôles réguliers pour surveiller l'amélioration`,
-          category: category,
-          priority: 'Haute',
-          status: 'Non démarré',
-          progress: 0,
-          dueDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
-          owner: 'RSSI',
-          estimatedHours: 12,
-          businessImpact: `Surveillance continue d'un point critique`,
-          budget: 1000
-        });
-      }
     });
+    
+    // Actions supplémentaires basées sur les réponses faibles (si pas assez d'actions spécifiques)
+    if (specificActions.length < 2 && lowScoreResponses.length > 0) {
+      lowScoreResponses.slice(0, 2).forEach((response: any, index: number) => {
+        const scorePercent = Math.round(((response.score || 0) / 5) * 100);
+        const priority = (response.score || 0) < 1.5 ? 'Critique' : 
+                        (response.score || 0) < 2.5 ? 'Haute' : 'Moyenne';
+        
+        actions.push({
+          id: `${category.toLowerCase()}-response-${index + 1}`,
+          title: `Amélioration ${category} - Action complémentaire`,
+          action: `Améliorer les pratiques ${category} suite aux résultats d'audit`,
+          description: `Action d'amélioration basée sur l'évaluation: Score actuel ${scorePercent}%`,
+          category: category,
+          priority: priority,
+          status: 'Non démarré',
+          progress: 0,
+          dueDate: new Date(Date.now() + (60 + index * 15) * 24 * 60 * 60 * 1000).toISOString(),
+          owner: 'Responsable métier',
+          estimatedHours: 20,
+          businessImpact: `Correction des lacunes identifiées en ${category}`,
+          budget: 3000
+        });
+      });
+    }
     
     // Actions supplémentaires pour les catégories avec beaucoup de réponses faibles
     if (lowScoreResponses.length >= 3) {
       actions.push({
         id: `comprehensive-${category.toLowerCase().replace(/\s+/g, '-')}`,
         title: `Plan complet d'amélioration - ${category}`,
+        action: `Élaborer et exécuter un plan complet d'amélioration pour ${category}`,
         description: `Plan d'amélioration global pour ${category} suite aux multiples lacunes identifiées`,
         category: category,
         priority: 'Critique',
@@ -233,6 +453,7 @@ function generateActionsFromResponses(responses: any[]): ActionPlan[] {
       actions.push({
         id: 'excellence-maintenance',
         title: 'Maintien de l\'excellence sécuritaire',
+        action: 'Maintenir le niveau d\'excellence sécuritaire atteint',
         description: 'Processus de maintien du haut niveau de sécurité atteint',
         category: 'Gouvernance',
         priority: 'Moyenne',
@@ -248,6 +469,7 @@ function generateActionsFromResponses(responses: any[]): ActionPlan[] {
       actions.push({
         id: 'excellence-innovation',
         title: 'Innovation en cybersécurité',
+        action: 'Mettre en place une veille et des innovations en cybersécurité',
         description: 'Veille et mise en place de nouvelles technologies de sécurité',
         category: 'Technique',
         priority: 'Faible',

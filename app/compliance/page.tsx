@@ -139,11 +139,25 @@ const complianceModules = [
 
   const managementTools = [
     {
-      title: 'Feuille de Route',
-      description: 'Planification stratégique et priorisation des initiatives de conformité réglementaire.',
-      icon: <MapPin className="h-6 w-6" />,
-      href: '/compliance/roadmap',
-      features: ['Timeline de mise en œuvre', 'Priorisation des risques', 'Allocation des ressources']
+      title: 'Dashboard de Conformité',
+      description: 'Suivi en temps réel de votre posture de conformité avec KPIs et indicateurs avancés.',
+      icon: <TrendingUp className="h-6 w-6" />,
+      href: '/compliance/dashboard',
+      features: ['KPIs temps réel', 'Alertes personnalisées', 'Rapports automatisés']
+    },
+    {
+      title: 'Templates & Modèles',
+      description: 'Bibliothèque de templates professionnels pour accélérer votre mise en conformité.',
+      icon: <FileText className="h-6 w-6" />,
+      href: '/compliance/templates',
+      features: ['12+ templates prêts', 'Multi-formats', 'Mise à jour régulière']
+    },
+    {
+      title: 'Alertes Réglementaires',
+      description: 'Veille automatisée des évolutions législatives et réglementaires en temps réel.',
+      icon: <AlertTriangle className="h-6 w-6" />,
+      href: '/compliance/alertes',
+      features: ['Veille 24/7', 'Notifications personnalisées', 'Analyse d\'impact']
     },
     {
       title: 'Plans d\'Action',
@@ -209,20 +223,20 @@ const complianceModules = [
           </Card>
           <Card className="text-center">
             <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-green-600">4+</div>
-              <div className="text-sm text-gray-600">Ressources spécialisées</div>
+              <div className="text-2xl font-bold text-green-600">8+</div>
+              <div className="text-sm text-gray-600">Modules intégrés</div>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-orange-600">+50</div>
-              <div className="text-sm text-gray-600">Définitions glossaire</div>
+              <div className="text-2xl font-bold text-orange-600">12+</div>
+              <div className="text-sm text-gray-600">Templates téléchargeables</div>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-purple-600">+20</div>
-              <div className="text-sm text-gray-600">Questions FAQ</div>
+              <div className="text-2xl font-bold text-purple-600">100+</div>
+              <div className="text-sm text-gray-600">Ressources expertes</div>
             </CardContent>
           </Card>
         </div>
