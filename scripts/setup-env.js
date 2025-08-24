@@ -23,7 +23,8 @@ const envPath = path.join(process.cwd(), '.env');
 // Configuration selon la branche
 switch (currentBranch) {
   case 'dev':
-    console.log('📁 Configuration pour la branche DEV (SQLite locale)');
+  case 'feature/dashboard-enhanced':
+    console.log(`📁 Configuration pour la branche ${currentBranch.toUpperCase()} (SQLite locale)`);
     
     // Copie du fichier .env.development
     const devEnvPath = path.join(process.cwd(), '.env.development');
@@ -72,7 +73,7 @@ switch (currentBranch) {
     
   default:
     console.error(`⚠️  Branche non reconnue: ${currentBranch}`);
-    console.error('Branches supportées: "dev" (SQLite) ou "master" (PostgreSQL)');
+    console.error('Branches supportées: "dev", "feature/*" (SQLite) ou "master" (PostgreSQL)');
     process.exit(1);
 }
 
