@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/react';
+import { getServerSession } from 'next-auth';
 import { getDashboardKPIs } from '@/lib/dashboard/data';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
