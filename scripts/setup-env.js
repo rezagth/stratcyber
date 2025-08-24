@@ -23,7 +23,6 @@ const envPath = path.join(process.cwd(), '.env');
 // Configuration selon la branche
 switch (currentBranch) {
   case 'dev':
-  case 'feature/dashboard-enhanced':
     console.log(`📁 Configuration pour la branche ${currentBranch.toUpperCase()} (SQLite locale)`);
     
     // Copie du fichier .env.development
@@ -45,6 +44,30 @@ switch (currentBranch) {
     }
     
     console.log('🗃️  Base de données: SQLite locale (./dev.db)');
+    break;
+
+  case 'feature/dashboard-enhanced':
+    console.log(`📁 Configuration pour la branche ${currentBranch.toUpperCase()} (PostgreSQL Neon)`);
+    
+    // Copie du fichier .env.production pour utiliser PostgreSQL
+    const featureEnvPath = path.join(process.cwd(), '.env.production');
+    if (fs.existsSync(featureEnvPath)) {
+      fs.copyFileSync(featureEnvPath, envPath);
+      console.log('✅ Fichier .env.production copié vers .env');
+    } else {
+      console.error('❌ Fichier .env.production non trouvé');
+      process.exit(1);
+    }
+    
+    // Configuration du schema Prisma pour PostgreSQL
+    if (fs.existsSync(schemaPath)) {
+      let schemaContent = fs.readFileSync(schemaPath, 'utf8');
+      schemaContent = schemaContent.replace(/provider = "sqlite"/g, 'provider = "postgresql"');
+      fs.writeFileSync(schemaPath, schemaContent);
+      console.log('✅ Schema Prisma configuré pour PostgreSQL');
+    }
+    
+    console.log('🐘 Base de données: PostgreSQL sur Neon');
     break;
     
   case 'master':
