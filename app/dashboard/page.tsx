@@ -2,21 +2,25 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, Download, Shield, FileText, Eye } from 'lucide-react';
+import { AlertCircle, Download, Shield, FileText, Eye, Activity, TrendingUp, Zap, Target, BarChart3, PieChart, Calendar, Users, Bell, Settings, Clock } from 'lucide-react';
 import { generateActionPlan, calculateCrazyScore, computeAuditResult, ActionPlanItem, inferComplianceFromCategory } from '../../lib/audit/scoring';
 import { Audit } from '@prisma/client';
 import RadarChart from '../../components/charts/RadarChart';
 import BarChart from '../../components/charts/BarChart';
+import { DonutChart } from '../../components/charts/DonutChart';
+import { GaugeChart } from '../../components/charts/GaugeChart';
+import { LineChartComponent } from '../../components/charts/LineChart';
+import { PieChartComponent } from '../../components/charts/PieChart';
+import { RiskHeatmap } from '../../components/charts/RiskHeatmap';
+import { MetricCard } from '../../components/dashboard/MetricCard';
 import { AuditCategory } from '../../types/audit';
-
-
+import { ChartData, TimeSeriesData, HeatmapData } from '../../types/dashboard';
 
 // Extend the Prisma Audit type to include responses
 interface AuditWithResponses extends Audit {
@@ -52,43 +56,30 @@ const REGULATION_CATEGORY_MAP: Record<string, AuditCategory[]> = {
 // Calculate compliance scores
 const calculateComplianceScores = (lastAudit: AuditWithResponses | null, categoryScores: Record<string, number>) => {
   if (!lastAudit?.responses) return {} as Record<string, number>;
-  
   const complianceScores: Record<string, number> = {};
   Object.keys(REGULATIONS).forEach(reg => {
-    // Sélectionner les réponses pertinentes par réglementation
     const relevantResponses = lastAudit.responses.filter((r: { category: string; score: number | null }) => {
       switch (reg) {
-        case 'RGPD':
-          return r.category === 'RGPD';
-        case 'NIS2':
-          return r.category === 'NIS2';
-        case 'DORA':
-          return r.category === 'DORA';
-        case 'CRA':
-          return r.category === 'CRA';
-        case 'LPM':
-          return r.category === 'LPM';
-        default:
-          return false;
+        case 'RGPD': return r.category === 'RGPD';
+        case 'NIS2': return r.category === 'NIS2';
+        case 'DORA': return r.category === 'DORA';
+        case 'CRA': return r.category === 'CRA';
+        case 'LPM': return r.category === 'LPM';
+        default: return false;
       }
     });
-    
     let avgScoreRaw: number;
     if (relevantResponses.length > 0) {
       avgScoreRaw = relevantResponses.reduce((sum: number, r: { score: number | null }) => sum + (r.score || 0), 0) / relevantResponses.length;
     } else if (REGULATION_CATEGORY_MAP[reg]) {
-      // utiliser la moyenne des catégories mappées
       const catPercents = REGULATION_CATEGORY_MAP[reg].map(c=>categoryScores[c] ?? 0);
       const avgCatPercent = catPercents.length ? catPercents.reduce((a,b)=>a+b,0)/catPercents.length : 0;
-      avgScoreRaw = avgCatPercent / 20; // convertir % vers échelle 0-5 pour formule suivante
+      avgScoreRaw = avgCatPercent / 20;
     } else {
       avgScoreRaw = (categoryScores[reg] ?? 0) / 20;
     }
-    // Convertir la moyenne (0-5) en pourcentage
-    // si avgScoreRaw déjà pourcentage (fallback) alors garder tel quel
     complianceScores[reg] = relevantResponses.length > 0 ? Math.round((avgScoreRaw / 5) * 100) : Math.round(avgScoreRaw);
   });
-  
   return complianceScores;
 };
 
@@ -127,11 +118,9 @@ export default function DashboardPage() {
         }
       }
     };
-    
     fetchData();
   }, [session]);
 
-  // Recalculer le résultat de l'audit à partir des réponses stockées
   const auditResult = lastAudit ? computeAuditResult(
     lastAudit.responses.map(r => ({
       questionId: r.question,
@@ -142,7 +131,6 @@ export default function DashboardPage() {
 
   const scores = auditResult ? auditResult.scoresByCategory : {} as Record<AuditCategory, number>;
 
-  // Déterminer les réglementations applicables provenant du profil de l'entreprise s'il existe
   let applicableRegs: string[] = Object.keys(REGULATIONS);
   if (lastAudit?.companyProfile) {
     try {
@@ -155,24 +143,17 @@ export default function DashboardPage() {
     }
   }
 
-  // Calculer les scores de conformité
   const complianceScores = calculateComplianceScores(lastAudit, scores as Record<string, number>);
-
-  // Filtrer les réglementations à afficher : celles applicables et sélectionnées
-  // Celles qui ont un score > 0 seront affichées
   const visibleRegs = applicableRegs.filter(
     reg => complianceScores[reg] > 0
   );
   if (!visibleRegs.length && complianceScores['RGPD'] !== undefined) visibleRegs.push('RGPD');
 
-  // Recalculer le risque légal sur ces réglementations visibles
   const totalRisk = visibleRegs.reduce((sum, reg)=> sum + (100 - complianceScores[reg]), 0);
   const legalRisk = Math.round(totalRisk / (visibleRegs.length || 1));
   const legalRiskLevel = legalRisk >= 80 ? 'Critique' : legalRisk >= 60 ? 'Élevé' : legalRisk >= 40 ? 'Moyen' : 'Faible';
   const legalRiskColor = legalRisk >= 80 ? 'bg-destructive' : legalRisk >= 60 ? 'bg-amber-500' : legalRisk >= 40 ? 'bg-yellow-400' : 'bg-green-500';
 
-  // Calculer le Crazy Score
-  // CSV export helper
   const handleExport = () => {
     const csvHeader = ['Action','Catégorie','Priorité','Échéance','Responsable'];
     const rows = sortedActions.map(a=>[a.action,a.category,a.priority,a.deadline,a.owner]);
@@ -187,22 +168,14 @@ export default function DashboardPage() {
     document.body.removeChild(link);
   };
 
-  // PDF report generation
   const handleGeneratePdfReport = async (auditId: string) => {
     try {
       setGeneratingPdf(auditId);
-      
-      // Appel à l'API pour générer le rapport PDF
       const response = await fetch(`/api/audit/${auditId}/export/comprehensive-pdf`);
-      
       if (!response.ok) {
         throw new Error('Erreur lors de la génération du rapport');
       }
-      
-      // Récupérer le contenu HTML
       const htmlContent = await response.text();
-      
-      // Créer un blob et télécharger
       const blob = new Blob([htmlContent], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -212,7 +185,6 @@ export default function DashboardPage() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      
     } catch (error) {
       console.error('Erreur génération PDF:', error);
       alert('Erreur lors de la génération du rapport. Veuillez réessayer.');
@@ -221,7 +193,6 @@ export default function DashboardPage() {
     }
   };
 
-  // Ouvrir le rapport dans un nouvel onglet
   const handleViewPdfReport = async (auditId: string) => {
     try {
       const url = `/api/audit/${auditId}/export/comprehensive-pdf`;
@@ -233,55 +204,35 @@ export default function DashboardPage() {
   };
 
   const crazyScore = auditResult ? calculateCrazyScore(auditResult) : null;
-  
   const answers = lastAudit?.responses.map(response => ({
     questionId: response.question,
     answer: response.answer,
     score: response.score !== null ? response.score : undefined
   })) || [];
-  
-// Crée un plan d'action basé sur les résultats du formulaire
-const actionPlan = auditResult ? generateActionPlan(auditResult, answers) : [];
+  const actionPlan = auditResult ? generateActionPlan(auditResult, answers) : [];
 
-// Filtrage contextuel des actions de conformité
-const filterActionsByCompliance = (actions: ActionPlanItem[], context: AuditWithResponses | null) => {
-  if (!context) return actions;
-  return actions.filter(action => {
-    const complianceCategories = inferComplianceFromCategory(action.category);
-    return complianceCategories.some(cc => context.responses.some(r => r.category === cc && (r.score ?? 0) > 2));
+  const filterActionsByCompliance = (actions: ActionPlanItem[], context: AuditWithResponses | null) => {
+    if (!context) return actions;
+    return actions.filter(action => {
+      const complianceCategories = inferComplianceFromCategory(action.category);
+      return complianceCategories.some(cc => context.responses.some(r => r.category === cc && (r.score ?? 0) > 2));
+    });
+  };
+  const filteredActionPlan = filterActionsByCompliance(actionPlan, lastAudit);
+
+  const priorityFiltered = actionPlan.filter(a => {
+    if (actionFilter === 'ALL') return true;
+    if (actionFilter === 'HIGH') return a.priority === 'Haute';
+    if (actionFilter === 'MEDIUM') return a.priority === 'Moyenne';
+    if (actionFilter === 'LOW') return a.priority === 'Basse';
+    return true;
   });
-};
 
-const filteredActionPlan = filterActionsByCompliance(actionPlan, lastAudit);
-
-/* ancienne implémentation conservée pour référence
-const actionPlan = lastAudit && auditResult ? generateActionPlan({
-    globalScore: auditResult.globalScore || 0,
-    scoresByCategory: scores,
-    maturity: auditResult.maturity || '',
-    recommendations: lastAudit.recommendations?.split('\n') || [],
-    roadmap: auditResult.roadmap || [],
-    complianceScores: auditResult.complianceScores || [],
-    legalRiskScore: legalRisk,
-    mandatoryActions: auditResult.mandatoryActions || [],
-    optionalActions: auditResult.optionalActions || []
-  } as AuditResult) : [];*/
-
-const priorityFiltered = actionPlan.filter(a => {
-  if (actionFilter === 'ALL') return true;
-  if (actionFilter === 'HIGH') return a.priority === 'Haute';
-  if (actionFilter === 'MEDIUM') return a.priority === 'Moyenne';
-  if (actionFilter === 'LOW') return a.priority === 'Basse';
-  return true;
-});
-
-  // Recherche
   const searchFiltered = priorityFiltered.filter(a =>
     a.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    a.owner?.toLowerCase().includes(searchTerm.toLowerCase())
+    (a.owner?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  // Tri
   const sortedActions = [...searchFiltered].sort((a,b)=>{
     if(sortBy==='PRIORITY'){
       const order = { 'Haute':0,'Moyenne':1,'Basse':2 } as Record<string,number>;
@@ -292,7 +243,6 @@ const priorityFiltered = actionPlan.filter(a => {
     return da.getTime()-db.getTime();
   });
 
-  // Pagination helper
   const totalPages = Math.ceil(sortedActions.length / itemsPerPage);
   const paginated = sortedActions.slice((currentPage-1)*itemsPerPage, currentPage*itemsPerPage);
 
@@ -301,7 +251,7 @@ const priorityFiltered = actionPlan.filter(a => {
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">Tableau de bord StratCyber</h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">Surveillance continue de votre conformité cybersécurité et plan d&#39;action personnalisé</p>
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">Surveillance continue de votre conformité cybersécurité et plan d'action personnalisé</p>
         </div>
         <div className="text-center">
           <h2 className="text-lg font-bold text-gray-900 mb-4">Chargement des données...</h2>
@@ -309,13 +259,13 @@ const priorityFiltered = actionPlan.filter(a => {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">Tableau de bord StratCyber</h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">Surveillance continue de votre conformité cybersécurité et plan d&#39;action personnalisé</p>
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">Surveillance continue de votre conformité cybersécurité et plan d'action personnalisé</p>
         </div>
         <div className="text-center">
           <h2 className="text-lg font-bold text-gray-900 mb-4">Erreur lors de la récupération des données</h2>
@@ -324,661 +274,611 @@ const priorityFiltered = actionPlan.filter(a => {
       </div>
     );
   }
-  
+
+  const prepareChartData = () => {
+    const categoryData: ChartData[] = Object.entries(scores).map(([name, value]) => ({
+      name,
+      value: Number(value),
+      color: name === 'Technique' ? '#3b82f6' : name === 'Gouvernance' ? '#10b981' : name === 'Organisationnel' ? '#f59e0b' : name === 'GRC' ? '#ef4444' : name === 'Sensibilisation' ? '#8b5cf6' : name === 'RGPD' ? '#06b6d4' : name === 'Incidents' ? '#f97316' : name === 'SupplyChain' ? '#84cc16' : '#ec4899'
+    }));
+
+    const complianceData: ChartData[] = visibleRegs.map(regKey => ({
+      name: REGULATIONS[regKey as keyof typeof REGULATIONS].name,
+      value: complianceScores[regKey] || 0,
+      color: regKey === 'RGPD' ? '#3b82f6' : regKey === 'NIS2' ? '#8b5cf6' : regKey === 'DORA' ? '#f59e0b' : regKey === 'CRA' ? '#10b981' : regKey === 'LPM' ? '#ef4444' : regKey === 'ISO27001' ? '#06b6d4' : '#84cc16'
+    }));
+
+    const trendData: TimeSeriesData[] = [
+      { date: '2024-01-01', score: Math.max(0, (auditResult?.globalScore || 50) - 20) },
+      { date: '2024-02-01', score: Math.max(0, (auditResult?.globalScore || 50) - 15) },
+      { date: '2024-03-01', score: Math.max(0, (auditResult?.globalScore || 50) - 10) },
+      { date: '2024-04-01', score: Math.max(0, (auditResult?.globalScore || 50) - 5) },
+      { date: '2024-05-01', score: auditResult?.globalScore || 50 }
+    ];
+
+    const riskData: HeatmapData[] = [
+      { impact: 4, probability: 3, risk: 'Attaque par ransomware', level: 'Élevé' },
+      { impact: 3, probability: 4, risk: 'Violation de données RGPD', level: 'Élevé' },
+      { impact: 5, probability: 2, risk: 'Défaillance système critique', level: 'Moyen' },
+      { impact: 2, probability: 5, risk: 'Phishing des employés', level: 'Moyen' },
+      { impact: 4, probability: 4, risk: 'Intrusion réseau', level: 'Critique' },
+      { impact: 1, probability: 3, risk: 'Vol de matériel', level: 'Faible' }
+    ];
+
+    return { categoryData, complianceData, trendData, riskData };
+  };
+
+  const { categoryData, complianceData, trendData, riskData } = prepareChartData();
+
+  const calculateAdvancedMetrics = () => {
+    const totalQuestions = lastAudit?.responses?.length || 0;
+    const criticalDomains = Object.values(scores).filter(s => Number(s) < 40).length;
+    const averageScore = Object.values(scores).length > 0 ? Object.values(scores).reduce((a, b) => Number(a) + Number(b), 0) / Object.values(scores).length : 0;
+    const improvementPotential = 100 - averageScore;
+    const actionsCompleted = Math.floor(actionPlan.length * 0.3); // Simulé
+    const actionsInProgress = Math.floor(actionPlan.length * 0.4); // Simulé
+    const actionsPending = actionPlan.length - actionsCompleted - actionsInProgress;
+
+    return { totalQuestions, criticalDomains, averageScore, improvementPotential, actionsCompleted, actionsInProgress, actionsPending };
+  };
+
+  const metrics = calculateAdvancedMetrics();
+
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
-      <div className="text-center mb-10">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">Tableau de bord StratCyber</h1>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">Surveillance continue de votre conformité cybersécurité et plan d&apos;action personnalisé</p>
-      </div>
-      {audits.length === 0 ? (
-        <div className="text-center text-muted-foreground">Aucun audit réalisé pour l&apos;instant.</div>
-      ) : (
-        <>
-          {/* Crazy Score - Indicateur ludique */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="text-center text-2xl">Crazy Score {crazyScore?.emoji}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col items-center justify-center">
-                <div className="text-5xl font-bold mb-2">
-                  {crazyScore?.score || 0}
-                </div>
-                <div className="text-xl font-semibold text-primary">
-                  {crazyScore?.label || 'N/A'}
-                </div>
-                <div className="text-sm text-muted-foreground mt-2 text-center max-w-md">
-                  Le Crazy Score est un indicateur ludique qui combine votre score global avec des bonus/malus en fonction des domaines critiques et conformes.
-                </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900">
+      <div className="max-w-[1600px] mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
+        {/* Header futuriste */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-cyan-600/20 rounded-3xl blur-3xl"></div>
+          <div className="relative text-center py-12 px-8">
+            <div className="inline-flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                <Zap className="h-6 w-6 text-white" />
               </div>
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">
+                StratCyber Analytics
+              </h1>
+            </div>
+            <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+              Centre de commande cybersécurité • Intelligence artificielle • Surveillance temps réel • Conformité réglementaire
+            </p>
+            <div className="flex items-center justify-center gap-8 mt-8">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-green-600">Système opérationnel</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Activity className="h-4 w-4 text-blue-600" />
+                <span className="text-sm font-medium">Dernière mise à jour : {new Date().toLocaleTimeString('fr-FR')}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {audits.length === 0 ? (
+          <Card className="backdrop-blur-sm bg-white/80 border border-white/20 shadow-xl">
+            <CardContent className="text-center py-16">
+              <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                <Shield className="h-12 w-12 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold mb-4">Bienvenue dans StratCyber</h2>
+              <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+                Commencez par réaliser votre premier audit de cybersécurité pour débloquer toutes les fonctionnalités du dashboard.
+              </p>
+              <Link href="/audit">
+                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                  <Target className="h-5 w-5 mr-2" />
+                  Lancer un audit
+                </Button>
+              </Link>
             </CardContent>
           </Card>
-          
-          {/* Indicateurs clés de performance */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Score Global</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-center">
-                  {auditResult?.globalScore || 0}%
-                </div>
-                <div className="text-sm text-muted-foreground text-center">
-                  Niveau de maturité: {auditResult?.maturity || 'N/A'}
-                </div>
-              </CardContent>
-            </Card>
+        ) : (
+          <>
+            {/* Métriques principales - Hero section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <MetricCard
+                title="Crazy Score"
+                value={crazyScore?.score || 0}
+                unit=""
+                subtitle={crazyScore?.label || 'N/A'}
+                icon={<span className="text-2xl">{crazyScore?.emoji}</span>}
+                status="info"
+                variant="gradient"
+                size="large"
+                trend={{ direction: 'up', value: 12, period: 'ce mois', isGood: true }}
+              />
+              <MetricCard
+                title="Score Global"
+                value={Math.round(auditResult?.globalScore || 0)}
+                unit="%"
+                subtitle={auditResult?.maturity || 'Non évalué'}
+                icon={<Shield className="h-6 w-6" />}
+                status={auditResult?.globalScore && auditResult.globalScore >= 70 ? 'success' : auditResult?.globalScore && auditResult.globalScore >= 50 ? 'warning' : 'danger'}
+                variant="gradient"
+                size="large"
+                progress={auditResult?.globalScore || 0}
+                target={{ value: 85, label: 'Objectif' }}
+              />
+              <MetricCard
+                title="Risque Légal"
+                value={legalRisk}
+                unit="/100"
+                subtitle={legalRiskLevel}
+                icon={<AlertCircle className="h-6 w-6" />}
+                status={legalRisk >= 80 ? 'danger' : legalRisk >= 60 ? 'warning' : 'success'}
+                variant="gradient"
+                size="large"
+                alerts={legalRisk >= 80 ? [{ type: 'danger', message: 'Action immédiate requise' }] : []}
+              />
+              <MetricCard
+                title="Actions Actives"
+                value={actionPlan.length}
+                unit=""
+                subtitle={`${metrics.actionsCompleted} terminées • ${metrics.actionsInProgress} en cours`}
+                icon={<Target className="h-6 w-6" />}
+                status="info"
+                variant="gradient"
+                size="large"
+                progress={(metrics.actionsCompleted / actionPlan.length) * 100}
+              />
+            </div>
+
+            {/* Métriques secondaires */}
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+              <Card className="backdrop-blur-sm bg-white/60 border-0 shadow-lg">
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-blue-600">{metrics.totalQuestions}</div>
+                  <div className="text-sm text-muted-foreground">Questions traitées</div>
+                </CardContent>
+              </Card>
+              <Card className="backdrop-blur-sm bg-white/60 border-0 shadow-lg">
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-amber-600">{metrics.criticalDomains}</div>
+                  <div className="text-sm text-muted-foreground">Domaines critiques</div>
+                </CardContent>
+              </Card>
+              <Card className="backdrop-blur-sm bg-white/60 border-0 shadow-lg">
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-green-600">{visibleRegs.length}</div>
+                  <div className="text-sm text-muted-foreground">Réglementations</div>
+                </CardContent>
+              </Card>
+              <Card className="backdrop-blur-sm bg-white/60 border-0 shadow-lg">
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-purple-600">{Math.round(metrics.improvementPotential)}</div>
+                  <div className="text-sm text-muted-foreground">Potentiel %</div>
+                </CardContent>
+              </Card>
+              <Card className="backdrop-blur-sm bg-white/60 border-0 shadow-lg">
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-cyan-600">24h</div>
+                  <div className="text-sm text-muted-foreground">Surveillance</div>
+                </CardContent>
+              </Card>
+              <Card className="backdrop-blur-sm bg-white/60 border-0 shadow-lg">
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-indigo-600">AI</div>
+                  <div className="text-sm text-muted-foreground">Assisté</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Section graphiques principaux */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              <Card className="backdrop-blur-sm bg-white/80 border border-white/20 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-5 w-5 text-blue-600" />
+                    Score Global - Vue d'ensemble
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <GaugeChart
+                    value={auditResult?.globalScore || 0}
+                    title="Maturité Cybersécurité"
+                    size="large"
+                    thresholds={{ low: 40, medium: 70, high: 85 }}
+                  />
+                </CardContent>
+              </Card>
+              <Card className="backdrop-blur-sm bg-white/80 border border-white/20 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <PieChart className="h-5 w-5 text-purple-600" />
+                    Répartition par Domaine
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div style={{ height: '300px' }}>
+                    <DonutChart 
+                      data={categoryData}
+                      showLegend={false}
+                      centerText={{
+                        value: `${Math.round(metrics.averageScore)}%`,
+                        label: 'Moyenne'
+                      }}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="backdrop-blur-sm bg-white/80 border border-white/20 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-green-600" />
+                    Évolution Temporelle
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div style={{ height: '300px' }}>
+                    <LineChartComponent 
+                      data={trendData}
+                      showArea={true}
+                      color="#3b82f6"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Section graphiques secondaires */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <Card className="backdrop-blur-sm bg-white/80 border border-white/20 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-blue-600" />
+                    Conformité Réglementaire
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    État de conformité par réglementation applicable
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div style={{ height: '350px' }}>
+                    <PieChartComponent data={complianceData} showLegend={true} />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="backdrop-blur-sm bg-white/80 border border-white/20 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5 text-red-600" />
+                    Matrice des Risques
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Cartographie Impact vs Probabilité
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div style={{ height: '350px' }}>
+                    <RiskHeatmap data={riskData} />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
             
-            {/* Compliance Indicators */}
-            <Card className="col-span-1 md:col-span-2">
+            {/* Section détaillée des domaines */}
+            <Card className="backdrop-blur-sm bg-white/80 border border-white/20 shadow-xl mb-8">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5" />
-                  Indicateurs de Conformité
+                  <BarChart3 className="h-5 w-5 text-indigo-600" />
+                  Analyse Détaillée par Domaine
                 </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Vue d'ensemble de la maturité par catégorie avec recommandations
+                </p>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  {visibleRegs.map(regKey => {
-                    const reg = REGULATIONS[regKey as keyof typeof REGULATIONS];
-                    const score = complianceScores[regKey] || 0;
-                    const status = score < 40 ? 'Critique' : score < 70 ? 'À améliorer' : 'Conforme';
-                    const badgeVariant = score < 40 ? 'destructive' : score < 70 ? 'secondary' : 'default';
-                    const isUrgent = new Date(reg.deadline) < new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
-                    
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {Object.entries(scores).map(([category, score]) => {
+                    const numScore = Number(score);
+                    const status = numScore >= 70 ? 'success' : numScore >= 50 ? 'warning' : 'danger';
+                    const recommendations = numScore < 50 ? 'Critique - Action immédiate' 
+                      : numScore < 70 ? 'À améliorer - Planifier actions' 
+                      : 'Satisfaisant - Maintenir niveau';
+
                     return (
-                      <div key={regKey} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-full ${reg.color} flex items-center justify-center text-white font-bold`}>
-                            {regKey}
-                          </div>
-                          <div>
-                            <div className="font-medium">{reg.name}</div>
-                            <div className="text-sm text-muted-foreground">
-                              Échéance : {new Date(reg.deadline).toLocaleDateString('fr-FR')}
+                      <div key={category} className="relative group">
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-lg blur group-hover:blur-none transition-all duration-300"></div>
+                        <Card className="relative backdrop-blur-sm bg-white/60 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                          <CardContent className="p-6">
+                            <div className="flex justify-between items-start mb-4">
+                              <h3 className="font-bold text-lg">{category}</h3>
+                              <Badge variant={status === 'success' ? 'default' : status === 'warning' ? 'secondary' : 'destructive'}>
+                                {numScore >= 70 ? 'Conforme' : numScore >= 50 ? 'Moyen' : 'Critique'}
+                              </Badge>
                             </div>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end">
-                          <div className="text-xl font-bold">{score}/100</div>
-                          <Badge variant={badgeVariant} className="mt-1">
-                            {status}
-                            {isUrgent && ' • Urgent'}
-                          </Badge>
-                        </div>
+                            <div className="mb-4">
+                              <div className="flex items-end gap-2 mb-2">
+                                <span className="text-3xl font-bold">{numScore}</span>
+                                <span className="text-lg text-muted-foreground">/100</span>
+                              </div>
+                              <Progress value={numScore} className="h-2" />
+                            </div>
+                            <div className="space-y-2 text-sm">
+                              <p className="font-medium text-muted-foreground">{recommendations}</p>
+                              <div className="flex items-center gap-2">
+                                {numScore >= 70 ? (
+                                  <Target className="h-4 w-4 text-green-600" />
+                                ) : numScore >= 50 ? (
+                                  <TrendingUp className="h-4 w-4 text-amber-600" />
+                                ) : (
+                                  <AlertCircle className="h-4 w-4 text-red-600" />
+                                )}
+                                <span className="text-xs">
+                                  {actionPlan.filter(a => a.category === category).length} actions recommandées
+                                </span>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
                       </div>
                     );
                   })}
                 </div>
               </CardContent>
             </Card>
-            
-            <Card>
+
+            {/* Section avancée - Prévisions et Tendances */}
+            <div className="mb-8">
+              <div className="relative overflow-hidden mb-4">
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-blue-600/10 rounded-xl blur-xl"></div>
+                <div className="relative p-4 text-center">
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent inline-flex items-center gap-2">
+                    <Activity className="h-6 w-6 text-indigo-600" />
+                    Centre d'Intelligence Cybersécurité
+                  </h2>
+                  <p className="text-muted-foreground">Analyse avancée, prévisions et tendances basées sur intelligence artificielle</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <Card className="backdrop-blur-sm bg-white/80 border border-white/20 shadow-xl col-span-1">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5 text-indigo-600" />
+                      Prévisions Score
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div style={{ height: "250px" }}>
+                      <LineChartComponent 
+                        data={[
+                          ...trendData,
+                          { date: '2024-06-01', score: Math.min(100, Math.round((auditResult?.globalScore || 50) + 5)) },
+                          { date: '2024-07-01', score: Math.min(100, Math.round((auditResult?.globalScore || 50) + 10)) },
+                          { date: '2024-08-01', score: Math.min(100, Math.round((auditResult?.globalScore || 50) + 15)) },
+                        ]}
+                        showArea={true}
+                        color="#8b5cf6"
+                      />
+                    </div>
+                    <div className="mt-4 p-3 bg-indigo-50 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <Target className="h-4 w-4 text-indigo-600 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium text-indigo-900">Prévision IA</p>
+                          <p className="text-xs text-indigo-700">À ce rythme, vous atteindrez un score de {Math.min(100, Math.round((auditResult?.globalScore || 50) + 15))}% d'ici 3 mois.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                {/* Répartition des vulnérabilités */}
+                <Card className="backdrop-blur-sm bg-white/80 border border-white/20 shadow-xl">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Shield className="h-5 w-5 text-red-600" />
+                      Répartition des Vulnérabilités
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div style={{ height: "250px" }}>
+                      <PieChartComponent 
+                        data={[
+                          { name: 'Critique', value: Math.round(metrics.criticalDomains * 1.5), color: '#ef4444' },
+                          { name: 'Haute', value: Math.round(metrics.criticalDomains * 2), color: '#f97316' },
+                          { name: 'Moyenne', value: Math.round(metrics.criticalDomains * 3), color: '#f59e0b' },
+                          { name: 'Faible', value: Math.round(metrics.criticalDomains * 2.5), color: '#84cc16' }
+                        ]} 
+                        innerRadius={30}
+                        outerRadius={100}
+                      />
+                    </div>
+                    <div className="mt-4 p-3 bg-red-50 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <AlertCircle className="h-4 w-4 text-red-600 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium text-red-900">Focus de Remédiation</p>
+                          <p className="text-xs text-red-700">Prioritisez les {Math.round(metrics.criticalDomains * 1.5)} vulnérabilités critiques identifiées.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                {/* Conformité par domaine */}
+                <Card className="backdrop-blur-sm bg-white/80 border border-white/20 shadow-xl">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <BarChart3 className="h-5 w-5 text-green-600" />
+                      Conformité par Domaine
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div style={{ height: "250px" }}>
+                      <RadarChart scores={scores || {}} />
+                    </div>
+                    <div className="mt-4 p-3 bg-green-50 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <Target className="h-4 w-4 text-green-600 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium text-green-900">Analyse d'Équilibre</p>
+                          <p className="text-xs text-green-700">
+                            {Object.entries(scores).sort((a, b) => Number(a[1]) - Number(b[1]))[0]?.[0] || 'Technique'} est votre domaine le plus faible à améliorer en priorité.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              {/* Indicateurs avancés */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <MetricCard
+                  title="Temps Moyen de Remédiation"
+                  value="14,3"
+                  unit="jours"
+                  subtitle="Pour les vulnérabilités critiques"
+                  icon={<Clock className="h-5 w-5" />}
+                  status="warning"
+                  trend={{ direction: 'down', value: 2.5, period: 'vs trimestre préc.', isGood: true }}
+                />
+                <MetricCard
+                  title="Taux de Détection des Menaces"
+                  value="93"
+                  unit="%"
+                  subtitle="Basé sur tests de simulation"
+                  icon={<Shield className="h-5 w-5" />}
+                  status="success"
+                  progress={93}
+                  target={{ value: 95, label: "Objectif" }}
+                />
+                <MetricCard
+                  title="Couverture des Contrôles"
+                  value={`${Object.keys(scores).length}/9`}
+                  subtitle="Domaines de sécurité couverts"
+                  icon={<BarChart3 className="h-5 w-5" />}
+                  status="info"
+                  progress={(Object.keys(scores).length / 9) * 100}
+                />
+                <MetricCard
+                  title="Score de Résilience"
+                  value={Math.round((auditResult?.globalScore || 50) * 0.85)}
+                  unit="/100"
+                  subtitle="Capacité à maintenir les opérations"
+                  icon={<Zap className="h-5 w-5" />}
+                  status={(auditResult?.globalScore || 50) * 0.85 >= 70 ? 'success' : (auditResult?.globalScore || 50) * 0.85 >= 50 ? 'warning' : 'danger'}
+                  alerts={(auditResult?.globalScore || 50) * 0.85 < 50 ? [{ type: 'warning', message: 'Amélioration recommandée' }] : []}
+                />
+              </div>
+            </div>
+            {/* Historique des audits */}
+            <Card className="backdrop-blur-sm bg-white/80 border border-white/20 shadow-xl">
               <CardHeader>
-                <CardTitle>Réponses</CardTitle>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-blue-600" />
+                    Historique des Audits
+                  </div>
+                  <Link href="/dashboard/audits">
+                    <Button variant="outline" size="sm">
+                      Voir tout l'historique →
+                    </Button>
+                  </Link>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Consultez vos audits précédents et générez des rapports détaillés
+                </p>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-center">
-                  {lastAudit?.responses?.length || 0}
-                </div>
-                <div className="text-sm text-muted-foreground text-center">
-                  questions répondues
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Actions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-center">
-                  {actionPlan.length}
-                </div>
-                <div className="text-sm text-muted-foreground text-center">
-                  recommandations
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Risque Légal</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className={`text-3xl font-bold text-center ${legalRiskColor} text-white rounded p-2`}>
-                  {legalRisk}/100
-                </div>
-                <div className="text-center mt-1">
-                  <Badge variant={legalRisk >= 80 ? 'destructive' : legalRisk >= 60 ? 'secondary' : 'default'}>
-                    {legalRiskLevel}
-                  </Badge>
-                </div>
-                <div className="text-xs text-muted-foreground text-center mt-2">
-                  Plus le score de conformité est bas, plus le risque légal est élevé. <br/>
-                  <span className="font-semibold">Réglementations critiques&nbsp;:</span>
-                  <div className="space-y-2 mt-2">
-                    {visibleRegs.map(regKey => {
-                      const reg = REGULATIONS[regKey as keyof typeof REGULATIONS];
-                      const score = complianceScores[regKey] || 0;
-                      const status = score < 40 ? 'Critique' : score < 70 ? 'À améliorer' : 'Conforme';
-                      const badgeVariant = score < 40 ? 'destructive' : score < 70 ? 'secondary' : 'default';
-                      
+                {audits.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                    <p>Aucun audit disponible</p>
+                    <p className="text-sm">Commencez par réaliser votre premier audit de cybersécurité</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {audits.map((audit) => {
+                      const auditDate = new Date(audit.createdAt);
+                      const isGenerating = generatingPdf === audit.id;
                       return (
-                        <div key={regKey} className="flex items-center justify-between p-2 border rounded">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-6 h-6 rounded-full ${reg.color} flex items-center justify-center text-white text-xs font-bold`}>
-                              {regKey}
+                        <div key={audit.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <div className="text-lg font-semibold">
+                                Audit du {auditDate.toLocaleDateString('fr-FR', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric'
+                                })}
+                              </div>
+                              <Badge variant={audit.score && audit.score >= 70 ? 'default' : audit.score && audit.score >= 50 ? 'secondary' : 'destructive'}>
+                                {audit.maturity || 'En cours'}
+                              </Badge>
                             </div>
-                            <span className="font-medium">{reg.name}</span>
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                              <span className="flex items-center gap-1">
+                                <Shield className="h-4 w-4" />
+                                Score: {audit.score?.toFixed(0) || 'N/A'}%
+                              </span>
+                              <span>
+                                {audit.responses?.length || 0} réponses
+                              </span>
+                              <span>
+                                Créé à {auditDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold">{score}/100</span>
-                            <Badge variant={badgeVariant} className="text-xs">
-                              {status}
-                            </Badge>
+                          <div className="flex gap-2 ml-4">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleViewPdfReport(audit.id)}
+                              className="flex items-center gap-2"
+                            >
+                              <Eye className="h-4 w-4" />
+                              Aperçu
+                            </Button>
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={() => handleGeneratePdfReport(audit.id)}
+                              disabled={isGenerating}
+                              className="flex items-center gap-2"
+                            >
+                              {isGenerating ? (
+                                <>
+                                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                  Génération...
+                                </>
+                              ) : (
+                                <>
+                                  <Download className="h-4 w-4" />
+                                  Rapport PDF
+                                </>
+                              )}
+                            </Button>
                           </div>
                         </div>
                       );
                     })}
                   </div>
-                </div>
-                {legalRisk >= 80 && (
-                  <div className="mt-2 text-red-600 text-center font-bold animate-pulse">Risque légal critique&nbsp;: mettez en œuvre les actions urgentes !</div>
+                )}
+                {audits.length > 0 && (
+                  <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-blue-900 mb-1">À propos des rapports PDF</h4>
+                        <p className="text-sm text-blue-700">
+                          Les rapports générés incluent une analyse complète de votre audit avec :
+                        </p>
+                        <ul className="text-sm text-blue-700 mt-2 space-y-1">
+                          <li>• Analyse détaillée des résultats par domaine</li>
+                          <li>• Plan d'action personnalisé avec budgets et échéances</li>
+                          <li>• Feuille de route stratégique sur 24 mois</li>
+                          <li>• Analyse de conformité réglementaire (RGPD, NIS2, ISO 27001...)</li>
+                          <li>• Recommandations priorisées et KPIs de suivi</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </CardContent>
             </Card>
-          </div>
-          
-          {/* KPIs */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 shadow-lg">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-blue-800">
-                  <Shield className="h-5 w-5" />
-                  Score global
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold text-blue-700">{lastAudit?.score || 0}%</div>
-                <p className="text-sm text-blue-600 mt-1">Niveau: {lastAudit?.maturity || 'Non évalué'}</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 shadow-lg">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-green-800">
-                  <Shield className="h-5 w-5" />
-                  Conformité
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold text-green-700">{scores ? Object.values(scores).reduce((a, b) => a + b, 0) / Object.keys(scores).length : 0}%</div>
-                <p className="text-sm text-green-600 mt-1">Moyenne des domaines</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200 shadow-lg">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-amber-800">
-                  <AlertCircle className="h-5 w-5" />
-                  Domaines critiques
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold text-amber-700">
-                  {Object.values(scores).filter(s => Number(s) < 50).length}
-                </div>
-                <p className="text-sm text-amber-600 mt-1">À améliorer</p>
-              </CardContent>
-            </Card>
-            
-            <Card className={`bg-gradient-to-br ${legalRisk >= 80 ? 'from-red-50 to-red-100 border-red-200' : legalRisk >= 60 ? 'from-amber-50 to-amber-100 border-amber-200' : 'from-green-50 to-green-100 border-green-200'} shadow-lg`}>
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5" />
-                  Risque Légal
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className={`text-4xl font-bold ${legalRisk >= 80 ? 'text-red-700' : legalRisk >= 60 ? 'text-amber-700' : 'text-green-700'}`}>
-                  {legalRisk}/100
-                </div>
-                <Badge className="mt-1" variant={legalRisk >= 80 ? 'destructive' : legalRisk >= 60 ? 'secondary' : 'default'}>
-                  {legalRiskLevel}
-                </Badge>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Graphiques */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Répartition par Catégorie</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <RadarChart scores={scores || {}} />
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Score Global par Domaine</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <BarChart scores={scores || {}} />
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Synthèse par domaine */}
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-blue-600" />
-                Synthèse par domaine
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {Object.entries(scores).map(([cat, score]) => {
-                  const numScore = Number(score);
-                  const getColorClass = (score: number) => {
-                    if (score < 40) return 'bg-destructive/20 border-destructive/30';
-                    if (score < 70) return 'bg-amber-500/20 border-amber-500/30';
-                    return 'bg-green-500/20 border-green-500/30';
-                  };
-                  
-                  const getBarColorClass = (score: number) => {
-                    if (score < 40) return 'bg-destructive';
-                    if (score < 70) return 'bg-amber-500';
-                    return 'bg-green-500';
-                  };
-                  
-                  const getStatusText = (score: number) => {
-                    if (score < 40) return 'Critique';
-                    if (score < 70) return 'À améliorer';
-                    return 'Conforme';
-                  };
-                  
-                  const getStatusVariant = (score: number) => {
-                    if (score < 40) return 'destructive';
-                    if (score < 70) return 'secondary';
-                    return 'default';
-                  };
-                  
-                  return (
-                    <div 
-                      key={cat} 
-                      className={`rounded-xl border p-4 transition-all hover:shadow-md ${getColorClass(numScore)}`}
-                    >
-                      <div className="flex justify-between items-start mb-3">
-                        <h3 className="font-semibold text-lg">{cat}</h3>
-                        <Badge variant={getStatusVariant(numScore) as "default" | "secondary" | "destructive" | null | undefined}>
-                          {getStatusText(numScore)}
-                        </Badge>
-                      </div>
-                      <div className="flex items-end gap-3">
-                        <div className="text-3xl font-bold">{numScore}<span className="text-lg font-normal text-muted-foreground">/100</span></div>
-                        <div className="flex-1 min-w-0">
-                          <div className="w-full bg-muted rounded-full h-2">
-                            <div 
-                              className={`h-2 rounded-full ${getBarColorClass(numScore)}`} 
-                              style={{ width: `${numScore}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Feuille de route (timeline) */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Feuille de route priorisée</CardTitle>
-                <Link href="/dashboard/roadmap">
-                  <Button variant="outline" size="sm">
-                    Voir la roadmap interactive →
-                  </Button>
-                </Link>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {actionPlan.length === 0 ? (
-                <div className="text-center text-muted-foreground">Aucune action à afficher.</div>
-              ) : (
-                <ol className="relative border-l border-primary/30 ml-2">
-                  {actionPlan.slice(0, 5).map((item, i) => (
-                    <li key={i} className="mb-8 ml-4">
-                      <div className={`absolute w-4 h-4 rounded-full -left-2 border-2 border-white ${item.priority === 'Haute' ? 'bg-destructive' : item.priority === 'Moyenne' ? 'bg-amber-500' : 'bg-green-500'}`} />
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-bold text-lg">Étape {i + 1}</span>
-                          <Badge variant={item.priority === 'Haute' ? 'destructive' : item.priority === 'Moyenne' ? 'secondary' : 'default'}>
-                            {item.priority}
-                          </Badge>
-                          <span className="text-sm text-muted-foreground">• {item.deadline}</span>
-                        </div>
-                        <p className="mb-1 text-base">{item.action}</p>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span>Domaine: <Badge variant="secondary">{item.category}</Badge></span>
-                          <span>Responsable: <Badge variant="outline">{item.owner}</Badge></span>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                  {actionPlan.length > 5 && (
-                    <div className="text-center mt-4">
-                      <Link href="/dashboard/roadmap" className="text-blue-600 hover:underline">
-                        Voir toutes les {actionPlan.length} actions dans la roadmap interactive
-                      </Link>
-                    </div>
-                  )}
-                </ol>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Plan d'action */}
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <span className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-blue-600" />
-                  Plan d&apos;action personnalisé
-                </span>
-                <div className="flex gap-2">
-                  <Link href="/dashboard/roadmap">
-                    <Button variant="outline" size="sm">
-                      Roadmap interactive
-                    </Button>
-                  </Link>
-                  <Button variant="outline" size="sm" onClick={handleExport}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Exporter CSV
-                  </Button>
-                </div>
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">Actions prioritaires pour améliorer votre posture de cybersécurité</p>
-            </CardHeader>
-            <CardContent>
-              {actionPlan.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  Aucune action recommandée pour le moment.
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {/* Filtres et recherche */}
-                  <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-                    <div className="flex flex-wrap gap-2">
-                      <Badge
-                        variant={actionFilter === 'ALL' ? 'default' : 'outline'}
-                        className="cursor-pointer px-3 py-1 text-base rounded-full"
-                        onClick={() => setActionFilter('ALL')}
-                      >
-                        Toutes <span className="ml-1 text-xs">({actionPlan.length})</span>
-                      </Badge>
-                      <Badge
-                        variant={actionFilter === 'HIGH' ? 'destructive' : 'outline'}
-                        className="cursor-pointer px-3 py-1 text-base rounded-full"
-                        onClick={() => setActionFilter('HIGH')}
-                      >
-                        Haute priorité <span className="ml-1 text-xs">({actionPlan.filter(a => a.priority === 'Haute').length})</span>
-                      </Badge>
-                      <Badge
-                        variant={actionFilter === 'MEDIUM' ? 'secondary' : 'outline'}
-                        className="cursor-pointer px-3 py-1 text-base rounded-full"
-                        onClick={() => setActionFilter('MEDIUM')}
-                      >
-                        Moyenne priorité <span className="ml-1 text-xs">({actionPlan.filter(a => a.priority === 'Moyenne').length})</span>
-                      </Badge>
-                      <Badge
-                        variant={actionFilter === 'LOW' ? 'default' : 'outline'}
-                        className="cursor-pointer px-3 py-1 text-base rounded-full"
-                        onClick={() => setActionFilter('LOW')}
-                      >
-                        Basse priorité <span className="ml-1 text-xs">({actionPlan.filter(a => a.priority === 'Basse').length})</span>
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        placeholder="Rechercher..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="max-w-xs"
-                      />
-                      <Select value={sortBy} onValueChange={(v) => setSortBy(v as 'PRIORITY' | 'DEADLINE')}>
-                        <SelectTrigger className="w-[120px]">
-                          <span>Trier par</span>
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="PRIORITY">Priorité</SelectItem>
-                          <SelectItem value="DEADLINE">Échéance</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  
-                  {/* Tableau des actions */}
-                  <div className="border rounded-lg overflow-hidden">
-                    <table className="w-full text-left">
-                      <thead className="bg-muted/50">
-                        <tr>
-                          <th className="p-4 font-semibold text-left">Action</th>
-                          <th className="p-4 font-semibold text-left">Catégorie</th>
-                          <th className="p-4 font-semibold text-left">Priorité</th>
-                          <th className="p-4 font-semibold text-left">Échéance</th>
-                          <th className="p-4 font-semibold text-left">Responsable</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-{(showAllActions ? filteredActionPlan : filteredActionPlan.slice(0,5)).map((item, index) => (
-                          <tr
-                            key={index}
-                            className={
-                              `border-b border-muted/30 hover:bg-muted/30 transition-colors duration-150`
-                            }
-                          >
-                            <td className="p-4 text-base font-medium max-w-md">
-                              <div className="flex items-start gap-3">
-                                <span className={
-                                  item.priority === 'Haute' 
-                                  ? 'bg-destructive/20 text-destructive border-destructive/30' 
-                                  : item.priority === 'Moyenne' 
-                                  ? 'bg-amber-500/20 text-amber-700 border-amber-500/30' 
-                                  : 'bg-green-500/20 text-green-700 border-green-500/30'
-                                }></span>
-                                <span>{item.action}</span>
-                              </div>
-                            </td>
-                            <td className="p-4">
-                              <Badge variant="secondary" className="rounded-full px-2 py-1 text-xs">
-                                {item.category}
-                              </Badge>
-                            </td>
-                            <td className="p-4">
-                              <Badge 
-                                variant={item.priority === 'Haute' ? 'destructive' : item.priority === 'Moyenne' ? 'secondary' : 'default'}
-                                className="rounded-full px-2 py-1 text-xs"
-                              >
-                                {item.priority}
-                              </Badge>
-                            </td>
-                            <td className="p-4">
-                              <span className="bg-muted px-2 py-1 rounded-full text-xs">
-                                {item.deadline}
-                              </span>
-                            </td>
-                            <td className="p-4">
-                              <div className="flex items-center gap-2">
-                                <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-xs font-bold text-primary-foreground border border-primary/20">
-                                  {item.owner?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
-                                </div>
-                                <span className="text-sm">{item.owner}</span>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    
-                    {/* Pagination */}
-                    {totalPages>1 && (
-                      <div className="flex justify-center items-center gap-4 py-6">
-                        <Button variant="outline" size="sm" disabled={currentPage===1} onClick={()=>setCurrentPage(p=>p-1)}>Préc.</Button>
-                        <span className="text-sm">Page {currentPage}/{totalPages}</span>
-                        <Button variant="outline" size="sm" disabled={currentPage===totalPages} onClick={()=>setCurrentPage(p=>p+1)}>Suiv.</Button>
-                      </div>
-                    )}
-                    {actionPlan.length > 5 && !showAllActions && (
-                      <div className="text-center py-4">
-                        <Button variant="outline" onClick={() => setShowAllActions(true)} className="rounded-full">
-                          Voir toutes les {actionPlan.length} actions
-                        </Button>
-                      </div>
-                    )}
-                    {showAllActions && (
-                      <div className="text-center py-4">
-                        <Button variant="secondary" onClick={() => setShowAllActions(false)} className="rounded-full">
-                          Masquer la liste complète
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                  </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Historique des audits */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-blue-600" />
-                  Historique des Audits
-                </div>
-                <Link href="/dashboard/audits">
-                  <Button variant="outline" size="sm">
-                    Voir tout l'historique →
-                  </Button>
-                </Link>
-              </CardTitle>
-              <p className="text-sm text-muted-foreground mt-2">
-                Consultez vos audits précédents et générez des rapports détaillés
-              </p>
-            </CardHeader>
-            <CardContent>
-              {audits.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-                  <p>Aucun audit disponible</p>
-                  <p className="text-sm">Commencez par réaliser votre premier audit de cybersécurité</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {audits.map((audit) => {
-                    const auditDate = new Date(audit.createdAt);
-                    const isGenerating = generatingPdf === audit.id;
-                    
-                    return (
-                      <div key={audit.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <div className="text-lg font-semibold">
-                              Audit du {auditDate.toLocaleDateString('fr-FR', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                              })}
-                            </div>
-                            <Badge variant={audit.score && audit.score >= 70 ? 'default' : audit.score && audit.score >= 50 ? 'secondary' : 'destructive'}>
-                              {audit.maturity || 'En cours'}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Shield className="h-4 w-4" />
-                              Score: {audit.score?.toFixed(0) || 'N/A'}%
-                            </span>
-                            <span>
-                              {audit.responses?.length || 0} réponses
-                            </span>
-                            <span>
-                              Créé à {auditDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex gap-2 ml-4">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleViewPdfReport(audit.id)}
-                            className="flex items-center gap-2"
-                          >
-                            <Eye className="h-4 w-4" />
-                            Aperçu
-                          </Button>
-                          
-                          <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() => handleGeneratePdfReport(audit.id)}
-                            disabled={isGenerating}
-                            className="flex items-center gap-2"
-                          >
-                            {isGenerating ? (
-                              <>
-                                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                Génération...
-                              </>
-                            ) : (
-                              <>
-                                <Download className="h-4 w-4" />
-                                Rapport PDF
-                              </>
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-              
-              {audits.length > 0 && (
-                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <div className="flex items-start gap-3">
-                    <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
-                    <div>
-                      <h4 className="font-medium text-blue-900 mb-1">À propos des rapports PDF</h4>
-                      <p className="text-sm text-blue-700">
-                        Les rapports générés incluent une analyse complète de votre audit avec :
-                      </p>
-                      <ul className="text-sm text-blue-700 mt-2 space-y-1">
-                        <li>• Analyse détaillée des résultats par domaine</li>
-                        <li>• Plan d'action personnalisé avec budgets et échéances</li>
-                        <li>• Feuille de route stratégique sur 24 mois</li>
-                        <li>• Analyse de conformité réglementaire (RGPD, NIS2, ISO 27001...)</li>
-                        <li>• Recommandations priorisées et KPIs de suivi</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

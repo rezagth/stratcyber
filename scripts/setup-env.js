@@ -21,83 +21,57 @@ const schemaPath = path.join(process.cwd(), 'prisma', 'schema.prisma');
 const envPath = path.join(process.cwd(), '.env');
 
 // Configuration selon la branche
-switch (currentBranch) {
-  case 'dev':
-    console.log(`📁 Configuration pour la branche ${currentBranch.toUpperCase()} (SQLite locale)`);
-    
-    // Copie du fichier .env.development
-    const devEnvPath = path.join(process.cwd(), '.env.development');
-    if (fs.existsSync(devEnvPath)) {
-      fs.copyFileSync(devEnvPath, envPath);
-      console.log('✅ Fichier .env.development copié vers .env');
-    } else {
-      console.error('❌ Fichier .env.development non trouvé');
-      process.exit(1);
-    }
-    
-    // Configuration du schema Prisma pour SQLite
-    if (fs.existsSync(schemaPath)) {
-      let schemaContent = fs.readFileSync(schemaPath, 'utf8');
-      schemaContent = schemaContent.replace(/provider = "postgresql"/g, 'provider = "sqlite"');
-      fs.writeFileSync(schemaPath, schemaContent);
-      console.log('✅ Schema Prisma configuré pour SQLite');
-    }
-    
-    console.log('🗃️  Base de données: SQLite locale (./dev.db)');
-    break;
-
-  case 'feature/dashboard-enhanced':
-    console.log(`📁 Configuration pour la branche ${currentBranch.toUpperCase()} (PostgreSQL Neon)`);
-    
-    // Copie du fichier .env.production pour utiliser PostgreSQL
-    const featureEnvPath = path.join(process.cwd(), '.env.production');
-    if (fs.existsSync(featureEnvPath)) {
-      fs.copyFileSync(featureEnvPath, envPath);
-      console.log('✅ Fichier .env.production copié vers .env');
-    } else {
-      console.error('❌ Fichier .env.production non trouvé');
-      process.exit(1);
-    }
-    
-    // Configuration du schema Prisma pour PostgreSQL
-    if (fs.existsSync(schemaPath)) {
-      let schemaContent = fs.readFileSync(schemaPath, 'utf8');
-      schemaContent = schemaContent.replace(/provider = "sqlite"/g, 'provider = "postgresql"');
-      fs.writeFileSync(schemaPath, schemaContent);
-      console.log('✅ Schema Prisma configuré pour PostgreSQL');
-    }
-    
-    console.log('🐘 Base de données: PostgreSQL sur Neon');
-    break;
-    
-  case 'master':
-    console.log('🚀 Configuration pour la branche MASTER (PostgreSQL Neon)');
-    
-    // Copie du fichier .env.production
-    const prodEnvPath = path.join(process.cwd(), '.env.production');
-    if (fs.existsSync(prodEnvPath)) {
-      fs.copyFileSync(prodEnvPath, envPath);
-      console.log('✅ Fichier .env.production copié vers .env');
-    } else {
-      console.error('❌ Fichier .env.production non trouvé');
-      process.exit(1);
-    }
-    
-    // Configuration du schema Prisma pour PostgreSQL
-    if (fs.existsSync(schemaPath)) {
-      let schemaContent = fs.readFileSync(schemaPath, 'utf8');
-      schemaContent = schemaContent.replace(/provider = "sqlite"/g, 'provider = "postgresql"');
-      fs.writeFileSync(schemaPath, schemaContent);
-      console.log('✅ Schema Prisma configuré pour PostgreSQL');
-    }
-    
-    console.log('🐘 Base de données: PostgreSQL sur Neon');
-    break;
-    
-  default:
-    console.error(`⚠️  Branche non reconnue: ${currentBranch}`);
-    console.error('Branches supportées: "dev", "feature/*" (SQLite) ou "master" (PostgreSQL)');
+// Branches de développement (dev et feature/*) → SQLite
+// Branche de production (master) → PostgreSQL
+if (currentBranch === 'dev' || currentBranch.startsWith('feature/')) {
+  console.log(`📁 Configuration pour la branche ${currentBranch.toUpperCase()} (SQLite locale)`);
+  
+  // Copie du fichier .env.developpement
+  const devEnvPath = path.join(process.cwd(), '.env.developpement');
+  if (fs.existsSync(devEnvPath)) {
+    fs.copyFileSync(devEnvPath, envPath);
+    console.log('✅ Fichier .env.developpement copié vers .env');
+  } else {
+    console.error('❌ Fichier .env.developpement non trouvé');
     process.exit(1);
+  }
+  
+  // Configuration du schema Prisma pour SQLite
+  if (fs.existsSync(schemaPath)) {
+    let schemaContent = fs.readFileSync(schemaPath, 'utf8');
+    schemaContent = schemaContent.replace(/provider = "postgresql"/g, 'provider = "sqlite"');
+    fs.writeFileSync(schemaPath, schemaContent);
+    console.log('✅ Schema Prisma configuré pour SQLite');
+  }
+  
+  console.log('🗃️  Base de données: SQLite locale (./dev.db)');
+} else if (currentBranch === 'master') {
+    
+  console.log('🚀 Configuration pour la branche MASTER (PostgreSQL Neon)');
+  
+  // Copie du fichier .env.production
+  const prodEnvPath = path.join(process.cwd(), '.env.production');
+  if (fs.existsSync(prodEnvPath)) {
+    fs.copyFileSync(prodEnvPath, envPath);
+    console.log('✅ Fichier .env.production copié vers .env');
+  } else {
+    console.error('❌ Fichier .env.production non trouvé');
+    process.exit(1);
+  }
+  
+  // Configuration du schema Prisma pour PostgreSQL
+  if (fs.existsSync(schemaPath)) {
+    let schemaContent = fs.readFileSync(schemaPath, 'utf8');
+    schemaContent = schemaContent.replace(/provider = "sqlite"/g, 'provider = "postgresql"');
+    fs.writeFileSync(schemaPath, schemaContent);
+    console.log('✅ Schema Prisma configuré pour PostgreSQL');
+  }
+  
+  console.log('🐘 Base de données: PostgreSQL sur Neon');
+} else {
+  console.error(`⚠️  Branche non reconnue: ${currentBranch}`);
+  console.error('Branches supportées: "dev", "feature/*" (SQLite) ou "master" (PostgreSQL)');
+  process.exit(1);
 }
 
 // Génération du client Prisma
