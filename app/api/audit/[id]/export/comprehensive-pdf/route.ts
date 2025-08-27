@@ -4,6 +4,20 @@ import { prisma } from '@/lib/db';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { generateAdvancedActionPlan } from '@/lib/audit/advancedActionPlan';
 import { computeAuditResult } from '@/lib/audit/scoring';
+import { baseQuestions } from '@/lib/audit/questions';
+import { 
+  rgpdQuestions, 
+  nis2Questions, 
+  doraQuestions, 
+  lmpQuestions, 
+  incidentQuestions, 
+  supplyChainQuestions, 
+  cloudQuestions, 
+  craQuestions, 
+  isoQuestions, 
+  ebiosQuestions 
+} from '@/lib/audit/questions-extended';
+import puppeteer from 'puppeteer';
 
 // Interface pour les données du rapport PDF
 interface ComprehensiveReportData {
@@ -35,7 +49,7 @@ interface ComprehensiveReportData {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -47,10 +61,13 @@ export async function GET(
       );
     }
 
+    // Await params first (Next.js 15 requirement)
+    const { id } = await params;
+
     // Récupérer l'audit complet depuis la BDD
     const audit = await prisma.audit.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: session.user.id
       },
       include: {
@@ -86,11 +103,65 @@ export async function GET(
 
     const auditResult = computeAuditResult(auditAnswers);
 
-    // Générer le plan d'action avancé
-    const advancedPlan = generateAdvancedActionPlan(auditResult, {
-      startDate: new Date(),
-      companySize: companyProfile?.size || 'PME'
+    // Récupérer les données roadmap spécifiques à cet audit via l'API
+    console.log('🔍 Debug PDF - ID Audit:', id);
+    console.log('🔍 Debug PDF - User ID:', session.user.id);
+    console.log('🔍 Debug PDF - Nombre de réponses audit:', audit.responses.length);
+    
+    // Utiliser l'API roadmap avec l'audit ID spécifique
+    const roadmapResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/roadmap/data?auditId=${id}`, {
+      headers: {
+        'Cookie': request.headers.get('cookie') || ''
+      }
     });
+    
+    console.log('🔍 Debug PDF - Status API Roadmap:', roadmapResponse.status);
+    
+    let roadmapData;
+    if (roadmapResponse.ok) {
+      roadmapData = await roadmapResponse.json();
+      console.log('🔍 Debug PDF - Données API récupérées pour audit', id, ':');
+      console.log('  - Nombre d\'actions:', roadmapData.actions?.length || 0);
+      console.log('  - Nombre de milestones:', roadmapData.milestones?.length || 0);
+      console.log('  - Score:', roadmapData.score);
+      console.log('  - Actions critiques:', roadmapData.analyticsData?.summary?.criticalActions || 0);
+      console.log('  - Budget total:', roadmapData.analyticsData?.summary?.budgetTotal || 0);
+    } else {
+      console.error('❌ Debug PDF - Erreur API Roadmap:', roadmapResponse.status, roadmapResponse.statusText);
+      const errorText = await roadmapResponse.text();
+      console.error('❌ Debug PDF - Détail erreur:', errorText);
+      
+      // En cas d'erreur, générer les actions directement pour cet audit
+      console.log('🛠️ Fallback: Génération directe des actions pour l\'audit', id);
+      const auditSpecificActions = generateActionsFromResponses(audit.responses);
+      const actionPlanItems = convertToActionPlanItems(auditSpecificActions);
+      const roadmapMilestones = generateRoadmapMilestones(auditSpecificActions);
+      const roadmapQuarters = generateRoadmapQuarters(auditSpecificActions, roadmapMilestones);
+      const actionSummary = calculateActionSummary(auditSpecificActions);
+      
+      roadmapData = {
+        actions: actionPlanItems,
+        milestones: roadmapMilestones,
+        quarters: roadmapQuarters,
+        score: audit.score || 0,
+        statistics: {
+          totalActions: actionSummary.totalActions,
+          completedActions: actionSummary.completedActions,
+          criticalActions: actionSummary.criticalActions,
+          overdueActions: actionSummary.overdueActions,
+          avgProgress: actionSummary.overallProgress
+        },
+        analyticsData: {
+          summary: {
+            totalActions: actionSummary.totalActions,
+            completedActions: actionSummary.completedActions,
+            criticalActions: actionSummary.criticalActions,
+            budgetTotal: actionSummary.budgetTotal,
+            riskDistribution: actionSummary.riskDistribution
+          }
+        }
+      };
+    }
 
     // Préparer les données du rapport
     const reportData: ComprehensiveReportData = {
@@ -104,27 +175,48 @@ export async function GET(
         responses: audit.responses
       },
       auditResult: auditResult,
-      actionPlan: advancedPlan,
-      roadmapData: null,
+      actionPlan: roadmapData,
+      roadmapData: roadmapData,
       companyInfo: {
-        name: companyProfile?.sector ? `Entreprise ${companyProfile.sector}` : 'Mon Entreprise',
-        sector: companyProfile?.sector || 'Non spécifié',
+        name: 'entreprise',
+        sector: (companyProfile?.sector === 'autre') ? 'tertiaire' : (companyProfile?.sector || 'Non spécifié'),
         size: companyProfile?.size || 'PME',
         address: 'Adresse de l\'entreprise',
-        contact: session.user.email || 'noam.chemoul@hotmail.fr'
+        contact: 'noam.chemoul@hotmail.com'
       }
     };
 
     // Générer le HTML du rapport
     const htmlContent = generateComprehensiveReport(reportData);
 
-    // Pour une vraie génération PDF, vous devriez utiliser Puppeteer ici
-    // Ici, on retourne le HTML pour l'instant
-    return new Response(htmlContent, {
+    // Générer le PDF avec Puppeteer
+    const browser = await puppeteer.launch({ 
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    const page = await browser.newPage();
+    
+    await page.setContent(htmlContent, { waitUntil: 'domcontentloaded' });
+    await page.emulateMediaType('print');
+    
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      margin: {
+        top: '1cm',
+        bottom: '1cm',
+        left: '1cm',
+        right: '1cm'
+      }
+    });
+    
+    await browser.close();
+
+    return new Response(pdfBuffer, {
       status: 200,
       headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-        'Content-Disposition': `attachment; filename="rapport-audit-${audit.id}.html"`,
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="rapport-audit-${audit.id}.pdf"`,
       },
     });
 
@@ -165,8 +257,9 @@ function generateComprehensiveReport(data: ComprehensiveReportData): string {
     ${generateMonitoringFramework(data)}
     ${generateRecommendations(data)}
     ${generateAppendices(data)}
+    ${generateLegalNotices(data)}
 </body>
-</html>`;
+</html>`
 }
 
 function getComprehensiveStyles(): string {
@@ -640,7 +733,7 @@ function generateCoverPage(data: ComprehensiveReportData): string {
           <div style="opacity: 0.9;">Niveau de Maturité</div>
         </div>
         <div>
-          <div style="font-size: 2.5em; font-weight: bold; margin-bottom: 0.5em;">${data.actionPlan.actions.length}</div>
+          <div style="font-size: 2.5em; font-weight: bold; margin-bottom: 0.5em;">${data.actionPlan.actions?.length || 0}</div>
           <div style="opacity: 0.9;">Actions Recommandées</div>
         </div>
       </div>
@@ -801,11 +894,11 @@ function generateExecutiveSummary(data: ComprehensiveReportData): string {
           <div class="kpi-label">Actions Identifiées</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-value">${data.actionPlan.summary.criticalActions}</div>
+          <div class="kpi-value">${data.actionPlan.statistics?.criticalActions || data.actionPlan.analyticsData?.summary?.criticalActions || 0}</div>
           <div class="kpi-label">Actions Critiques</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-value">${Math.round(data.actionPlan.summary.budgetTotal / 1000)}K€</div>
+          <div class="kpi-value">${Math.round((data.actionPlan.analyticsData?.summary?.budgetTotal || 0) / 1000)}K€</div>
           <div class="kpi-label">Budget Estimé</div>
         </div>
         <div class="kpi-card">
@@ -849,8 +942,8 @@ function generateExecutiveSummary(data: ComprehensiveReportData): string {
       <p>Un plan d'action détaillé et chiffré a été élaboré, comprenant :</p>
       <ul>
         <li><strong>${data.actionPlan.actions.length} actions concrètes</strong> réparties sur 24 mois</li>
-        <li><strong>Budget total estimé :</strong> ${data.actionPlan.summary.budgetTotal.toLocaleString('fr-FR')}€</li>
-        <li><strong>Actions critiques :</strong> ${data.actionPlan.summary.criticalActions} à traiter en priorité</li>
+        <li><strong>Budget total estimé :</strong> ${(data.actionPlan.analyticsData?.summary?.budgetTotal || 0).toLocaleString('fr-FR')}€</li>
+        <li><strong>Actions critiques :</strong> ${data.actionPlan.analyticsData?.summary?.criticalActions || data.actionPlan.statistics?.criticalActions || 0} à traiter en priorité</li>
         <li><strong>ROI attendu :</strong> Réduction significative des risques cyber et amélioration de la conformité réglementaire</li>
       </ul>
     </div>
@@ -1059,6 +1152,33 @@ function generateResponseAnalysis(data: ComprehensiveReportData): string {
     return acc;
   }, {} as Record<string, typeof data.audit.responses>);
 
+  // Fonction pour récupérer le texte de la question à partir de son ID
+  const getQuestionText = (questionId: string): string => {
+    // Chercher d'abord dans les questions de base
+    let question = baseQuestions.find(q => q.id === questionId);
+    if (question) return question.question;
+
+    // Chercher dans toutes les questions étendues
+    const allExtendedQuestions = [
+      ...rgpdQuestions,
+      ...nis2Questions,
+      ...doraQuestions,
+      ...lmpQuestions,
+      ...incidentQuestions,
+      ...supplyChainQuestions,
+      ...cloudQuestions,
+      ...craQuestions,
+      ...isoQuestions,
+      ...ebiosQuestions
+    ];
+
+    question = allExtendedQuestions.find(q => q.id === questionId);
+    if (question) return question.question;
+
+    // Si la question n'est trouvée nulle part, retourner l'ID
+    return questionId;
+  };
+
   return `
     <div class="page-break section">
       <h2 class="section-title">3. Analyse Détaillée des Réponses</h2>
@@ -1093,10 +1213,11 @@ function generateResponseAnalysis(data: ComprehensiveReportData): string {
                 const scorePercent = Math.round((score / 5) * 100);
                 const level = score < 2 ? 'Critique' : score < 3.5 ? 'À améliorer' : 'Conforme';
                 const analysis = getQuestionAnalysis(response.question, response.answer, score);
+                const questionText = getQuestionText(response.question);
                 
                 return `
                   <tr>
-                    <td>${response.question}</td>
+                    <td>${questionText}</td>
                     <td><strong>${response.answer}</strong></td>
                     <td>
                       <span class="priority-${level === 'Critique' ? 'critique' : level === 'À améliorer' ? 'haute' : 'basse'}">
@@ -1197,7 +1318,7 @@ function generateActionPlanSection(data: ComprehensiveReportData): string {
           <div class="kpi-label">Priorité Moyenne</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-value">${Math.round(data.actionPlan.summary.budgetTotal / 1000)}K€</div>
+          <div class="kpi-value">${Math.round((data.actionPlan.analyticsData?.summary?.budgetTotal || 0) / 1000)}K€</div>
           <div class="kpi-label">Budget Total</div>
         </div>
       </div>
@@ -1370,7 +1491,7 @@ function generateRoadmapSection(data: ComprehensiveReportData): string {
           document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('budgetQuarterChart').getContext('2d');
             const quarters = ['T1 2024', 'T2 2024', 'T3 2024', 'T4 2024', 'T1 2025', 'T2 2025', 'T3 2025', 'T4 2025'];
-            const totalBudget = ${data.actionPlan.summary.budgetTotal};
+            const totalBudget = ${data.actionPlan.analyticsData?.summary?.budgetTotal || 0};
             const quarterlyBudget = [
               Math.round(totalBudget * 0.35), // 35% au T1 (actions critiques)
               Math.round(totalBudget * 0.25), // 25% au T2
@@ -1464,7 +1585,7 @@ function generateRiskAnalysis(data: ComprehensiveReportData): string {
       <h3 class="subsection-title">6.1 Distribution des risques</h3>
       
       <div class="kpi-grid">
-        ${Object.entries(data.actionPlan.summary.riskDistribution).map(([riskLevel, count]) => `
+        ${Object.entries(data.actionPlan.analyticsData?.summary?.riskDistribution || {}).map(([riskLevel, count]) => `
           <div class="kpi-card">
             <div class="kpi-value">${count}</div>
             <div class="kpi-label">Risque ${riskLevel}</div>
@@ -1773,11 +1894,11 @@ function generateBudgetAnalysis(data: ComprehensiveReportData): string {
       
       <div class="kpi-grid">
         <div class="kpi-card">
-          <div class="kpi-value">${Math.round(data.actionPlan.summary.budgetTotal / 1000)}K€</div>
+          <div class="kpi-value">${Math.round((data.actionPlan.analyticsData?.summary?.budgetTotal || 0) / 1000)}K€</div>
           <div class="kpi-label">Budget Total</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-value">${Math.round(data.actionPlan.summary.budgetTotal / data.actionPlan.actions.length / 1000)}K€</div>
+          <div class="kpi-value">${Math.round((data.actionPlan.analyticsData?.summary?.budgetTotal || 0) / Math.max(data.actionPlan.actions.length, 1) / 1000)}K€</div>
           <div class="kpi-label">Coût Moyen/Action</div>
         </div>
         <div class="kpi-card">
@@ -1785,7 +1906,7 @@ function generateBudgetAnalysis(data: ComprehensiveReportData): string {
           <div class="kpi-label">Mois d'Étalement</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-value">${Math.round(data.actionPlan.summary.budgetTotal / 24 / 1000)}K€</div>
+          <div class="kpi-value">${Math.round((data.actionPlan.analyticsData?.summary?.budgetTotal || 0) / 24 / 1000)}K€</div>
           <div class="kpi-label">Budget Mensuel</div>
         </div>
       </div>
@@ -1909,7 +2030,7 @@ function generateBudgetAnalysis(data: ComprehensiveReportData): string {
             .map(([category, score]) => {
               const categoryActions = data.actionPlan.actions.filter((a: any) => a.category === category);
               const categoryBudget = categoryActions.reduce((sum: number, a: any) => sum + (a.budget || 0), 0);
-              const percentage = Math.round((categoryBudget / data.actionPlan.summary.budgetTotal) * 100);
+              const percentage = Math.round((categoryBudget / (data.actionPlan.analyticsData?.summary?.budgetTotal || 1)) * 100);
               const roi = getRoiByCategory(category);
               
               return `
@@ -1933,7 +2054,7 @@ function generateBudgetAnalysis(data: ComprehensiveReportData): string {
           document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('cashflowChart').getContext('2d');
             const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
-            const totalBudget = ${data.actionPlan.summary.budgetTotal};
+            const totalBudget = ${data.actionPlan.analyticsData?.summary?.budgetTotal || 0};
             
             // Simulation des décaissements mensuels
             const monthlyExpenses = [
@@ -2512,7 +2633,7 @@ function generateAppendices(data: ComprehensiveReportData): string {
         <h4 style="margin-top: 0;">Équipe projet StratCyber</h4>
         <ul style="margin: 0;">
           <li><strong>Contact principal :</strong> ${data.companyInfo.contact}</li>
-          <li><strong>Support technique :</strong> noam.chemoul@hotmail.fr</li>
+          <li><strong>Support technique :</strong> noam.chemoul@hotmail.com</li>
           <li><strong>Urgences sécurité :</strong> +33 6 62 08 73 76</li>
         </ul>
       </div>
@@ -2559,4 +2680,404 @@ function getRoiByCategory(category: string): string {
   };
   
   return rois[category] || 'Amélioration globale de la sécurité';
+}
+
+// Fonctions pour générer les données roadmap (importées depuis l'API roadmap)
+function generateActionsFromResponses(responses: any[]): any[] {
+  const actions: any[] = [];
+  
+  // Analyse par catégorie - Les scores sont sur une échelle de 0-5
+  const categoriesAnalysis = responses.reduce((acc, response) => {
+    if (!acc[response.category]) {
+      acc[response.category] = {
+        responses: [],
+        avgScore: 0,
+        totalScore: 0,
+        count: 0
+      };
+    }
+    
+    acc[response.category].responses.push(response);
+    acc[response.category].totalScore += response.score || 0;
+    acc[response.category].count += 1;
+    acc[response.category].avgScore = acc[response.category].totalScore / acc[response.category].count;
+    
+    return acc;
+  }, {} as Record<string, any>);
+
+  // Génération d'actions basées sur les scores faibles (échelle 0-5)
+  Object.entries(categoriesAnalysis).forEach(([category, data]) => {
+    const avgScore = data.avgScore;
+    const avgScorePercent = Math.round((avgScore / 5) * 100);
+    const lowScoreResponses = data.responses.filter((r: any) => (r.score || 0) < 3);
+    
+    // Actions pour les catégories avec des scores faibles
+    if (avgScore < 2.5) { // Score < 2.5 sur 5 = critique
+      actions.push({
+        id: `critical-${category.toLowerCase().replace(/\s+/g, '-')}`,
+        title: `Amélioration critique - ${category}`,
+        action: `Mettre en place des mesures de sécurité critiques pour ${category}`,
+        description: `Mise en place urgente des mesures de sécurité pour ${category}. Score actuel: ${avgScorePercent}%`,
+        category: category,
+        priority: 'Critique',
+        status: 'Non démarré',
+        progress: 0,
+        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        owner: 'RSSI',
+        estimatedHours: 40,
+        businessImpact: `Réduction significative des risques dans ${category}`,
+        budget: 10000
+      });
+    } else if (avgScore < 3.5) { // Score < 3.5 sur 5 = haute priorité
+      actions.push({
+        id: `high-${category.toLowerCase().replace(/\s+/g, '-')}`,
+        title: `Renforcement - ${category}`,
+        action: `Renforcer les processus de sécurité pour ${category}`,
+        description: `Optimisation des processus de sécurité pour ${category}. Score actuel: ${avgScorePercent}%`,
+        category: category,
+        priority: 'Haute',
+        status: 'Non démarré',
+        progress: 0,
+        dueDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
+        owner: 'Équipe IT',
+        estimatedHours: 24,
+        businessImpact: `Amélioration des performances sécuritaires dans ${category}`,
+        budget: 5000
+      });
+    } else if (avgScore < 4.5) { // Score < 4.5 sur 5 = moyenne priorité
+      actions.push({
+        id: `medium-${category.toLowerCase().replace(/\s+/g, '-')}`,
+        title: `Amélioration continue - ${category}`,
+        action: `Améliorer continuellement les pratiques de sécurité pour ${category}`,
+        description: `Perfectionnement des pratiques de sécurité pour ${category}. Score actuel: ${avgScorePercent}%`,
+        category: category,
+        priority: 'Moyenne',
+        status: 'Non démarré',
+        progress: 0,
+        dueDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+        owner: 'Responsable métier',
+        estimatedHours: 16,
+        businessImpact: `Optimisation des pratiques dans ${category}`,
+        budget: 3000
+      });
+    }
+    
+    // Actions supplémentaires pour les catégories avec beaucoup de réponses faibles
+    if (lowScoreResponses.length >= 2) {
+      actions.push({
+        id: `comprehensive-${category.toLowerCase().replace(/\s+/g, '-')}`,
+        title: `Plan complet d'amélioration - ${category}`,
+        action: `Élaborer et exécuter un plan complet d'amélioration pour ${category}`,
+        description: `Plan d'amélioration global pour ${category} suite aux lacunes identifiées`,
+        category: category,
+        priority: lowScoreResponses.length >= 3 ? 'Critique' : 'Haute',
+        status: 'Non démarré',
+        progress: 0,
+        dueDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString(),
+        owner: 'Direction + RSSI',
+        estimatedHours: 60,
+        businessImpact: `Transformation complète des pratiques de ${category}`,
+        budget: 15000
+      });
+    }
+  });
+
+  return actions.slice(0, 30); // Maximum 30 actions
+}
+
+function convertToActionPlanItems(actions: any[]): any[] {
+  return actions.map(action => ({
+    ...action,
+    startDate: new Date(action.dueDate),
+    dueDate: new Date(action.dueDate),
+    status: action.status,
+    estimatedDuration: Math.round(action.estimatedHours / 8), // Conversion heures vers jours
+    assignees: [action.owner],
+    subTasks: [],
+    dependencies: [],
+    blockers: [],
+    resources: [],
+    notes: '',
+    kpis: ['Amélioration du score de sécurité', 'Réduction des risques'],
+    successCriteria: [action.businessImpact],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    technicalComplexity: action.priority === 'Critique' ? 'Élevée' : 'Moyenne',
+    riskLevel: action.priority === 'Critique' ? 'Très élevé' : 'Moyen'
+  }));
+}
+
+function generateRoadmapMilestones(actions: any[]): any[] {
+  const milestones: any[] = [];
+  
+  // Grouper les actions par trimestre
+  const actionsByQuarter = actions.reduce((acc, action) => {
+    const dueDate = new Date(action.dueDate);
+    const quarter = Math.floor(dueDate.getMonth() / 3) + 1;
+    const key = `Q${quarter}-${dueDate.getFullYear()}`;
+    
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(action.id);
+    return acc;
+  }, {} as Record<string, string[]>);
+
+  // Créer les jalons trimestriels
+  Object.entries(actionsByQuarter).forEach(([quarter, actionIds], index) => {
+    const criticalActions = actionIds.filter(id => 
+      actions.find(a => a.id === id)?.priority === 'Critique'
+    );
+    
+    milestones.push({
+      id: `milestone-${quarter.toLowerCase()}`,
+      title: `Jalon ${quarter} - Sécurisation`,
+      description: `Finalisation des actions de sécurité planifiées pour ${quarter}${
+        criticalActions.length > 0 ? ` (${criticalActions.length} actions critiques)` : ''
+      }`,
+      dueDate: new Date(Date.now() + (index + 1) * 90 * 24 * 60 * 60 * 1000).toISOString(),
+      progress: 0,
+      status: 'En cours',
+      actions: actionIds
+    });
+  });
+
+  return milestones.slice(0, 4); // Maximum 4 jalons
+}
+
+function generateRoadmapQuarters(actions: any[], milestones: any[]): any[] {
+  const currentYear = new Date().getFullYear();
+  const quarters = [];
+  
+  for (let q = 1; q <= 4; q++) {
+    const quarterStart = new Date(currentYear, (q - 1) * 3, 1);
+    const quarterEnd = new Date(currentYear, q * 3, 0);
+    
+    const quarterActions = actions.filter(action => {
+      const actionDate = new Date(action.dueDate);
+      return actionDate >= quarterStart && actionDate <= quarterEnd;
+    });
+    
+    const quarterMilestones = milestones.filter(milestone => {
+      const milestoneDate = new Date(milestone.dueDate);
+      return milestoneDate >= quarterStart && milestoneDate <= quarterEnd;
+    });
+    
+    if (quarterActions.length > 0 || quarterMilestones.length > 0) {
+      quarters.push({
+        quarter: `Q${q} ${currentYear}`,
+        year: currentYear,
+        startDate: quarterStart,
+        endDate: quarterEnd,
+        milestones: quarterMilestones,
+        budget: quarterActions.reduce((sum, a) => sum + (a.budget || 0), 0),
+        focusAreas: [...new Set(quarterActions.map(a => a.category))]
+      });
+    }
+  }
+  
+  return quarters;
+}
+
+function generateLegalNotices(data: ComprehensiveReportData): string {
+  return `
+    <div class="page-break section" style="margin-top: 6em;">
+      <div style="border-top: 3px solid #2563eb; padding-top: 2em; margin-top: 4em;">
+        <h2 class="section-title">Mentions Légales</h2>
+        
+        <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 2em; border-radius: 12px; border: 1px solid #e2e8f0; margin: 2em 0;">
+          <h3 style="color: #1e40af; margin-top: 0;">📋 Informations légales</h3>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em; margin: 1.5em 0;">
+            <div>
+              <h4 style="color: #374151; margin-bottom: 1em;">Éditeur du logiciel</h4>
+              <p style="margin: 0.5em 0; line-height: 1.6;">
+                <strong>InfraCyb</strong><br/>
+                Société spécialisée en cybersécurité<br/>
+                Développeur de la plateforme StratCyber
+              </p>
+            </div>
+            
+            <div>
+              <h4 style="color: #374151; margin-bottom: 1em;">Plateforme SaaS</h4>
+              <p style="margin: 0.5em 0; line-height: 1.6;">
+                <strong>StratCyber</strong><br/>
+                Solution SaaS d'audit cybersécurité<br/>
+                Propriété d'InfraCyb
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: #fefbeb; padding: 1.5em; border-radius: 8px; border-left: 4px solid #f59e0b; margin: 2em 0;">
+          <h4 style="margin-top: 0; color: #92400e;">⚖️ Propriété intellectuelle</h4>
+          <p style="margin: 0.5em 0; font-size: 0.95em; line-height: 1.5;">
+            Ce rapport a été généré par <strong>StratCyber</strong>, plateforme SaaS développée et éditée par <strong>InfraCyb</strong>. 
+            Tous les éléments de ce rapport (méthodologie, analyses, recommandations, mise en page) sont la propriété intellectuelle d'InfraCyb.
+          </p>
+        </div>
+
+        <div style="background: #f0f9ff; padding: 1.5em; border-radius: 8px; border-left: 4px solid #3b82f6; margin: 2em 0;">
+          <h4 style="margin-top: 0; color: #1d4ed8;">🔒 Confidentialité et usage</h4>
+          <ul style="margin: 0.5em 0 0 1.2em; font-size: 0.95em; line-height: 1.5;">
+            <li>Ce rapport est strictement confidentiel et destiné exclusivement à <strong>${data.companyInfo.name}</strong></li>
+            <li>Toute diffusion, reproduction ou utilisation non autorisée est interdite</li>
+            <li>Les données analysées restent la propriété du client</li>
+            <li>InfraCyb s'engage au respect de la confidentialité des informations traitées</li>
+          </ul>
+        </div>
+
+        <div style="background: #fef2f2; padding: 1.5em; border-radius: 8px; border-left: 4px solid #dc2626; margin: 2em 0;">
+          <h4 style="margin-top: 0; color: #dc2626;">⚠️ Limitation de responsabilité</h4>
+          <p style="margin: 0.5em 0; font-size: 0.95em; line-height: 1.5;">
+            Ce rapport constitue une évaluation basée sur les informations fournies et l'état de l'art au moment de l'audit. 
+            InfraCyb ne peut être tenu responsable des évolutions ultérieures du contexte de menaces ou des systèmes analysés.
+          </p>
+        </div>
+
+        <div style="margin-top: 3em; padding-top: 2em; border-top: 2px solid #e5e7eb; text-align: center;">
+          <div style="margin-bottom: 1.5em;">
+            <strong style="color: #1e40af; font-size: 1.2em;">© ${new Date().getFullYear()} InfraCyb - Tous droits réservés</strong>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2em; font-size: 0.9em; color: #6b7280;">
+            <div>
+              <strong>Plateforme</strong><br/>
+              StratCyber SaaS<br/>
+              Version ${new Date().getFullYear()}.${String(new Date().getMonth() + 1).padStart(2, '0')}
+            </div>
+            <div>
+              <strong>Éditeur</strong><br/>
+              InfraCyb<br/>
+              Cybersécurité & Audit
+            </div>
+            <div>
+              <strong>Document</strong><br/>
+              Rapport ID: ${data.audit.id}<br/>
+              ${new Date().toLocaleDateString('fr-FR')}
+            </div>
+          </div>
+          
+          <div style="margin-top: 2em; padding-top: 1em; border-top: 1px solid #e5e7eb;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5em; margin-bottom: 2em;">
+              <div style="background: #f0f9ff; padding: 1em; border-radius: 8px; border-left: 3px solid #3b82f6;">
+                <h5 style="margin-top: 0; color: #1d4ed8;">🏆 Certifications</h5>
+                <ul style="margin: 0.5em 0; font-size: 0.85em; line-height: 1.4;">
+                  <li>Audit ISO 27001:2022</li>
+                  <li>Conformité ANSSI</li>
+                  <li>NIST Cybersecurity Framework</li>
+                  <li>Méthodologie EBIOS Risk Manager</li>
+                </ul>
+              </div>
+              
+              <div style="background: #f0fdf4; padding: 1em; border-radius: 8px; border-left: 3px solid #22c55e;">
+                <h5 style="margin-top: 0; color: #15803d;">📋 Réglementations</h5>
+                <ul style="margin: 0.5em 0; font-size: 0.85em; line-height: 1.4;">
+                  <li>RGPD - Protection des données</li>
+                  <li>NIS2 - Sécurité des réseaux</li>
+                  <li>DORA - Résilience opérationnelle</li>
+                  <li>Loi de Programmation Militaire</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div style="background: #fafafa; padding: 1.5em; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 2em;">
+              <h5 style="margin-top: 0; color: #374151;">📄 Conditions d'utilisation</h5>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1em; font-size: 0.85em;">
+                <div>
+                  <strong>CGU StratCyber</strong><br/>
+                  Conditions Générales d'Utilisation<br/>
+                  <em>Disponibles sur la plateforme</em>
+                </div>
+                <div>
+                  <strong>CGV InfraCyb</strong><br/>
+                  Conditions Générales de Vente<br/>
+                  <em>Fournies lors de la souscription</em>
+                </div>
+                <div>
+                  <strong>Politique de confidentialité</strong><br/>
+                  Protection des données clients<br/>
+                  <em>Conforme RGPD</em>
+                </div>
+              </div>
+            </div>
+            
+            <div style="background: #fef7cd; padding: 1.5em; border-radius: 8px; border-left: 4px solid #f59e0b; margin-bottom: 2em;">
+              <h5 style="margin-top: 0; color: #92400e;">⚡ Clause de non-responsabilité technique</h5>
+              <p style="margin: 0.5em 0; font-size: 0.9em; line-height: 1.5;">
+                <strong>Évolution des menaces :</strong> Le paysage des cybermenaces évoluant constamment, 
+                ce rapport reflète l'état des connaissances et des bonnes pratiques au moment de sa génération. 
+                InfraCyb recommande une réévaluation périodique de la posture de sécurité.
+              </p>
+              <p style="margin: 0.5em 0; font-size: 0.9em; line-height: 1.5;">
+                <strong>Mise en œuvre :</strong> Les recommandations doivent être adaptées au contexte spécifique 
+                de l'organisation. InfraCyb recommande un accompagnement professionnel pour la mise en œuvre.
+              </p>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; padding: 1.5em; border-radius: 8px; text-align: center; margin-bottom: 2em;">
+              <h5 style="margin-top: 0; color: white;">🤝 Support et accompagnement</h5>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1em; font-size: 0.9em;">
+                <div>
+                  <strong>Support technique</strong><br/>
+                  Assistance mise en œuvre<br/>
+                  <em>noam.chemoul@hotmail.com</em>
+                </div>
+                <div>
+                  <strong>Conseil stratégique</strong><br/>
+                  Accompagnement RSSI<br/>
+                  <em>noam.chemoul@hotmail.com</em>
+                </div>
+                <div>
+                  <strong>Formation équipes</strong><br/>
+                  Sensibilisation cyber<br/>
+                  <em>noam.chemoul@hotmail.com</em>
+                </div>
+              </div>
+            </div>
+            
+            <div style="font-size: 0.85em; color: #9ca3af; text-align: center;">
+              <p style="margin: 0;">
+                Ce document a été généré automatiquement par la plateforme StratCyber d'InfraCyb.<br/>
+                Pour toute question concernant ce rapport, contactez votre interlocuteur InfraCyb.<br/>
+                <strong>Dernière mise à jour des référentiels :</strong> ${new Date().toLocaleDateString('fr-FR')}
+              </p>
+              <p style="margin: 1em 0 0 0; font-size: 0.8em; opacity: 0.8;">
+                InfraCyb - Expert en cybersécurité depuis 2020 | SIRET : XXX XXX XXX XXXXX | Capital social : XX XXX€<br/>
+                Siège social : Paris, France | Tél : +33 6 62 08 73 76 | Email : contact@infracyb.fr
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function calculateActionSummary(actions: any[]): any {
+  const totalActions = actions.length;
+  const completedActions = actions.filter(a => a.status === 'Terminé').length;
+  const criticalActions = actions.filter(a => a.priority === 'Critique').length;
+  const budgetTotal = actions.reduce((sum, a) => sum + (a.budget || 0), 0);
+  
+  const riskDistribution = {
+    'Très élevé': actions.filter(a => a.priority === 'Critique').length,
+    'Élevé': actions.filter(a => a.priority === 'Haute').length,
+    'Moyen': actions.filter(a => a.priority === 'Moyenne').length,
+    'Faible': actions.filter(a => a.priority === 'Basse').length
+  };
+  
+  return {
+    totalActions,
+    completedActions,
+    overallProgress: Math.round((completedActions / totalActions) * 100) || 0,
+    criticalActions,
+    overdueActions: 0,
+    upcomingDeadlines: [],
+    budgetTotal,
+    budgetSpent: 0,
+    averageCompletionTime: 45,
+    riskDistribution,
+    categoryProgress: {}
+  };
 }

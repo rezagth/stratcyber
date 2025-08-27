@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, Download, Shield, FileText, Eye, Trash2, Copy, Filter, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { AlertCircle, Download, Shield, FileText, Eye, Filter, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Audit } from '@prisma/client';
 
 // Extend the Prisma Audit type to include responses
@@ -166,12 +166,15 @@ export default function AuditsHistoryPage() {
         throw new Error('Erreur lors de la génération du rapport');
       }
       
-      const htmlContent = await response.text();
-      const blob = new Blob([htmlContent], { type: 'text/html' });
+      // Récupérer le contenu PDF en tant qu'ArrayBuffer
+      const pdfBuffer = await response.arrayBuffer();
+      
+      // Créer un blob PDF et télécharger
+      const blob = new Blob([pdfBuffer], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `rapport-audit-${auditId}.html`);
+      link.setAttribute('download', `rapport-audit-${auditId}.pdf`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -185,68 +188,11 @@ export default function AuditsHistoryPage() {
     }
   };
 
-  const handleViewPdfReport = async (auditId: string) => {
-    try {
-      const url = `/api/audit/${auditId}/export/comprehensive-pdf`;
-      window.open(url, '_blank');
-    } catch (error) {
-      console.error('Erreur ouverture rapport:', error);
-      alert('Erreur lors de l\'ouverture du rapport.');
-    }
-  };
 
   const handleViewDetails = (auditId: string) => {
     router.push(`/dashboard/audits/${auditId}`);
   };
 
-  const handleDuplicateAudit = async (auditId: string) => {
-    try {
-      const response = await fetch(`/api/audits/${auditId}/duplicate`, {
-        method: 'POST',
-      });
-      
-      if (!response.ok) {
-        throw new Error('Erreur lors de la duplication');
-      }
-      
-      const newAudit = await response.json();
-      setAudits(prev => [newAudit, ...prev]);
-      alert('Audit dupliqué avec succès !');
-      
-    } catch (error) {
-      console.error('Erreur duplication:', error);
-      alert('Erreur lors de la duplication de l\'audit.');
-    }
-  };
-
-  const handleDeleteAudit = async (auditId: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet audit ? Cette action est irréversible.')) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/audits/${auditId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: session?.user?.id,
-        }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Erreur lors de la suppression');
-      }
-      
-      setAudits(prev => prev.filter(audit => audit.id !== auditId));
-      alert('Audit supprimé avec succès.');
-      
-    } catch (error) {
-      console.error('Erreur suppression:', error);
-      alert('Erreur lors de la suppression de l\'audit.');
-    }
-  };
 
   const getMaturityBadgeVariant = (maturity: string | null) => {
     if (!maturity) return 'secondary';
@@ -540,16 +486,6 @@ export default function AuditsHistoryPage() {
                         </Button>
                         
                         <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleViewPdfReport(audit.id)}
-                          className="flex items-center gap-2"
-                        >
-                          <FileText className="h-4 w-4" />
-                          Aperçu
-                        </Button>
-                        
-                        <Button
                           variant="default"
                           size="sm"
                           onClick={() => handleGeneratePdfReport(audit.id)}
@@ -564,29 +500,9 @@ export default function AuditsHistoryPage() {
                           ) : (
                             <>
                               <Download className="h-4 w-4" />
-                              PDF
+                              Rapport PDF
                             </>
                           )}
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDuplicateAudit(audit.id)}
-                          className="flex items-center gap-2"
-                        >
-                          <Copy className="h-4 w-4" />
-                          Dupliquer
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteAudit(audit.id)}
-                          className="flex items-center gap-2 text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Supprimer
                         </Button>
                       </div>
                     </div>

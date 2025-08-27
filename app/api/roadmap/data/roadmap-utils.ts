@@ -1,13 +1,10 @@
-import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { prisma } from '@/lib/db';
-import { authOptions } from '../../auth/[...nextauth]/route';
-import { getActionStatuses } from '../actions/route';
+// Utilitaires pour la génération de roadmap et d'actions
+// Exportation des fonctions depuis le fichier route.ts pour éviter la dépendance aux APIs
 
 interface ActionPlan {
   id: string;
   title: string;
-  action: string;  // Ajout du champ action pour le contenu détaillé
+  action: string;
   description: string;
   category: string;
   priority: 'Critique' | 'Haute' | 'Moyenne' | 'Faible';
@@ -31,7 +28,7 @@ interface Milestone {
 }
 
 // Conversion vers ActionPlanItem pour compatibilité avec les composants existants
-function convertToActionPlanItems(actions: ActionPlan[]): any[] {
+export function convertToActionPlanItems(actions: ActionPlan[]): any[] {
   return actions.map(action => ({
     ...action,
     startDate: new Date(action.dueDate),
@@ -54,7 +51,7 @@ function convertToActionPlanItems(actions: ActionPlan[]): any[] {
 }
 
 // Générateur d'actions basé sur les réponses d'audit
-function generateActionsFromResponses(responses: any[]): ActionPlan[] {
+export function generateActionsFromResponses(responses: any[]): ActionPlan[] {
   const actions: ActionPlan[] = [];
   
   // Analyse par catégorie - Les scores sont sur une échelle de 0-5
@@ -488,7 +485,7 @@ function generateActionsFromResponses(responses: any[]): ActionPlan[] {
 }
 
 // Génération des trimestres basés sur les actions
-function generateQuarters(actions: any[], milestones: Milestone[]): any[] {
+export function generateQuarters(actions: any[], milestones: Milestone[]): any[] {
   const currentYear = new Date().getFullYear();
   const quarters = [];
   
@@ -528,7 +525,7 @@ function generateQuarters(actions: any[], milestones: Milestone[]): any[] {
 }
 
 // Génération des jalons basés sur les actions
-function generateMilestones(actions: ActionPlan[]): Milestone[] {
+export function generateMilestones(actions: ActionPlan[]): Milestone[] {
   const milestones: Milestone[] = [];
   
   // Grouper les actions par trimestre
@@ -564,167 +561,4 @@ function generateMilestones(actions: ActionPlan[]): Milestone[] {
   });
 
   return milestones.slice(0, 4); // Maximum 4 jalons
-}
-
-export async function GET(request: Request) {
-  try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Non autorisé' },
-        { status: 401 }
-      );
-    }
-
-    // Récupérer le paramètre auditId depuis l'URL
-    const { searchParams } = new URL(request.url);
-    const auditId = searchParams.get('auditId');
-
-    let audit;
-    
-    if (auditId) {
-      // Récupérer l'audit spécifique avec validation de sécurité
-      audit = await prisma.audit.findFirst({
-        where: {
-          id: auditId,
-          userId: session.user.id, // S'assurer que l'utilisateur a accès à cet audit
-        },
-        include: {
-          responses: true,
-        },
-      });
-      
-      // Si l'audit spécifié n'existe pas ou n'appartient pas à l'utilisateur
-      if (!audit) {
-        return NextResponse.json(
-          { error: 'Audit non trouvé ou accès non autorisé' },
-          { status: 404 }
-        );
-      }
-    } else {
-      // Récupérer le dernier audit (comportement par défaut)
-      audit = await prisma.audit.findFirst({
-        where: {
-          userId: session.user.id,
-        },
-        include: {
-          responses: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
-    }
-
-    if (!audit || audit.responses.length === 0) {
-      return NextResponse.json({
-        actions: [],
-        milestones: [],
-        score: 0,
-        lastAuditDate: new Date().toISOString(),
-        statistics: {
-          totalActions: 0,
-          completedActions: 0,
-          criticalActions: 0,
-          overdueActions: 0,
-          avgProgress: 0,
-        }
-      });
-    }
-
-    // Récupérer les statuts des actions sauvegardés
-    const actionStatuses = getActionStatuses(session.user.id);
-    
-    // Générer les actions basées sur les réponses réelles
-    const generatedActions = generateActionsFromResponses(audit.responses);
-    
-    // Appliquer les statuts sauvegardés aux actions
-    const actionsWithStatus = generatedActions.map(action => {
-      const savedStatus = actionStatuses[action.id];
-      return {
-        ...action,
-        status: savedStatus?.status || action.status,
-        progress: savedStatus?.progress || action.progress
-      };
-    });
-    
-    // Convertir vers le format ActionPlanItem
-    const actions = convertToActionPlanItems(actionsWithStatus);
-    
-    // Générer les jalons basés sur les actions
-    const milestones = generateMilestones(actionsWithStatus);
-    
-    // Générer les trimestres avec les jalons
-    const quarters = generateQuarters(actions, milestones);
-
-    // Calculer le score global - Les scores sont sur une échelle de 0-5, donc on divise par 5 pour obtenir un pourcentage
-    const totalResponses = audit.responses.length;
-    const totalScore = audit.responses.reduce((sum, response) => sum + (response.score || 0), 0);
-    const maxPossibleScore = totalResponses * 5; // Score maximum possible (tous les scores à 5)
-    const globalScore = totalResponses > 0 ? Math.round((totalScore / maxPossibleScore) * 100) : 0;
-
-    // Calculer les statistiques
-    const statistics = {
-      totalActions: actions.length,
-      completedActions: actions.filter(a => a.status === 'Terminé').length,
-      criticalActions: actions.filter(a => a.priority === 'Critique').length,
-      overdueActions: actions.filter(a => {
-        const dueDate = new Date(a.dueDate);
-        return dueDate < new Date() && a.status !== 'Terminé';
-      }).length,
-      avgProgress: actions.length > 0 ? Math.round(actions.reduce((sum, a) => sum + a.progress, 0) / actions.length) : 0,
-    };
-
-    return NextResponse.json({
-      actions,
-      milestones,
-      quarters,
-      score: globalScore,
-      lastAuditDate: audit.createdAt.toISOString(),
-      statistics,
-      analyticsData: {
-        summary: {
-          totalActions: statistics.totalActions,
-          completedActions: statistics.completedActions,
-          overallProgress: statistics.avgProgress,
-          criticalActions: statistics.criticalActions,
-          overdueActions: statistics.overdueActions,
-          upcomingDeadlines: [],
-          budgetTotal: actions.reduce((sum: number, a: any) => sum + (a.budget || 0), 0),
-          budgetSpent: Math.round(actions.reduce((sum: number, a: any) => sum + (a.budget || 0), 0) * 0.12),
-          averageCompletionTime: 45,
-          riskDistribution: {
-            'Très élevé': statistics.criticalActions,
-            'Élevé': actions.filter((a: any) => a.priority === 'Haute').length,
-            'Moyen': actions.filter((a: any) => a.priority === 'Moyenne').length,
-            'Faible': actions.filter((a: any) => a.priority === 'Faible').length
-          },
-          categoryProgress: actions.reduce((acc: any, action: any) => {
-            acc[action.category] = acc[action.category] || 0;
-            acc[action.category] += action.progress;
-            return acc;
-          }, {})
-        },
-        trends: {
-          scoreEvolution: [],
-          budgetUtilization: [],
-          actionCompletion: []
-        },
-        benchmarks: {
-          industryAverage: 65,
-          bestPractice: 85,
-          companySize: 'PME',
-          sector: 'Services'
-        }
-      }
-    });
-
-  } catch (error) {
-    console.error('Erreur lors de la récupération des données de roadmap:', error);
-    return NextResponse.json(
-      { error: 'Erreur lors de la récupération des données' },
-      { status: 500 }
-    );
-  }
 }
