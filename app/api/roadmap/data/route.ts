@@ -566,7 +566,7 @@ function generateMilestones(actions: ActionPlan[]): Milestone[] {
   return milestones.slice(0, 4); // Maximum 4 jalons
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -577,20 +577,47 @@ export async function GET() {
       );
     }
 
-    // Récupérer le dernier audit avec les réponses
-    const latestAudit = await prisma.audit.findFirst({
-      where: {
-        userId: session.user.id,
-      },
-      include: {
-        responses: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+    // Récupérer le paramètre auditId depuis l'URL
+    const { searchParams } = new URL(request.url);
+    const auditId = searchParams.get('auditId');
 
-    if (!latestAudit || latestAudit.responses.length === 0) {
+    let audit;
+    
+    if (auditId) {
+      // Récupérer l'audit spécifique avec validation de sécurité
+      audit = await prisma.audit.findFirst({
+        where: {
+          id: auditId,
+          userId: session.user.id, // S'assurer que l'utilisateur a accès à cet audit
+        },
+        include: {
+          responses: true,
+        },
+      });
+      
+      // Si l'audit spécifié n'existe pas ou n'appartient pas à l'utilisateur
+      if (!audit) {
+        return NextResponse.json(
+          { error: 'Audit non trouvé ou accès non autorisé' },
+          { status: 404 }
+        );
+      }
+    } else {
+      // Récupérer le dernier audit (comportement par défaut)
+      audit = await prisma.audit.findFirst({
+        where: {
+          userId: session.user.id,
+        },
+        include: {
+          responses: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+    }
+
+    if (!audit || audit.responses.length === 0) {
       return NextResponse.json({
         actions: [],
         milestones: [],
@@ -610,7 +637,7 @@ export async function GET() {
     const actionStatuses = getActionStatuses(session.user.id);
     
     // Générer les actions basées sur les réponses réelles
-    const generatedActions = generateActionsFromResponses(latestAudit.responses);
+    const generatedActions = generateActionsFromResponses(audit.responses);
     
     // Appliquer les statuts sauvegardés aux actions
     const actionsWithStatus = generatedActions.map(action => {
@@ -632,8 +659,8 @@ export async function GET() {
     const quarters = generateQuarters(actions, milestones);
 
     // Calculer le score global - Les scores sont sur une échelle de 0-5, donc on divise par 5 pour obtenir un pourcentage
-    const totalResponses = latestAudit.responses.length;
-    const totalScore = latestAudit.responses.reduce((sum, response) => sum + (response.score || 0), 0);
+    const totalResponses = audit.responses.length;
+    const totalScore = audit.responses.reduce((sum, response) => sum + (response.score || 0), 0);
     const maxPossibleScore = totalResponses * 5; // Score maximum possible (tous les scores à 5)
     const globalScore = totalResponses > 0 ? Math.round((totalScore / maxPossibleScore) * 100) : 0;
 
@@ -654,7 +681,7 @@ export async function GET() {
       milestones,
       quarters,
       score: globalScore,
-      lastAuditDate: latestAudit.createdAt.toISOString(),
+      lastAuditDate: audit.createdAt.toISOString(),
       statistics,
       analyticsData: {
         summary: {

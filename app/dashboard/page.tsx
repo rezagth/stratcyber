@@ -106,6 +106,7 @@ export default function DashboardPage() {
   const [complianceFilter, setComplianceFilter] = useState<'ALL' | 'CRITICAL' | 'LOW_SCORE'>('ALL');
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
   const [generatingPdf, setGeneratingPdf] = useState<string | null>(null);
+  const [roadmapData, setRoadmapData] = useState<any>(null);
 
   const itemsPerPage = 10;
 
@@ -119,6 +120,13 @@ export default function DashboardPage() {
           const auditData = await auditResponse.json();
           setAudits(auditData);
           setLastAudit(auditData[0] as AuditWithResponses || null);
+          
+          // Fetch roadmap data for actions
+          const roadmapResponse = await fetch('/api/roadmap/data');
+          if (roadmapResponse.ok) {
+            const roadmapResult = await roadmapResponse.json();
+            setRoadmapData(roadmapResult);
+          }
         } catch (err) {
           setError(err instanceof Error ? err.message : 'Une erreur inconnue est survenue');
           console.error('Erreur lors de la récupération des données:', err);
@@ -199,15 +207,15 @@ export default function DashboardPage() {
         throw new Error('Erreur lors de la génération du rapport');
       }
       
-      // Récupérer le contenu HTML
-      const htmlContent = await response.text();
+      // Récupérer le contenu PDF en tant qu'ArrayBuffer
+      const pdfBuffer = await response.arrayBuffer();
       
-      // Créer un blob et télécharger
-      const blob = new Blob([htmlContent], { type: 'text/html' });
+      // Créer un blob PDF et télécharger
+      const blob = new Blob([pdfBuffer], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `rapport-audit-${auditId}.html`);
+      link.setAttribute('download', `rapport-audit-${auditId}.pdf`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -234,14 +242,15 @@ export default function DashboardPage() {
 
   const crazyScore = auditResult ? calculateCrazyScore(auditResult) : null;
   
+  // Utiliser les actions de l'API roadmap si disponibles, sinon générer localement
   const answers = lastAudit?.responses.map(response => ({
     questionId: response.question,
     answer: response.answer,
     score: response.score !== null ? response.score : undefined
   })) || [];
   
-// Crée un plan d'action basé sur les résultats du formulaire
-const actionPlan = auditResult ? generateActionPlan(auditResult, answers) : [];
+  // Utiliser les actions de roadmap en priorité
+  const actionPlan = roadmapData?.actions || (auditResult ? generateActionPlan(auditResult, answers) : []);
 
 // Filtrage contextuel des actions de conformité
 const filterActionsByCompliance = (actions: ActionPlanItem[], context: AuditWithResponses | null) => {
@@ -434,12 +443,12 @@ const priorityFiltered = actionPlan.filter(a => {
                 <CardTitle>Actions</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-center">
-                  {actionPlan.length}
-                </div>
-                <div className="text-sm text-muted-foreground text-center">
-                  recommandations
-                </div>
+                        <div className="text-3xl font-bold text-center">
+                          {roadmapData?.statistics?.totalActions || actionPlan.length}
+                        </div>
+                        <div className="text-sm text-muted-foreground text-center">
+                          actions recommandées
+                        </div>
               </CardContent>
             </Card>
             
@@ -657,17 +666,17 @@ const priorityFiltered = actionPlan.filter(a => {
               ) : (
                 <ol className="relative border-l border-primary/30 ml-2">
                   {actionPlan.slice(0, 5).map((item, i) => (
-                    <li key={i} className="mb-8 ml-4">
-                      <div className={`absolute w-4 h-4 rounded-full -left-2 border-2 border-white ${item.priority === 'Haute' ? 'bg-destructive' : item.priority === 'Moyenne' ? 'bg-amber-500' : 'bg-green-500'}`} />
+                    <li key={item.id || i} className="mb-8 ml-4">
+                      <div className={`absolute w-4 h-4 rounded-full -left-2 border-2 border-white ${item.priority === 'Critique' ? 'bg-destructive' : item.priority === 'Haute' ? 'bg-orange-500' : item.priority === 'Moyenne' ? 'bg-amber-500' : 'bg-green-500'}`} />
                       <div className="flex flex-col">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-bold text-lg">Étape {i + 1}</span>
-                          <Badge variant={item.priority === 'Haute' ? 'destructive' : item.priority === 'Moyenne' ? 'secondary' : 'default'}>
+                          <Badge variant={item.priority === 'Critique' ? 'destructive' : item.priority === 'Haute' ? 'destructive' : item.priority === 'Moyenne' ? 'secondary' : 'default'}>
                             {item.priority}
                           </Badge>
-                          <span className="text-sm text-muted-foreground">• {item.deadline}</span>
+                          <span className="text-sm text-muted-foreground">• {new Date(item.dueDate).toLocaleDateString('fr-FR') || item.deadline}</span>
                         </div>
-                        <p className="mb-1 text-base">{item.action}</p>
+                        <p className="mb-1 text-base">{item.action || item.title}</p>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <span>Domaine: <Badge variant="secondary">{item.category}</Badge></span>
                           <span>Responsable: <Badge variant="outline">{item.owner}</Badge></span>
@@ -779,10 +788,10 @@ const priorityFiltered = actionPlan.filter(a => {
                           <th className="p-4 font-semibold text-left">Responsable</th>
                         </tr>
                       </thead>
-                      <tbody>
+                        <tbody>
 {(showAllActions ? filteredActionPlan : filteredActionPlan.slice(0,5)).map((item, index) => (
                           <tr
-                            key={index}
+                            key={item.id || index}
                             className={
                               `border-b border-muted/30 hover:bg-muted/30 transition-colors duration-150`
                             }
@@ -790,13 +799,15 @@ const priorityFiltered = actionPlan.filter(a => {
                             <td className="p-4 text-base font-medium max-w-md">
                               <div className="flex items-start gap-3">
                                 <span className={
-                                  item.priority === 'Haute' 
+                                  item.priority === 'Critique' 
                                   ? 'bg-destructive/20 text-destructive border-destructive/30' 
+                                  : item.priority === 'Haute' 
+                                  ? 'bg-orange-500/20 text-orange-700 border-orange-500/30'
                                   : item.priority === 'Moyenne' 
                                   ? 'bg-amber-500/20 text-amber-700 border-amber-500/30' 
                                   : 'bg-green-500/20 text-green-700 border-green-500/30'
                                 }></span>
-                                <span>{item.action}</span>
+                                <span>{item.action || item.title}</span>
                               </div>
                             </td>
                             <td className="p-4">
@@ -806,7 +817,7 @@ const priorityFiltered = actionPlan.filter(a => {
                             </td>
                             <td className="p-4">
                               <Badge 
-                                variant={item.priority === 'Haute' ? 'destructive' : item.priority === 'Moyenne' ? 'secondary' : 'default'}
+                                variant={item.priority === 'Critique' ? 'destructive' : item.priority === 'Haute' ? 'destructive' : item.priority === 'Moyenne' ? 'secondary' : 'default'}
                                 className="rounded-full px-2 py-1 text-xs"
                               >
                                 {item.priority}
@@ -814,7 +825,7 @@ const priorityFiltered = actionPlan.filter(a => {
                             </td>
                             <td className="p-4">
                               <span className="bg-muted px-2 py-1 rounded-full text-xs">
-                                {item.deadline}
+                                {new Date(item.dueDate).toLocaleDateString('fr-FR') || item.deadline}
                               </span>
                             </td>
                             <td className="p-4">
