@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/db';
 import { authOptions } from '../../auth/[...nextauth]/route';
@@ -568,6 +568,8 @@ function generateMilestones(actions: ActionPlan[]): Milestone[] {
 
 export async function GET(request: Request) {
   try {
+    // Correction pour Next.js 15 : pas besoin de passer request à getServerSession
+    // car getServerSession gère maintenant les APIs asynchrones en interne
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
