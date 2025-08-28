@@ -17,7 +17,7 @@ import {
   isoQuestions, 
   ebiosQuestions 
 } from '@/lib/audit/questions-extended';
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
 
 // Interface pour les données du rapport PDF
 interface ComprehensiveReportData {
@@ -51,8 +51,52 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Logger pour envoyer les logs au navigateur
+  const logs: string[] = [];
+  const log = (message: string) => {
+    console.log(message);
+    logs.push(`${new Date().toISOString()}: ${message}`);
+  };
+  
+  // Fonction pour nettoyer les logs pour les headers HTTP (ASCII seulement)
+  const sanitizeLogsForHeader = (logs: string[]): string => {
+    return logs
+      .map(log => log
+        // Remplacer les emojis et caractères non-ASCII par leur équivalent texte
+        .replace(/🚀/g, '[START]')
+        .replace(/✅/g, '[SUCCESS]')
+        .replace(/❌/g, '[ERROR]')
+        .replace(/📄/g, '[PDF]')
+        .replace(/🔍/g, '[DEBUG]')
+        .replace(/🌐/g, '[BROWSER]')
+        .replace(/📝/g, '[HTML]')
+        .replace(/🖨️/g, '[PRINT]')
+        .replace(/📋/g, '[GENERATE]')
+        .replace(/🔚/g, '[CLOSE]')
+        .replace(/🎉/g, '[COMPLETE]')
+        .replace(/🛠️/g, '[FALLBACK]')
+        // Nettoyer tous les autres caractères non-ASCII
+        .replace(/[^\x20-\x7E]/g, '')
+        // Limiter la longueur de chaque log
+        .substring(0, 200)
+      )
+      .join(' | ')
+      // Limiter la taille totale du header (les headers HTTP ont des limites)
+      .substring(0, 4000);
+  };
+
   try {
+    log('[START] [PDF Generation] Starting comprehensive PDF generation');
     const session = await getServerSession(authOptions);
+    log(`[SUCCESS] [PDF Generation] Session retrieved: ${session?.user?.id || 'No user'}`);
+    
+    // Ajouter les logs dans les headers de réponse pour debugging
+    const addDebugHeaders = (response: Response) => {
+      response.headers.set('X-Debug-Logs', logs.join(' | '));
+      response.headers.set('X-Debug-Count', logs.length.toString());
+      return response;
+    };
+    
     
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -63,6 +107,7 @@ export async function GET(
 
     // Await params first (Next.js 15 requirement)
     const { id } = await params;
+    log('[PDF] [PDF Generation] Processing audit ID: ' + id);
 
     // Récupérer l'audit complet depuis la BDD
     const audit = await prisma.audit.findFirst({
@@ -80,11 +125,13 @@ export async function GET(
     });
 
     if (!audit) {
+      log('[ERROR] [PDF Generation] Audit not found for ID: ' + id);
       return NextResponse.json(
         { error: 'Audit non trouvé' },
-        { status: 404 }
+        { status: 404, headers: { 'X-Debug-Logs': sanitizeLogsForHeader(logs), 'X-Debug-Count': logs.length.toString() } }
       );
     }
+    log('[SUCCESS] [PDF Generation] Audit retrieved with ' + audit.responses.length + ' responses');
 
     // Parser le profil d'entreprise
     let companyProfile = null;
@@ -102,18 +149,19 @@ export async function GET(
     }));
 
     const auditResult = computeAuditResult(auditAnswers);
+    log('[SUCCESS] [PDF Generation] Audit result computed');
 
     // Récupérer les données roadmap spécifiques à cet audit via l'API
-    console.log('🔍 Debug PDF - ID Audit:', id);
-    console.log('🔍 Debug PDF - User ID:', session.user.id);
-    console.log('🔍 Debug PDF - Nombre de réponses audit:', audit.responses.length);
+    log('[DEBUG] Debug PDF - ID Audit: ' + id);
+    log('[DEBUG] Debug PDF - User ID: ' + session.user.id);
+    log('[DEBUG] Debug PDF - Nombre de reponses audit: ' + audit.responses.length);
     
     // Construire l'URL dynamiquement basé sur la requête actuelle
     const protocol = request.headers.get('x-forwarded-proto') || 'http';
     const host = request.headers.get('host') || 'localhost:3000';
     const baseUrl = `${protocol}://${host}`;
     
-    console.log('🔍 Debug PDF - Base URL construite:', baseUrl);
+    log('[DEBUG] Debug PDF - Base URL construite: ' + baseUrl);
     
     // Utiliser l'API roadmap avec l'audit ID spécifique
     const roadmapResponse = await fetch(`${baseUrl}/api/roadmap/data?auditId=${id}`, {
@@ -122,24 +170,24 @@ export async function GET(
       }
     });
     
-    console.log('🔍 Debug PDF - Status API Roadmap:', roadmapResponse.status);
+    log('[DEBUG] Debug PDF - Status API Roadmap: ' + roadmapResponse.status);
     
     let roadmapData;
     if (roadmapResponse.ok) {
       roadmapData = await roadmapResponse.json();
-      console.log('🔍 Debug PDF - Données API récupérées pour audit', id, ':');
-      console.log('  - Nombre d\'actions:', roadmapData.actions?.length || 0);
-      console.log('  - Nombre de milestones:', roadmapData.milestones?.length || 0);
-      console.log('  - Score:', roadmapData.score);
-      console.log('  - Actions critiques:', roadmapData.analyticsData?.summary?.criticalActions || 0);
-      console.log('  - Budget total:', roadmapData.analyticsData?.summary?.budgetTotal || 0);
+      log('[DEBUG] Debug PDF - Donnees API recuperees pour audit ' + id);
+      log('  - Nombre d actions: ' + (roadmapData.actions?.length || 0));
+      log('  - Nombre de milestones: ' + (roadmapData.milestones?.length || 0));
+      log('  - Score: ' + roadmapData.score);
+      log('  - Actions critiques: ' + (roadmapData.analyticsData?.summary?.criticalActions || 0));
+      log('  - Budget total: ' + (roadmapData.analyticsData?.summary?.budgetTotal || 0));
     } else {
-      console.error('❌ Debug PDF - Erreur API Roadmap:', roadmapResponse.status, roadmapResponse.statusText);
+      log('[ERROR] Debug PDF - Erreur API Roadmap: ' + roadmapResponse.status + ' ' + roadmapResponse.statusText);
       const errorText = await roadmapResponse.text();
-      console.error('❌ Debug PDF - Détail erreur:', errorText);
+      log('[ERROR] Debug PDF - Detail erreur: ' + errorText);
       
       // En cas d'erreur, générer les actions directement pour cet audit
-      console.log('🛠️ Fallback: Génération directe des actions pour l\'audit', id);
+      log('[FALLBACK] Fallback: Generation directe des actions pour l audit ' + id);
       const auditSpecificActions = generateActionsFromResponses(audit.responses);
       const actionPlanItems = convertToActionPlanItems(auditSpecificActions);
       const roadmapMilestones = generateRoadmapMilestones(auditSpecificActions);
@@ -194,44 +242,175 @@ export async function GET(
     };
 
     // Générer le HTML du rapport
-    const htmlContent = generateComprehensiveReport(reportData);
+    log('[HTML] [PDF Generation] Generating HTML content...');
+    let htmlContent;
+    try {
+      htmlContent = generateComprehensiveReport(reportData);
+      log('[SUCCESS] [PDF Generation] HTML content generated, length: ' + htmlContent.length);
+    } catch (htmlError) {
+      log('[ERROR] [PDF Generation] Error generating HTML content: ' + htmlError.message);
+      throw new Error(`HTML generation failed: ${htmlError.message}`);
+    }
 
-    // Générer le PDF avec Puppeteer
-    const browser = await puppeteer.launch({ 
-      headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    const page = await browser.newPage();
+    // Générer le PDF avec Puppeteer - Configuration pour Vercel
+    log('[BROWSER] [PDF Generation] Launching Puppeteer browser...');
+    log('[CONFIG] [PDF Generation] Environment - VERCEL: ' + !!process.env.VERCEL);
     
-    await page.setContent(htmlContent, { waitUntil: 'domcontentloaded' });
-    await page.emulateMediaType('print');
-    
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: {
-        top: '1cm',
-        bottom: '1cm',
-        left: '1cm',
-        right: '1cm'
+    let browser;
+    try {
+      // Configuration pour puppeteer-core qui nécessite un executablePath
+      const puppeteerConfig = {
+        headless: 'new',
+        args: [
+          '--no-sandbox', 
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-accelerated-2d-canvas',
+          '--no-first-run',
+          '--no-zygote',
+          '--single-process',
+          '--disable-gpu'
+        ]
+      };
+
+      // Définir l'executablePath selon l'environnement
+      if (process.env.VERCEL) {
+        // Production sur Vercel
+        puppeteerConfig.executablePath = '/usr/bin/google-chrome';
+      } else {
+        // Développement local - tenter de trouver Chrome automatiquement
+        const chromePaths = [
+          // Windows
+          'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+          'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+          // macOS
+          '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+          // Linux
+          '/usr/bin/google-chrome',
+          '/usr/bin/google-chrome-stable',
+          '/usr/bin/chromium',
+          '/usr/bin/chromium-browser'
+        ];
+
+        // Essayer de trouver Chrome sur le système
+        const fs = require('fs');
+        let chromeFound = false;
+        for (const path of chromePaths) {
+          try {
+            if (fs.existsSync(path)) {
+              puppeteerConfig.executablePath = path;
+              chromeFound = true;
+              log('[SUCCESS] [PDF Generation] Chrome found at: ' + path);
+              break;
+            }
+          } catch (e) {
+            // Continue searching
+          }
+        }
+
+        if (!chromeFound) {
+          log('[WARNING] [PDF Generation] Chrome not found, falling back to puppeteer');
+          // Fallback: utiliser puppeteer au lieu de puppeteer-core pour le dev
+          const puppeteerFull = require('puppeteer');
+          browser = await puppeteerFull.launch({
+            headless: 'new',
+            args: puppeteerConfig.args
+          });
+        }
       }
-    });
-    
-    await browser.close();
 
-    return new Response(pdfBuffer, {
+      if (!browser) {
+        browser = await puppeteer.launch(puppeteerConfig);
+      }
+      log('[SUCCESS] [PDF Generation] Browser launched successfully');
+    } catch (browserError) {
+      log('[ERROR] [PDF Generation] Failed to launch browser: ' + browserError.message);
+      throw new Error(`Browser launch failed: ${browserError.message}`);
+    }
+    let page;
+    let pdfBuffer;
+    
+    try {
+      log('[PDF] [PDF Generation] Creating new page...');
+      page = await browser.newPage();
+      
+      log('[HTML] [PDF Generation] Setting HTML content...');
+      await page.setContent(htmlContent, { 
+        waitUntil: 'domcontentloaded',
+        timeout: 30000 // 30 seconds timeout
+      });
+      
+      log('[PRINT] [PDF Generation] Setting print media type...');
+      await page.emulateMediaType('print');
+      
+      log('[GENERATE] [PDF Generation] Generating PDF...');
+      pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        timeout: 60000, // 60 seconds timeout for PDF generation
+        margin: {
+          top: '1cm',
+          bottom: '1cm',
+          left: '1cm',
+          right: '1cm'
+        }
+      });
+      
+      log('[SUCCESS] [PDF Generation] PDF generated successfully, size: ' + pdfBuffer.length + ' bytes');
+      
+    } catch (pdfError) {
+      log('[ERROR] [PDF Generation] Error during PDF generation: ' + pdfError.message);
+      throw new Error(`PDF generation failed: ${pdfError.message}`);
+    } finally {
+      log('[CLOSE] [PDF Generation] Closing browser...');
+      await browser.close();
+      log('[SUCCESS] [PDF Generation] Browser closed');
+    }
+
+    log('[COMPLETE] [PDF Generation] Sending PDF response...');
+    const response = new Response(pdfBuffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="rapport-audit-${audit.id}.pdf"`,
+        'X-Debug-Logs': sanitizeLogsForHeader(logs),
+        'X-Debug-Count': logs.length.toString(),
+        'X-Debug-Success': 'true'
       },
     });
+    
+    return response;
 
   } catch (error) {
-    console.error('Erreur génération rapport PDF:', error);
+    log('[ERROR] [PDF Generation] FATAL ERROR in comprehensive PDF generation');
+    log('[ERROR] [PDF Generation] Error name: ' + error.name);
+    log('[ERROR] [PDF Generation] Error message: ' + error.message);
+    log('[ERROR] [PDF Generation] Error stack: ' + error.stack);
+    
+    // Provide more specific error information
+    let errorMessage = 'Erreur lors de la génération du rapport';
+    if (error.message.includes('Browser launch failed')) {
+      errorMessage = 'Erreur de lancement du navigateur PDF';
+    } else if (error.message.includes('PDF generation failed')) {
+      errorMessage = 'Erreur de génération PDF';
+    } else if (error.message.includes('HTML generation failed')) {
+      errorMessage = 'Erreur de génération HTML';
+    }
+    
     return NextResponse.json(
-      { error: 'Erreur lors de la génération du rapport' },
-      { status: 500 }
+      { 
+        error: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+        serverLogs: logs
+      },
+      { 
+        status: 500,
+        headers: {
+          'X-Debug-Logs': sanitizeLogsForHeader(logs),
+          'X-Debug-Count': logs.length.toString(),
+          'X-Debug-Error': 'true'
+        }
+      }
     );
   }
 }
