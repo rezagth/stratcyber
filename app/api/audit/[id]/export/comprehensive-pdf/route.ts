@@ -108,8 +108,15 @@ export async function GET(
     console.log('🔍 Debug PDF - User ID:', session.user.id);
     console.log('🔍 Debug PDF - Nombre de réponses audit:', audit.responses.length);
     
+    // Construire l'URL dynamiquement basé sur la requête actuelle
+    const protocol = request.headers.get('x-forwarded-proto') || 'http';
+    const host = request.headers.get('host') || 'localhost:3000';
+    const baseUrl = `${protocol}://${host}`;
+    
+    console.log('🔍 Debug PDF - Base URL construite:', baseUrl);
+    
     // Utiliser l'API roadmap avec l'audit ID spécifique
-    const roadmapResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/roadmap/data?auditId=${id}`, {
+    const roadmapResponse = await fetch(`${baseUrl}/api/roadmap/data?auditId=${id}`, {
       headers: {
         'Cookie': request.headers.get('cookie') || ''
       }
