@@ -122,6 +122,9 @@ importers:
       puppeteer:
         specifier: ^24.17.0
         version: 24.17.0(typescript@5.8.3)
+      puppeteer-core:
+        specifier: ^24.17.0
+        version: 24.17.0
       raf:
         specifier: ^3.4.1
         version: 3.4.1
