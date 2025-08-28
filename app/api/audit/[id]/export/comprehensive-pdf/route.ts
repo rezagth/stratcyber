@@ -18,6 +18,7 @@ import {
   ebiosQuestions 
 } from '@/lib/audit/questions-extended';
 import puppeteer from 'puppeteer-core';
+import chromium from '@sparticuz/chromium';
 
 // Interface pour les données du rapport PDF
 interface ComprehensiveReportData {
@@ -258,8 +259,8 @@ export async function GET(
     
     let browser;
     try {
-      // Configuration pour puppeteer-core qui nécessite un executablePath
-      const puppeteerConfig = {
+      // Configuration optimisée pour Vercel et développement local
+      let puppeteerConfig = {
         headless: 'new',
         args: [
           '--no-sandbox', 
@@ -269,16 +270,32 @@ export async function GET(
           '--no-first-run',
           '--no-zygote',
           '--single-process',
-          '--disable-gpu'
+          '--disable-gpu',
+          '--disable-web-security',
+          '--disable-extensions',
+          '--disable-plugins'
         ]
       };
 
-      // Définir l'executablePath selon l'environnement
       if (process.env.VERCEL) {
-        // Production sur Vercel
-        puppeteerConfig.executablePath = '/usr/bin/google-chrome';
+        // Production sur Vercel - utiliser @sparticuz/chromium
+        log('[CONFIG] [PDF Generation] Using Sparticuz Chromium for Vercel');
+        
+        // Configuration spéciale pour Vercel
+        puppeteerConfig = {
+          ...puppeteerConfig,
+          executablePath: await chromium.executablePath(),
+          args: [
+            ...chromium.args,
+            '--hide-scrollbars',
+            '--disable-web-security',
+            '--disable-features=VizDisplayCompositor',
+          ]
+        };
+        log('[CONFIG] [PDF Generation] Chromium executable path configured for Vercel');
       } else {
         // Développement local - tenter de trouver Chrome automatiquement
+        log('[CONFIG] [PDF Generation] Local development - searching for Chrome');
         const chromePaths = [
           // Windows
           'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
@@ -309,13 +326,20 @@ export async function GET(
         }
 
         if (!chromeFound) {
-          log('[WARNING] [PDF Generation] Chrome not found, falling back to puppeteer');
-          // Fallback: utiliser puppeteer au lieu de puppeteer-core pour le dev
-          const puppeteerFull = require('puppeteer');
-          browser = await puppeteerFull.launch({
-            headless: 'new',
-            args: puppeteerConfig.args
-          });
+          log('[WARNING] [PDF Generation] Chrome not found locally, using bundled Chromium');
+          // Fallback: utiliser le Chromium de @sparticuz/chromium même en local
+          try {
+            puppeteerConfig.executablePath = await chromium.executablePath();
+            log('[SUCCESS] [PDF Generation] Using Sparticuz Chromium as fallback');
+          } catch (chromiumError) {
+            log('[ERROR] [PDF Generation] Failed to get Chromium path: ' + chromiumError.message);
+            // Dernier recours: utiliser puppeteer complet
+            const puppeteerFull = require('puppeteer');
+            browser = await puppeteerFull.launch({
+              headless: 'new',
+              args: puppeteerConfig.args
+            });
+          }
         }
       }
 
