@@ -567,19 +567,42 @@ export default function RoadmapDashboard() {
                                 </div>
                               </div>
 
+                              {/* Nouveau : Badge automatisable */}
+                              {action.isAutomatable && (
+                                <div className="mb-2">
+                                  <Badge variant="outline" className="bg-purple-50 border-purple-200 text-purple-700 text-xs">
+                                    🤖 Automatisable - Économise {action.timeSavedHours}h
+                                  </Badge>
+                                </div>
+                              )}
+
                               {/* Actions */}
                               <div className="flex gap-2">
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  className="flex-1 text-xs"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    updateActionStatus(action.id, 'En cours', 10);
-                                  }}
-                                >
-                                  Commencer
-                                </Button>
+                                {action.isAutomatable ? (
+                                  <Link href="/dashboard/automation">
+                                    <Button 
+                                      size="sm" 
+                                      className="flex-1 text-xs bg-purple-600 hover:bg-purple-700"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                      }}
+                                    >
+                                      ⚡ Auto (5 min)
+                                    </Button>
+                                  </Link>
+                                ) : (
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    className="flex-1 text-xs"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      updateActionStatus(action.id, 'En cours', 10);
+                                    }}
+                                  >
+                                    Commencer
+                                  </Button>
+                                )}
                                 <Button 
                                   size="sm" 
                                   variant="ghost"

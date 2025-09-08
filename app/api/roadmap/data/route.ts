@@ -18,6 +18,13 @@ interface ActionPlan {
   estimatedHours: number;
   businessImpact: string;
   budget?: number;
+  // Nouveaux champs d'automatisation
+  isAutomatable?: boolean;
+  automationType?: 'document_generation' | 'training_program' | 'monitoring' | 'audit';
+  automationStatus?: 'available' | 'requested' | 'processing' | 'completed';
+  timeSavedHours?: number;
+  automationComplexity?: 'low' | 'medium' | 'high';
+  requiredInputs?: string[];
 }
 
 interface Milestone {
@@ -379,9 +386,69 @@ function generateActionsFromResponses(responses: any[]): ActionPlan[] {
       ]
     };
     
+    // Définir les actions automatisables avec leurs caractéristiques
+    const automatableActionsMap: Record<string, {
+      isAutomatable: boolean;
+      automationType: 'document_generation' | 'training_program' | 'monitoring' | 'audit';
+      timeSavedHours: number;
+      complexity: 'low' | 'medium' | 'high';
+      requiredInputs: string[];
+    }> = {
+      "Mettre en place une procédure de notification des violations de données dans les 72h à la CNIL": {
+        isAutomatable: true,
+        automationType: 'document_generation',
+        timeSavedHours: 24,
+        complexity: 'low',
+        requiredInputs: ['company_info', 'data_types', 'systems', 'contacts']
+      },
+      "Créer et maintenir le registre des traitements de données personnelles": {
+        isAutomatable: true,
+        automationType: 'document_generation',
+        timeSavedHours: 32,
+        complexity: 'low',
+        requiredInputs: ['business_processes', 'data_flows', 'retention_periods']
+      },
+      "Développer un programme complet de sensibilisation à la cybersécurité": {
+        isAutomatable: true,
+        automationType: 'training_program',
+        timeSavedHours: 32,
+        complexity: 'low',
+        requiredInputs: ['company_size', 'sector', 'risk_level']
+      },
+      "Lancer des campagnes de simulation de phishing ciblées": {
+        isAutomatable: true,
+        automationType: 'training_program',
+        timeSavedHours: 16,
+        complexity: 'low',
+        requiredInputs: ['email_list', 'frequency', 'sectors']
+      },
+      "Élaborer et approuver la politique de sécurité de l'information": {
+        isAutomatable: true,
+        automationType: 'document_generation',
+        timeSavedHours: 40,
+        complexity: 'medium',
+        requiredInputs: ['company_structure', 'assets', 'compliance_requirements']
+      },
+      "Surveiller en continu les risques de la chaîne d'approvisionnement": {
+        isAutomatable: true,
+        automationType: 'monitoring',
+        timeSavedHours: 30,
+        complexity: 'medium',
+        requiredInputs: ['supplier_list', 'risk_thresholds', 'notification_contacts']
+      }
+    };
+
     // Ajouter les actions spécifiques pour la catégorie
     const specificActions = categoryActions[category as keyof typeof categoryActions] || [];
     specificActions.forEach((actionData, index) => {
+      const automationInfo = automatableActionsMap[actionData.action] || {
+        isAutomatable: false,
+        automationType: 'document_generation' as const,
+        timeSavedHours: 0,
+        complexity: 'high' as const,
+        requiredInputs: []
+      };
+
       actions.push({
         id: `${category.toLowerCase().replace(/\s+/g, '-')}-${index + 1}`,
         title: actionData.action.substring(0, 60) + "...",
@@ -395,7 +462,14 @@ function generateActionsFromResponses(responses: any[]): ActionPlan[] {
         owner: actionData.owner,
         estimatedHours: actionData.estimatedHours,
         businessImpact: `Amélioration de la sécurité ${category}`,
-        budget: actionData.budget
+        budget: actionData.budget,
+        // Nouveaux champs d'automatisation
+        isAutomatable: automationInfo.isAutomatable,
+        automationType: automationInfo.automationType,
+        automationStatus: 'available',
+        timeSavedHours: automationInfo.timeSavedHours,
+        automationComplexity: automationInfo.complexity,
+        requiredInputs: automationInfo.requiredInputs
       });
     });
     
