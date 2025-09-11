@@ -67,7 +67,7 @@ const navigationItems = [
       },
       {
         title: 'Historique',
-        url: '/audit/historique',
+        url: '/dashboard/audits',
       },
     ],
   },
