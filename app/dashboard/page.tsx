@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import { DashboardSkeleton } from '@/components/skeletons/dashboard-skeleton';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, Download, Shield } from 'lucide-react';
+import { AlertCircle, Download, Shield, FileText, Eye } from 'lucide-react';
 import { generateActionPlan, calculateCrazyScore, computeAuditResult, ActionPlanItem, inferComplianceFromCategory } from '../../lib/audit/scoring';
 import { Audit } from '@prisma/client';
 import RadarChart from '../../components/charts/RadarChart';
@@ -105,6 +106,8 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [complianceFilter, setComplianceFilter] = useState<'ALL' | 'CRITICAL' | 'LOW_SCORE'>('ALL');
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
+  const [generatingPdf, setGeneratingPdf] = useState<string | null>(null);
+  const [roadmapData, setRoadmapData] = useState<any>(null);
 
   const itemsPerPage = 10;
 
@@ -118,6 +121,13 @@ export default function DashboardPage() {
           const auditData = await auditResponse.json();
           setAudits(auditData);
           setLastAudit(auditData[0] as AuditWithResponses || null);
+          
+          // Fetch roadmap data for actions
+          const roadmapResponse = await fetch('/api/roadmap/data');
+          if (roadmapResponse.ok) {
+            const roadmapResult = await roadmapResponse.json();
+            setRoadmapData(roadmapResult);
+          }
         } catch (err) {
           setError(err instanceof Error ? err.message : 'Une erreur inconnue est survenue');
           console.error('Erreur lors de la récupération des données:', err);
@@ -186,16 +196,62 @@ export default function DashboardPage() {
     document.body.removeChild(link);
   };
 
+  // PDF report generation
+  const handleGeneratePdfReport = async (auditId: string) => {
+    try {
+      setGeneratingPdf(auditId);
+      
+      // Appel à l'API pour générer le rapport PDF
+      const response = await fetch(`/api/audit/${auditId}/export/comprehensive-pdf`);
+      
+      if (!response.ok) {
+        throw new Error('Erreur lors de la génération du rapport');
+      }
+      
+      // Récupérer le contenu PDF en tant qu'ArrayBuffer
+      const pdfBuffer = await response.arrayBuffer();
+      
+      // Créer un blob PDF et télécharger
+      const blob = new Blob([pdfBuffer], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `rapport-audit-${auditId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+    } catch (error) {
+      console.error('Erreur génération PDF:', error);
+      alert('Erreur lors de la génération du rapport. Veuillez réessayer.');
+    } finally {
+      setGeneratingPdf(null);
+    }
+  };
+
+  // Ouvrir le rapport dans un nouvel onglet
+  const handleViewPdfReport = async (auditId: string) => {
+    try {
+      const url = `/api/audit/${auditId}/export/comprehensive-pdf`;
+      window.open(url, '_blank');
+    } catch (error) {
+      console.error('Erreur ouverture rapport:', error);
+      alert('Erreur lors de l\'ouverture du rapport.');
+    }
+  };
+
   const crazyScore = auditResult ? calculateCrazyScore(auditResult) : null;
   
+  // Utiliser les actions de l'API roadmap si disponibles, sinon générer localement
   const answers = lastAudit?.responses.map(response => ({
     questionId: response.question,
     answer: response.answer,
     score: response.score !== null ? response.score : undefined
   })) || [];
   
-// Crée un plan d'action basé sur les résultats du formulaire
-const actionPlan = auditResult ? generateActionPlan(auditResult, answers) : [];
+  // Utiliser les actions de roadmap en priorité
+  const actionPlan = roadmapData?.actions || (auditResult ? generateActionPlan(auditResult, answers) : []);
 
 // Filtrage contextuel des actions de conformité
 const filterActionsByCompliance = (actions: ActionPlanItem[], context: AuditWithResponses | null) => {
@@ -251,29 +307,30 @@ const priorityFiltered = actionPlan.filter(a => {
   const paginated = sortedActions.slice((currentPage-1)*itemsPerPage, currentPage*itemsPerPage);
 
   if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">Tableau de bord StratCyber</h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">Surveillance continue de votre conformité cybersécurité et plan d&#39;action personnalisé</p>
-        </div>
-        <div className="text-center">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Chargement des données...</h2>
-        </div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
   
   if (error) {
     return (
-      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">Tableau de bord StratCyber</h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">Surveillance continue de votre conformité cybersécurité et plan d&#39;action personnalisé</p>
-        </div>
-        <div className="text-center">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Erreur lors de la récupération des données</h2>
-          <p className="text-lg text-red-600">{error}</p>
+      <div className="flex flex-col min-h-screen bg-gradient-to-br from-red-50 to-rose-100">
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-center space-y-6 max-w-md mx-auto">
+            <div className="flex justify-center">
+              <AlertCircle className="h-12 w-12 text-red-600 animate-pulse" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-2xl font-semibold text-gray-900">
+                Erreur de chargement
+              </h2>
+              <p className="text-lg text-gray-600">
+                Impossible de récupérer vos données
+              </p>
+              <p className="text-sm text-red-600 mt-4">{error}</p>
+            </div>
+            <Button onClick={() => window.location.reload()} className="mt-4">
+              Réessayer
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -388,12 +445,12 @@ const priorityFiltered = actionPlan.filter(a => {
                 <CardTitle>Actions</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-center">
-                  {actionPlan.length}
-                </div>
-                <div className="text-sm text-muted-foreground text-center">
-                  recommandations
-                </div>
+                        <div className="text-3xl font-bold text-center">
+                          {roadmapData?.statistics?.totalActions || actionPlan.length}
+                        </div>
+                        <div className="text-sm text-muted-foreground text-center">
+                          actions recommandées
+                        </div>
               </CardContent>
             </Card>
             
@@ -596,7 +653,14 @@ const priorityFiltered = actionPlan.filter(a => {
           {/* Feuille de route (timeline) */}
           <Card>
             <CardHeader>
-              <CardTitle>Feuille de route priorisée</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>Feuille de route priorisée</CardTitle>
+                <Link href="/dashboard/roadmap">
+                  <Button variant="outline" size="sm">
+                    Voir la roadmap interactive →
+                  </Button>
+                </Link>
+              </div>
             </CardHeader>
             <CardContent>
               {actionPlan.length === 0 ? (
@@ -604,17 +668,17 @@ const priorityFiltered = actionPlan.filter(a => {
               ) : (
                 <ol className="relative border-l border-primary/30 ml-2">
                   {actionPlan.slice(0, 5).map((item, i) => (
-                    <li key={i} className="mb-8 ml-4">
-                      <div className={`absolute w-4 h-4 rounded-full -left-2 border-2 border-white ${item.priority === 'Haute' ? 'bg-destructive' : item.priority === 'Moyenne' ? 'bg-amber-500' : 'bg-green-500'}`} />
+                    <li key={item.id || i} className="mb-8 ml-4">
+                      <div className={`absolute w-4 h-4 rounded-full -left-2 border-2 border-white ${item.priority === 'Critique' ? 'bg-destructive' : item.priority === 'Haute' ? 'bg-orange-500' : item.priority === 'Moyenne' ? 'bg-amber-500' : 'bg-green-500'}`} />
                       <div className="flex flex-col">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-bold text-lg">Étape {i + 1}</span>
-                          <Badge variant={item.priority === 'Haute' ? 'destructive' : item.priority === 'Moyenne' ? 'secondary' : 'default'}>
+                          <Badge variant={item.priority === 'Critique' ? 'destructive' : item.priority === 'Haute' ? 'destructive' : item.priority === 'Moyenne' ? 'secondary' : 'default'}>
                             {item.priority}
                           </Badge>
-                          <span className="text-sm text-muted-foreground">• {item.deadline}</span>
+                          <span className="text-sm text-muted-foreground">• {new Date(item.dueDate).toLocaleDateString('fr-FR') || item.deadline}</span>
                         </div>
-                        <p className="mb-1 text-base">{item.action}</p>
+                        <p className="mb-1 text-base">{item.action || item.title}</p>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <span>Domaine: <Badge variant="secondary">{item.category}</Badge></span>
                           <span>Responsable: <Badge variant="outline">{item.owner}</Badge></span>
@@ -624,8 +688,8 @@ const priorityFiltered = actionPlan.filter(a => {
                   ))}
                   {actionPlan.length > 5 && (
                     <div className="text-center mt-4">
-                      <Link href="/strategie" className="text-blue-600 hover:underline">
-                        Voir toutes les {actionPlan.length} actions
+                      <Link href="/dashboard/roadmap" className="text-blue-600 hover:underline">
+                        Voir toutes les {actionPlan.length} actions dans la roadmap interactive
                       </Link>
                     </div>
                   )}
@@ -643,6 +707,11 @@ const priorityFiltered = actionPlan.filter(a => {
                   Plan d&apos;action personnalisé
                 </span>
                 <div className="flex gap-2">
+                  <Link href="/dashboard/roadmap">
+                    <Button variant="outline" size="sm">
+                      Roadmap interactive
+                    </Button>
+                  </Link>
                   <Button variant="outline" size="sm" onClick={handleExport}>
                     <Download className="h-4 w-4 mr-2" />
                     Exporter CSV
@@ -721,10 +790,10 @@ const priorityFiltered = actionPlan.filter(a => {
                           <th className="p-4 font-semibold text-left">Responsable</th>
                         </tr>
                       </thead>
-                      <tbody>
+                        <tbody>
 {(showAllActions ? filteredActionPlan : filteredActionPlan.slice(0,5)).map((item, index) => (
                           <tr
-                            key={index}
+                            key={item.id || index}
                             className={
                               `border-b border-muted/30 hover:bg-muted/30 transition-colors duration-150`
                             }
@@ -732,13 +801,15 @@ const priorityFiltered = actionPlan.filter(a => {
                             <td className="p-4 text-base font-medium max-w-md">
                               <div className="flex items-start gap-3">
                                 <span className={
-                                  item.priority === 'Haute' 
+                                  item.priority === 'Critique' 
                                   ? 'bg-destructive/20 text-destructive border-destructive/30' 
+                                  : item.priority === 'Haute' 
+                                  ? 'bg-orange-500/20 text-orange-700 border-orange-500/30'
                                   : item.priority === 'Moyenne' 
                                   ? 'bg-amber-500/20 text-amber-700 border-amber-500/30' 
                                   : 'bg-green-500/20 text-green-700 border-green-500/30'
                                 }></span>
-                                <span>{item.action}</span>
+                                <span>{item.action || item.title}</span>
                               </div>
                             </td>
                             <td className="p-4">
@@ -748,7 +819,7 @@ const priorityFiltered = actionPlan.filter(a => {
                             </td>
                             <td className="p-4">
                               <Badge 
-                                variant={item.priority === 'Haute' ? 'destructive' : item.priority === 'Moyenne' ? 'secondary' : 'default'}
+                                variant={item.priority === 'Critique' ? 'destructive' : item.priority === 'Haute' ? 'destructive' : item.priority === 'Moyenne' ? 'secondary' : 'default'}
                                 className="rounded-full px-2 py-1 text-xs"
                               >
                                 {item.priority}
@@ -756,7 +827,7 @@ const priorityFiltered = actionPlan.filter(a => {
                             </td>
                             <td className="p-4">
                               <span className="bg-muted px-2 py-1 rounded-full text-xs">
-                                {item.deadline}
+                                {new Date(item.dueDate).toLocaleDateString('fr-FR') || item.deadline}
                               </span>
                             </td>
                             <td className="p-4">
@@ -803,23 +874,120 @@ const priorityFiltered = actionPlan.filter(a => {
           {/* Historique des audits */}
           <Card>
             <CardHeader>
-              <CardTitle>Historique des Audits</CardTitle>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-blue-600" />
+                  Historique des Audits
+                </div>
+                <Link href="/dashboard/audits">
+                  <Button variant="outline" size="sm">
+                    Voir tout l'historique →
+                  </Button>
+                </Link>
+              </CardTitle>
+              <p className="text-sm text-muted-foreground mt-2">
+                Consultez vos audits précédents et générez des rapports détaillés
+              </p>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2">
-                {audits.map((audit) => (
-                  <li key={audit.id} className="flex items-center justify-between p-3 border rounded">
+              {audits.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                  <p>Aucun audit disponible</p>
+                  <p className="text-sm">Commencez par réaliser votre premier audit de cybersécurité</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {audits.map((audit) => {
+                    const auditDate = new Date(audit.createdAt);
+                    const isGenerating = generatingPdf === audit.id;
+                    
+                    return (
+                      <div key={audit.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="text-lg font-semibold">
+                              Audit du {auditDate.toLocaleDateString('fr-FR', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
+                            </div>
+                            <Badge variant={audit.score && audit.score >= 70 ? 'default' : audit.score && audit.score >= 50 ? 'secondary' : 'destructive'}>
+                              {audit.maturity || 'En cours'}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <Shield className="h-4 w-4" />
+                              Score: {audit.score?.toFixed(0) || 'N/A'}%
+                            </span>
+                            <span>
+                              {audit.responses?.length || 0} réponses
+                            </span>
+                            <span>
+                              Créé à {auditDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex gap-2 ml-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleViewPdfReport(audit.id)}
+                            className="flex items-center gap-2"
+                          >
+                            <Eye className="h-4 w-4" />
+                            Aperçu
+                          </Button>
+                          
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => handleGeneratePdfReport(audit.id)}
+                            disabled={isGenerating}
+                            className="flex items-center gap-2"
+                          >
+                            {isGenerating ? (
+                              <>
+                                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                Génération...
+                              </>
+                            ) : (
+                              <>
+                                <Download className="h-4 w-4" />
+                                Rapport PDF
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              
+              {audits.length > 0 && (
+                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
                     <div>
-                      <div className="font-medium">Audit du {new Date(audit.createdAt).toLocaleDateString('fr-FR')}</div>
-                      <div className="text-sm text-muted-foreground">Score: {audit.score?.toFixed(0) || 'N/A'}%</div>
+                      <h4 className="font-medium text-blue-900 mb-1">À propos des rapports PDF</h4>
+                      <p className="text-sm text-blue-700">
+                        Les rapports générés incluent une analyse complète de votre audit avec :
+                      </p>
+                      <ul className="text-sm text-blue-700 mt-2 space-y-1">
+                        <li>• Analyse détaillée des résultats par domaine</li>
+                        <li>• Plan d'action personnalisé avec budgets et échéances</li>
+                        <li>• Feuille de route stratégique sur 24 mois</li>
+                        <li>• Analyse de conformité réglementaire (RGPD, NIS2, ISO 27001...)</li>
+                        <li>• Recommandations priorisées et KPIs de suivi</li>
+                      </ul>
                     </div>
-                    <div className="flex gap-2">
-                      <Link href={`/audit/${audit.id}`} className="btn btn-sm btn-primary">Détail</Link>
-                      <Link href={`/audit/${audit.id}/pdf`} className="btn btn-sm btn-secondary">PDF</Link>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </>

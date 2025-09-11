@@ -199,7 +199,7 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
 
   if (step === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
             <div className="text-center space-y-4">
@@ -214,7 +214,7 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+    <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* En-tête */}
         <div className="text-center mb-8">

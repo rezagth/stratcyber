@@ -1,0 +1,32 @@
+#!/bin/sh
+# Git Hook: pre-commit
+# Bloque automatiquement les commits dangereux
+
+echo "🔍 Vérification pre-commit..."
+
+# Fichiers interdits
+forbidden_files="prisma/schema.prisma|\.env$|dev\.db$"
+
+# Vérifier les fichiers ajoutés
+staged_files=$(git diff --cached --name-only)
+
+for file in $staged_files; do
+    if echo "$file" | grep -E "$forbidden_files" > /dev/null; then
+        echo ""
+        echo "❌ COMMIT BLOQUÉ !"
+        echo "🚨 Fichier dangereux détecté: $file"
+        echo ""
+        echo "Ces fichiers sont modifiés automatiquement par nos scripts."
+        echo "Les committer peut casser la production !"
+        echo ""
+        echo "Pour retirer ce fichier :"
+        echo "   git reset HEAD \"$file\""
+        echo ""
+        echo "Puis utilisez: npm run safe-commit"
+        echo ""
+        exit 1
+    fi
+done
+
+echo "✅ Pre-commit check passed!"
+exit 0

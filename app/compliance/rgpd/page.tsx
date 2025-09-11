@@ -1,16 +1,25 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Shield, FileText, CheckCircle, AlertCircle, Users, Lock, Eye, Download } from 'lucide-react';
+import { Shield, FileText, CheckCircle, AlertCircle, Users, Lock, Eye, Download, ExternalLink, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
 export default function RGPDDocumentation() {
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
+  const [documentationContent, setDocumentationContent] = useState<string>('');
+  const [templatesContent, setTemplatesContent] = useState<string>('');
+
+  useEffect(() => {
+    // En production, vous récupéreriez le contenu depuis votre API/CMS
+    // Pour le moment, nous affichons des liens vers la documentation
+    setDocumentationContent('Documentation RGPD complète disponible');
+    setTemplatesContent('Templates et outils pratiques disponibles');
+  }, []);
 
   const toggleCheck = (item: string) => {
     setCheckedItems(prev => 
@@ -67,17 +76,21 @@ export default function RGPDDocumentation() {
             <Link href="#obligations">Obligations</Link>
           </Button>
           <Button variant="outline" size="sm" asChild>
+            <Link href="#documentation">Documentation</Link>
+          </Button>
+          <Button variant="outline" size="sm" asChild>
             <Link href="#checklist">Checklist</Link>
           </Button>
         </div>
       </div>
 
       <Tabs defaultValue="overview" className="space-y-8">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="principles">Principes</TabsTrigger>
           <TabsTrigger value="rights">Droits</TabsTrigger>
           <TabsTrigger value="obligations">Obligations</TabsTrigger>
+          <TabsTrigger value="documentation">Documentation</TabsTrigger>
           <TabsTrigger value="checklist">Checklist</TabsTrigger>
         </TabsList>
 
@@ -128,18 +141,25 @@ export default function RGPDDocumentation() {
                   <CardTitle className="text-lg">Actions rapides</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Download className="h-4 w-4 mr-2" />
-                    Télécharger le guide complet
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Auto-évaluation RGPD
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <FileText className="h-4 w-4 mr-2" />
-                    Modèles de documents
-                  </Button>
+                  <Link href="/docs/rgpd-guide-complet.pdf" target="_blank">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Download className="h-4 w-4 mr-2" />
+                      Télécharger le guide complet
+                      <ExternalLink className="h-3 w-3 ml-auto" />
+                    </Button>
+                  </Link>
+                  <Link href="/compliance/rgpd/auto-evaluation">
+                    <Button variant="outline" className="w-full justify-start">
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Auto-évaluation RGPD
+                    </Button>
+                  </Link>
+                  <Link href="/compliance/templates#rgpd">
+                    <Button variant="outline" className="w-full justify-start">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Modèles de documents
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
 
@@ -407,6 +427,128 @@ export default function RGPDDocumentation() {
                     </ul>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* Documentation */}
+        <TabsContent value="documentation" id="documentation">
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BookOpen className="h-6 w-6" />
+                  Documentation RGPD Complète
+                </CardTitle>
+                <CardDescription>
+                  Accès à la documentation complète, templates et outils pratiques
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Card className="border border-blue-200 bg-blue-50">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Guide RGPD Complet
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <p className="text-sm text-gray-600">Documentation exhaustive de mise en conformité RGPD avec exemples concrets et cas d'usage.</p>
+                      <ul className="text-sm space-y-1">
+                        <li>• Principes fondamentaux détaillés</li>
+                        <li>• Procédures pratiques</li>
+                        <li>• Études de cas</li>
+                        <li>• Checklist avancée</li>
+                      </ul>
+                      <Link href="/docs/rgpd-guide-complet.pdf" target="_blank">
+                        <Button className="w-full" size="sm">
+                          <Download className="h-4 w-4 mr-2" />
+                          Télécharger le guide
+                          <ExternalLink className="h-3 w-3 ml-2" />
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border border-green-200 bg-green-50">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Templates RGPD
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <p className="text-sm text-gray-600">Collection de templates prêts à l'emploi pour accélérer votre mise en conformité.</p>
+                      <ul className="text-sm space-y-1">
+                        <li>• Registre des traitements</li>
+                        <li>• Formulaire d'exercice des droits</li>
+                        <li>• Politique de confidentialité</li>
+                        <li>• Contrats sous-traitants</li>
+                      </ul>
+                      <Link href="/compliance/templates#rgpd">
+                        <Button className="w-full" size="sm" variant="outline">
+                          <FileText className="h-4 w-4 mr-2" />
+                          Accéder aux templates
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                  <h4 className="font-semibold text-yellow-900 mb-2">📋 Documentation disponible dans les fichiers markdown :</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <Link href="/compliance/docs/rgpd-guide-complet.md" className="text-blue-600 hover:underline block">
+                        → rgpd-guide-complet.md
+                      </Link>
+                      <Link href="/compliance/docs/templates-outils-pratiques.md" className="text-blue-600 hover:underline block">
+                        → templates-outils-pratiques.md
+                      </Link>
+                    </div>
+                    <div>
+                      <Link href="/compliance/docs/sensibilisation-cybersecurite.md" className="text-blue-600 hover:underline block">
+                        → sensibilisation-cybersecurite.md
+                      </Link>
+                      <Link href="/compliance/docs/cloud-security-guide.md" className="text-blue-600 hover:underline block">
+                        → cloud-security-guide.md
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Outils Interactifs</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <Link href="/compliance/rgpd/auto-evaluation">
+                        <Button variant="outline" className="w-full h-auto p-4 flex-col">
+                          <CheckCircle className="h-6 w-6 mb-2" />
+                          <span className="font-medium">Auto-évaluation</span>
+                          <span className="text-xs text-muted-foreground">Test de conformité</span>
+                        </Button>
+                      </Link>
+                      <Link href="/compliance/rgpd/quiz">
+                        <Button variant="outline" className="w-full h-auto p-4 flex-col">
+                          <BookOpen className="h-6 w-6 mb-2" />
+                          <span className="font-medium">Quiz RGPD</span>
+                          <span className="text-xs text-muted-foreground">Test de connaissances</span>
+                        </Button>
+                      </Link>
+                      <Link href="/compliance/rgpd/calculator">
+                        <Button variant="outline" className="w-full h-auto p-4 flex-col">
+                          <AlertCircle className="h-6 w-6 mb-2" />
+                          <span className="font-medium">Calculateur</span>
+                          <span className="text-xs text-muted-foreground">Estimation amendes</span>
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
               </CardContent>
             </Card>
           </div>

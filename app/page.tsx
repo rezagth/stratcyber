@@ -1,38 +1,35 @@
 'use client';
 
 import Link from "next/link";
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { 
-  Shield, 
-  BarChart3, 
-  FileCheck, 
-  BookOpen, 
-  Target,
-  ArrowRight,
-  CheckCircle,
-  TrendingUp,
-  Users,
-  Award
-} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ArrowRight, BarChart3, BookOpen, CheckCircle, Award, Shield, Target, TrendingUp, Users, FileCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useSession } from 'next-auth/react';
 
 export default function Home() {
-  const { data: session, status } = useSession();
   const router = useRouter();
+  const { status } = useSession();
 
+  // Ancien comportement: si connecté, redirection immédiate et silencieuse vers /dashboard
   useEffect(() => {
     if (status === 'authenticated') {
       router.replace('/dashboard');
     }
   }, [status, router]);
 
-  if (status === 'authenticated') {
-    return null; // Évite le flash avant la redirection
+  if (status === 'loading') {
+    // Optionnel: on peut retourner null pour éviter tout flash
+    return null;
   }
 
+  if (status === 'authenticated') {
+    // Ne rien afficher pendant la redirection
+    return null;
+  }
+
+  // Contenu de la landing page pour les utilisateurs non authentifiés
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -53,28 +50,17 @@ export default function Home() {
               </p>
             </div>
             <div className="space-x-4">
-              {status === 'unauthenticated' ? (
-                <>
-                  <Button asChild size="lg">
-                    <Link href="/auth/login">
-                      Commencer
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                  <Button variant="outline" size="lg" asChild>
-                    <Link href="/auth/register">
-                      Créer un compte
-                    </Link>
-                  </Button>
-                </>
-              ) : (
-                <Button asChild size="lg">
-                  <Link href="/dashboard">
-                    Accéder au tableau de bord
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-              )}
+              <Button asChild size="lg">
+                <Link href="/auth/login">
+                  Commencer
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <Link href="/auth/register">
+                  Créer un compte
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
@@ -297,21 +283,12 @@ export default function Home() {
             <p className="mx-auto max-w-[600px] text-primary-foreground/80 md:text-xl">
               Rejoignez les centaines d'entreprises qui font confiance à StratCyber pour leur cybersécurité.
             </p>
-            {status === 'unauthenticated' ? (
-              <Button asChild size="lg" variant="secondary">
-                <Link href="/auth/register">
-                  Commencer gratuitement
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            ) : (
-              <Button asChild size="lg" variant="secondary">
-                <Link href="/dashboard">
-                  Accéder à votre tableau de bord
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            )}
+            <Button asChild size="lg" variant="secondary">
+              <Link href="/auth/register">
+                Commencer gratuitement
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
           </div>
         </div>
       </section>

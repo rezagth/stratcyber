@@ -1,4 +1,16 @@
 {
   "buildCommand": "prisma generate && next build",
-  "installCommand": "pnpm install"
+  "installCommand": "pnpm install",
+  "functions": {
+    "app/api/audit/[id]/export/comprehensive-pdf/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/audit/[id]/export/test-pdf/route.ts": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true",
+    "PUPPETEER_EXECUTABLE_PATH": "/usr/bin/google-chrome"
+  }
 }
