@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import { DashboardSkeleton } from '@/components/skeletons/dashboard-skeleton';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -306,29 +307,30 @@ const priorityFiltered = actionPlan.filter(a => {
   const paginated = sortedActions.slice((currentPage-1)*itemsPerPage, currentPage*itemsPerPage);
 
   if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">Tableau de bord StratCyber</h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">Surveillance continue de votre conformité cybersécurité et plan d&#39;action personnalisé</p>
-        </div>
-        <div className="text-center">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Chargement des données...</h2>
-        </div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
   
   if (error) {
     return (
-      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">Tableau de bord StratCyber</h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">Surveillance continue de votre conformité cybersécurité et plan d&#39;action personnalisé</p>
-        </div>
-        <div className="text-center">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Erreur lors de la récupération des données</h2>
-          <p className="text-lg text-red-600">{error}</p>
+      <div className="flex flex-col min-h-screen bg-gradient-to-br from-red-50 to-rose-100">
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-center space-y-6 max-w-md mx-auto">
+            <div className="flex justify-center">
+              <AlertCircle className="h-12 w-12 text-red-600 animate-pulse" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-2xl font-semibold text-gray-900">
+                Erreur de chargement
+              </h2>
+              <p className="text-lg text-gray-600">
+                Impossible de récupérer vos données
+              </p>
+              <p className="text-sm text-red-600 mt-4">{error}</p>
+            </div>
+            <Button onClick={() => window.location.reload()} className="mt-4">
+              Réessayer
+            </Button>
+          </div>
         </div>
       </div>
     );
