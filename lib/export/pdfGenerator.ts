@@ -33,16 +33,29 @@ export class ProfessionalPDFGenerator {
     success: '#16a34a',
     warning: '#d97706',
     danger: '#dc2626',
-    muted: '#6b7280'
+    muted: '#6b7280',
+    accent: '#7c3aed',
+    info: '#0ea5e9'
   };
 
   static async generateAuditReport(data: PDFReportData): Promise<Blob> {
-    // En production, utiliser jsPDF ou Puppeteer pour générer le PDF
-    // Ici, on simule la génération avec une structure HTML complète
-    
     const htmlContent = this.generateHTMLReport(data);
     
-    // Simuler la conversion HTML vers PDF
+    // Pour une utilisation réelle, vous devriez utiliser Puppeteer ici :
+    // const browser = await puppeteer.launch();
+    // const page = await browser.newPage();
+    // await page.setContent(htmlContent);
+    // const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+    // await browser.close();
+    // return new Blob([pdfBuffer], { type: 'application/pdf' });
+    
+    // Pour le moment, on retourne le HTML
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    return blob;
+  }
+
+  static async generateComprehensiveReport(data: PDFReportData): Promise<Blob> {
+    const htmlContent = this.generateComprehensiveHTMLReport(data);
     const blob = new Blob([htmlContent], { type: 'text/html' });
     return blob;
   }

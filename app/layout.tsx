@@ -7,6 +7,7 @@ const geist = Geist({
 import './globals.css';
 import AuthSessionProvider from '@/components/auth/session-provider';
 import { IntegratedLayout } from '@/components/layout/integrated-layout';
+import { Toaster } from '@/components/ui/sonner';
 
 export const metadata = {
   title: 'StratCyber',
@@ -25,6 +26,7 @@ export default function RootLayout({
           <IntegratedLayout>
             {children}
           </IntegratedLayout>
+          <Toaster position="top-right" richColors closeButton />
         </AuthSessionProvider>
       </body>
     </html>

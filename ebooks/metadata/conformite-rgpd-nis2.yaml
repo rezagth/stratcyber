@@ -1,0 +1,178 @@
+# Métadonnées pour l'ebook Conformité RGPD et NIS2
+id: conformite-rgpd-nis2
+title: "Conformité Cybersécurité : RGPD et NIS2"
+author: "StratCyber Formation"
+category: "Conformité"
+difficulty: "Intermédiaire"
+duration: "3h 15min"
+pages: 13
+version: "1.0"
+published: true
+
+description: |
+  Guide complet sur la conformité réglementaire européenne en cybersécurité.
+  Maîtrisez les exigences du RGPD et de la directive NIS2 pour protéger
+  votre organisation et réduire les risques juridiques et financiers.
+
+tags:
+  - rgpd
+  - nis2
+  - conformité
+  - régulation
+  - europe
+  - protection-données
+  - cybersécurité
+  - gouvernance
+  - documentation
+  - audit
+
+prerequisites:
+  - "Bases de la cybersécurité"
+  - "Notions juridiques de base"
+  - "Connaissance des systèmes d'information"
+
+learning_objectives:
+  - "Comprendre le cadre réglementaire européen"
+  - "Maîtriser les principes fondamentaux du RGPD"
+  - "Appliquer les nouvelles obligations de NIS2"
+  - "Mettre en place une gouvernance de la conformité"
+  - "Développer une documentation auditable"
+  - "Élaborer un plan de mise en conformité"
+  - "Évaluer et gérer les risques réglementaires"
+
+thumbnailUrl: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3"
+
+# Quiz associé
+quiz:
+  title: "Quiz Conformité RGPD et NIS2"
+  description: "Validez vos connaissances sur la conformité réglementaire européenne"
+  passingScore: 70
+  questions:
+    - id: "q1"
+      question: "Quelle est la sanction maximale prévue par le RGPD ?"
+      options:
+        - "10 millions € ou 2% du CA mondial"
+        - "20 millions € ou 4% du CA mondial"
+        - "5 millions € ou 1% du CA mondial"
+        - "Aucune sanction financière"
+      correctAnswer: "20 millions € ou 4% du CA mondial"
+      explanation: "Le RGPD prévoit des amendes pouvant aller jusqu'à 20 millions d'euros ou 4% du chiffre d'affaires annuel mondial, le montant le plus élevé étant retenu."
+
+    - id: "q2"
+      question: "Quelles entités sont concernées par NIS2 ?"
+      options:
+        - "Uniquement les grandes entreprises"
+        - "Les entités essentielles et importantes"
+        - "Toutes les PME sans exception"
+        - "Uniquement les administrations publiques"
+      correctAnswer: "Les entités essentielles et importantes"
+      explanation: "NIS2 s'applique aux entités essentielles (énergie, santé, transport...) et aux entités importantes (services postaux, chimie, numérique...)."
+
+    - id: "q3"
+      question: "Quel est le délai de notification initial d'un incident sous NIS2 ?"
+      options:
+        - "12 heures"
+        - "24 heures"
+        - "72 heures"
+        - "1 mois"
+      correctAnswer: "24 heures"
+      explanation: "NIS2 exige une notification initiale (early warning) sous 24 heures, suivie d'un rapport détaillé sous 72 heures."
+
+    - id: "q4"
+      question: "Parmi ces principes, lequel n'est PAS un principe fondamental du RGPD ?"
+      options:
+        - "Limitation des finalités"
+        - "Minimisation des données"
+        - "Centralisation des données"
+        - "Limitation de la conservation"
+      correctAnswer: "Centralisation des données"
+      explanation: "La centralisation des données n'est pas un principe RGPD. Les 7 principes incluent la licéité, limitation des finalités, minimisation, exactitude, limitation de conservation, intégrité et responsabilité."
+
+    - id: "q5"
+      question: "Quelle mesure technique est commune aux obligations RGPD et NIS2 ?"
+      options:
+        - "Authentification multifacteur"
+        - "Installation d'antivirus uniquement"
+        - "Utilisation obligatoire du cloud"
+        - "Externalisation complète de la sécurité"
+      correctAnswer: "Authentification multifacteur"
+      explanation: "L'authentification multifacteur est une mesure technique recommandée par les deux réglementations pour renforcer la sécurité des accès."
+
+    - id: "q6"
+      question: "Quelle documentation est obligatoire dans le cadre du RGPD ?"
+      options:
+        - "Plan de communication"
+        - "Registre des traitements"
+        - "Certification ISO 27001"
+        - "Politique de télétravail"
+      correctAnswer: "Registre des traitements"
+      explanation: "Le registre des traitements est un document obligatoire qui recense tous les traitements de données personnelles effectués par l'organisation."
+
+    - id: "q7"
+      question: "Qu'est-ce que l'AIPD dans le contexte du RGPD ?"
+      options:
+        - "Association Internationale de Protection des Données"
+        - "Analyse d'Impact sur la Protection des Données"
+        - "Autorisation d'Intervention sur les Processus Digitaux"
+        - "Audit Interne de Protection Digitale"
+      correctAnswer: "Analyse d'Impact sur la Protection des Données"
+      explanation: "L'AIPD (ou DPIA en anglais) est obligatoire pour les traitements susceptibles d'engendrer un risque élevé pour les droits et libertés des personnes."
+
+    - id: "q8"
+      question: "Quelle date marque l'application effective des obligations de NIS2 ?"
+      options:
+        - "Mai 2023"
+        - "Octobre 2024"
+        - "Avril 2025"
+        - "Octobre 2025"
+      correctAnswer: "Octobre 2025"
+      explanation: "La directive NIS2 doit être transposée avant octobre 2024, mais les obligations s'appliquent effectivement à partir d'octobre 2025."
+
+    - id: "q9"
+      question: "Quelle approche est recommandée pour la mise en conformité RGPD/NIS2 ?"
+      options:
+        - "Approche cloisonnée avec des équipes séparées"
+        - "Approche par les risques avec gouvernance commune"
+        - "Externalisation complète à des consultants"
+        - "Attendre les contrôles des autorités"
+      correctAnswer: "Approche par les risques avec gouvernance commune"
+      explanation: "Une approche intégrée par les risques permet d'optimiser les efforts et d'assurer une cohérence entre les démarches RGPD et NIS2."
+
+    - id: "q10"
+      question: "Quel rôle est ultimement responsable de la conformité au RGPD ?"
+      options:
+        - "Uniquement le DPO"
+        - "Uniquement le RSSI"
+        - "Le responsable de traitement"
+        - "Uniquement le service juridique"
+      correctAnswer: "Le responsable de traitement"
+      explanation: "Le responsable de traitement (souvent l'organisation elle-même) porte la responsabilité ultime de la conformité, même s'il s'appuie sur le DPO pour l'accompagner."
+
+# Métadonnées techniques
+metadata:
+  creation_date: "2024-01-14"
+  last_review: "2024-01-14"
+  next_review: "2024-07-14"
+  compliance_frameworks:
+    - "RGPD"
+    - "NIS2"
+    - "ISO 27001"
+    - "ISO 27701"
+  target_audience:
+    - "DPO et responsables conformité"
+    - "RSSI et équipes sécurité"
+    - "Dirigeants et management"
+    - "Juristes et risk managers"
+    - "Consultants en cybersécurité"
+  key_concepts:
+    - "Accountability et responsabilité démontrable"
+    - "Analyse d'impact (AIPD/DPIA)"
+    - "Gouvernance des données personnelles"
+    - "Gestion des risques cybersécurité"
+    - "Documentation de conformité"
+    - "Notification d'incidents"
+  related_regulations:
+    - "DORA (secteur financier)"
+    - "eIDAS (identité numérique)"
+    - "Cybersecurity Act"
+    - "ePrivacy (communications)"

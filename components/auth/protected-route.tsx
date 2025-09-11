@@ -3,6 +3,8 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { LoadingScreen } from '@/components/ui/loading-screen';
+import { toast } from 'sonner';
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { status } = useSession();
@@ -10,15 +12,20 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (status === 'unauthenticated') {
+      toast.error('Accès refusé', {
+        description: 'Vous devez être connecté pour accéder à cette page',
+      });
       router.replace('/auth/login');
     }
   }, [status, router]);
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
+      <LoadingScreen 
+        variant="auth" 
+        title="Vérification de vos droits d'accès..."
+        description="Authentification en cours"
+      />
     );
   }
 
@@ -26,5 +33,11 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  return null;
+  return (
+    <LoadingScreen 
+      variant="redirect" 
+      title="Redirection..."
+      description="Vous allez être redirigé vers la page de connexion"
+    />
+  );
 }
