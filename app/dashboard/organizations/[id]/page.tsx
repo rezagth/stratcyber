@@ -13,6 +13,9 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { ControlsTab } from '@/components/dossier/controls-tab';
+import { RisksTab } from '@/components/dossier/risks-tab';
+import { IncidentsTab } from '@/components/dossier/incidents-tab';
+import { VulnerabilitiesTab } from '@/components/dossier/vulnerabilities-tab';
 
 type Organization = {
   id: string; name: string; sector: string | null; size: string | null;
@@ -127,6 +130,9 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
           <TabsTrigger value="profil">Profil</TabsTrigger>
           <TabsTrigger value="contacts">Contacts ({contacts.length})</TabsTrigger>
           <TabsTrigger value="controles">Contrôles</TabsTrigger>
+          <TabsTrigger value="risques">Risques</TabsTrigger>
+          <TabsTrigger value="incidents">Incidents</TabsTrigger>
+          <TabsTrigger value="vulnerabilites">Vulnérabilités</TabsTrigger>
           <TabsTrigger value="decisions">Décisions ({decisions.length})</TabsTrigger>
           <TabsTrigger value="notes">Notes internes ({notes.length})</TabsTrigger>
         </TabsList>
@@ -248,6 +254,18 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
 
         <TabsContent value="controles">
           <ControlsTab organizationId={id} />
+        </TabsContent>
+
+        <TabsContent value="risques">
+          <RisksTab organizationId={id} />
+        </TabsContent>
+
+        <TabsContent value="incidents">
+          <IncidentsTab organizationId={id} />
+        </TabsContent>
+
+        <TabsContent value="vulnerabilites">
+          <VulnerabilitiesTab organizationId={id} />
         </TabsContent>
 
         <TabsContent value="decisions" className="space-y-4">

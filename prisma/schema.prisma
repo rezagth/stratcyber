@@ -62,6 +62,9 @@ model Organization {
   decisions DecisionLogEntry[]
   internalNotes InternalNote[]
   controls  Control[]
+  risks     Risk[]
+  incidents IncidentCase[]
+  vulnerabilities ClientVulnerability[]
 }
 
 // Contact côté client (module A). Un seul contact principal par organisation à la fois
@@ -123,6 +126,7 @@ model Control {
   owner       String?  // responsable du contrôle (texte libre, cohérent avec le module D)
 
   evidences Evidence[]
+  risks     Risk[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -181,6 +185,8 @@ model ActionPlanItem {
   proofDate         DateTime?
 
   reminders ActionReminder[]
+  risks     Risk[]
+  vulnerabilities ClientVulnerability[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -884,4 +890,85 @@ model LegalRiskAssessment {
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// Module C : registre des risques vivant, cloisonné par client. Peut optionnellement
+// être rattaché à une action du plan (module D) ou à un contrôle (module B) : le
+// traitement du risque passe alors concrètement par cette action/ce contrôle.
+// Le niveau de risque (probabilité × impact) est calculé à la volée, jamais stocké.
+model Risk {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+  likelihood  Int      // 1 à 5
+  impact      Int      // 1 à 5
+  treatment   String   @default("À traiter") // 'Éviter' | 'Réduire' | 'Transférer' | 'Accepter' | 'À traiter'
+  owner       String?
+  dueDate     DateTime?
+  status      String   @default("Ouvert") // 'Ouvert' | 'Traité' | 'Accepté' | 'Clos'
+
+  actionPlanItemId String?
+  actionPlanItem   ActionPlanItem? @relation(fields: [actionPlanItemId], references: [id], onDelete: SetNull)
+  controlId        String?
+  control          Control? @relation(fields: [controlId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+// Module C : registre d'incidents avec la procédure de notification NIS2 (alerte
+// précoce 24h, notification de l'incident 72h, rapport final 1 mois — article 23 de
+// la directive NIS2 ; transposition française non finalisée, voir le profil client).
+// Les retards sont calculés à la volée à partir de `detectedAt`, jamais stockés.
+model IncidentCase {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+  severity    String   @default("Moyenne") // 'Faible' | 'Moyenne' | 'Haute' | 'Critique'
+  category    String?
+  status      String   @default("Ouvert") // 'Ouvert' | 'En cours' | 'Clos'
+  owner       String?
+
+  detectedAt  DateTime  // point de référence des 3 échéances
+  earlyWarningSentAt DateTime? // échéance : detectedAt + 24h
+  notificationSentAt DateTime? // échéance : detectedAt + 72h
+  finalReportSentAt  DateTime? // échéance : detectedAt + 1 mois
+
+  personalDataInvolved Boolean @default(false) // pertinent pour une notification RGPD à la CNIL
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+// Module C : vulnérabilités par client (distinct du modèle global Vulnerability, qui
+// n'a pas de propriétaire — voir les limitations connues du dashboard admin).
+model ClientVulnerability {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+  severity    String   @default("Moyenne") // 'Faible' | 'Moyenne' | 'Haute' | 'Critique'
+  cvssScore   Float?
+  status      String   @default("Ouverte") // 'Ouverte' | 'Atténuée' | 'Corrigée'
+  discoveredAt DateTime @default(now())
+
+  actionPlanItemId String?
+  actionPlanItem   ActionPlanItem? @relation(fields: [actionPlanItemId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
 }
