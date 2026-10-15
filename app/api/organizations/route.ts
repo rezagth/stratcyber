@@ -4,14 +4,12 @@ import { prisma } from '@/lib/db';
 import { jsonError, withApiAuth } from '@/lib/auth/api-auth';
 import { logActivity } from '@/lib/activity-log';
 import { parseOrganizationProfile } from '@/lib/api/organization-profile';
+import { buildClientsCockpit } from '@/lib/organizations/cockpit';
 
-/** Liste des clients (organisations) : administrateur uniquement. */
+/** Liste des clients (organisations), enrichie du cockpit (module L) : administrateur uniquement. */
 export const GET = withApiAuth(
   async () => {
-    const organizations = await prisma.organization.findMany({
-      orderBy: { createdAt: 'desc' },
-      select: { id: true, name: true, sector: true, size: true, createdAt: true },
-    });
+    const organizations = await buildClientsCockpit();
     return NextResponse.json(organizations);
   },
   { roles: ['admin'] }

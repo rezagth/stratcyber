@@ -3,8 +3,12 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
-type Organization = { id: string; name: string; sector: string | null; size: string | null };
+type Organization = {
+  id: string; name: string; sector: string | null; size: string | null;
+  score: number | null; maturity: string | null; overdueActions: number; expiringEvidence: number;
+};
 
 export default function OrganizationsPage() {
   const [organizations, setOrganizations] = useState<Organization[] | null>(null);
@@ -41,7 +45,12 @@ export default function OrganizationsPage() {
             >
               <Card className="transition hover:shadow-md">
                 <CardHeader>
-                  <CardTitle className="text-base">{org.name}</CardTitle>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <CardTitle className="text-base">{org.name}</CardTitle>
+                    {org.score !== null && <Badge variant="outline">Score {org.score}/100{org.maturity && ` · ${org.maturity}`}</Badge>}
+                    {org.overdueActions > 0 && <Badge variant="destructive">{org.overdueActions} action{org.overdueActions > 1 ? 's' : ''} en retard</Badge>}
+                    {org.expiringEvidence > 0 && <Badge variant="destructive">{org.expiringEvidence} preuve{org.expiringEvidence > 1 ? 's' : ''} qui expire{org.expiringEvidence > 1 ? 'nt' : ''}</Badge>}
+                  </div>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">
                   {org.sector ?? '—'} · {org.size ?? '—'}

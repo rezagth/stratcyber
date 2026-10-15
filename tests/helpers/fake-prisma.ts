@@ -119,6 +119,9 @@ function matches(table: Table, row: Row, where: Row | undefined): boolean {
         if ('lt' in cond && !(num(value) < num(cond.lt))) return false;
         return true;
       }
+      if ('not' in cond) {
+        return cond.not === null ? row[key] != null : row[key] !== cond.not;
+      }
       throw new Error(`fake-prisma : opérateur non géré sur ${table}.${key} : ${JSON.stringify(cond)}`);
     }
     return row[key] === cond;

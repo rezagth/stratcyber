@@ -8,6 +8,7 @@ import { POST as SHARE } from '@/app/api/audits/[id]/share/route';
 import { GET as CLIENT_LIST } from '@/app/api/client/audits/route';
 import { GET as CLIENT_GET } from '@/app/api/client/audits/[id]/route';
 import { GET as OWNER_GET } from '@/app/api/audits/[id]/route';
+import { GET as LIST_USERS } from '@/app/api/organizations/[id]/users/route';
 
 vi.mock('@/lib/db', async () => {
   const { fakePrisma } = await import('../helpers/fake-prisma');
@@ -152,5 +153,64 @@ describe('gestion des clients et du partage (admin)', () => {
       ctx({ id: 'a-x-draft' })
     );
     expect(res.status).toBe(404);
+  });
+});
+
+describe('cockpit admin : liste enrichie des clients (module L)', () => {
+  it("affiche le score du dernier audit PARTAGÉ, jamais celui d'un brouillon interne", async () => {
+    loginAs(admin);
+    const res = await LIST_ORGS(req('/api/organizations'), ctx({}));
+    const orgs = await res.json();
+    const orgX = orgs.find((o: { id: string }) => o.id === 'org-x');
+    expect(orgX.score).toBe(70);
+    expect(orgX.maturity).toBe('Bonne');
+  });
+
+  it("un client sans audit partagé n'a pas de score (jamais une erreur)", async () => {
+    tables.organization.push({ id: 'org-z', name: 'Client Z' });
+    loginAs(admin);
+    const orgs = await (await LIST_ORGS(req('/api/organizations'), ctx({}))).json();
+    const orgZ = orgs.find((o: { id: string }) => o.id === 'org-z');
+    expect(orgZ.score).toBeNull();
+  });
+
+  it('compte les actions en retard et les preuves qui expirent, par client', async () => {
+    tables.actionPlanItem.push(
+      { id: 'ap1', organizationId: 'org-x', title: 'En retard', status: 'Non commencé', priority: 'Haute', dueDate: new Date('2020-01-01'), createdAt: new Date(), updatedAt: new Date() },
+      { id: 'ap2', organizationId: 'org-x', title: 'Pas en retard (terminée)', status: 'Terminé', priority: 'Haute', dueDate: new Date('2020-01-01'), createdAt: new Date(), updatedAt: new Date() },
+      { id: 'ap3', organizationId: 'org-y', title: 'Futur', status: 'Non commencé', priority: 'Haute', dueDate: new Date('2099-01-01'), createdAt: new Date(), updatedAt: new Date() }
+    );
+    tables.control.push({ id: 'c1', organizationId: 'org-x', title: 'MFA', frameworks: '["NIS2"]', status: 'Non évalué', createdAt: new Date(), updatedAt: new Date() });
+    tables.evidence.push({ id: 'e1', controlId: 'c1', organizationId: 'org-x', label: 'Preuve expirée', evidenceDate: new Date(), expiresAt: new Date('2020-01-01'), createdAt: new Date(), updatedAt: new Date() });
+    tables.supplier.push({ id: 's1', organizationId: 'org-x', name: 'Fournisseur', criticality: 'Moyenne', hasSecurityClause: false, status: 'Actif', createdAt: new Date(), updatedAt: new Date() });
+    tables.supplierEvidence.push({ id: 'se1', supplierId: 's1', organizationId: 'org-x', label: 'Certif qui expire bientôt', evidenceDate: new Date(), expiresAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), createdAt: new Date(), updatedAt: new Date() });
+
+    loginAs(admin);
+    const orgs = await (await LIST_ORGS(req('/api/organizations'), ctx({}))).json();
+    const orgX = orgs.find((o: { id: string }) => o.id === 'org-x');
+    const orgY = orgs.find((o: { id: string }) => o.id === 'org-y');
+    expect(orgX.overdueActions).toBe(1);
+    expect(orgX.expiringEvidence).toBe(2);
+    expect(orgY.overdueActions).toBe(0);
+    expect(orgY.expiringEvidence).toBe(0);
+  });
+});
+
+describe('comptes client (module L)', () => {
+  it("liste les comptes client d'une organisation, jamais ceux d'une autre ni les comptes admin", async () => {
+    tables.user.push(
+      { id: 'u-x1', email: 'x1@exemple.fr', name: 'Contact X1', role: 'client', organizationId: 'org-x', password: 'h', createdAt: new Date(), updatedAt: new Date() },
+      { id: 'u-y1', email: 'y1@exemple.fr', name: 'Contact Y1', role: 'client', organizationId: 'org-y', password: 'h', createdAt: new Date(), updatedAt: new Date() },
+      { id: 'u-admin2', email: 'admin2@exemple.fr', name: 'Autre admin', role: 'admin', organizationId: null, password: 'h', createdAt: new Date(), updatedAt: new Date() }
+    );
+    loginAs(admin);
+    const res = await LIST_USERS(req('/api/organizations/org-x/users'), ctx({ id: 'org-x' }));
+    const users = await res.json();
+    expect(users.map((u: { id: string }) => u.id)).toEqual(['u-x1']);
+  });
+
+  it('un client ne peut pas lister les comptes (403)', async () => {
+    loginAs(clientX);
+    expect((await LIST_USERS(req('/api/organizations/org-x/users'), ctx({ id: 'org-x' }))).status).toBe(403);
   });
 });

@@ -23,6 +23,7 @@ import { SuppliersTab } from '@/components/dossier/suppliers-tab';
 import { BudgetTab } from '@/components/dossier/budget-tab';
 import { TrainingTab } from '@/components/dossier/training-tab';
 import { MonthlyReportButton } from '@/components/monthly-report-button';
+import { ClientAccountsTab } from '@/components/dossier/client-accounts-tab';
 
 type Organization = {
   id: string; name: string; sector: string | null; size: string | null;
@@ -139,6 +140,7 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
         <TabsList>
           <TabsTrigger value="profil">Profil</TabsTrigger>
           <TabsTrigger value="contacts">Contacts ({contacts.length})</TabsTrigger>
+          <TabsTrigger value="comptes">Comptes</TabsTrigger>
           <TabsTrigger value="controles">Contrôles</TabsTrigger>
           <TabsTrigger value="risques">Risques</TabsTrigger>
           <TabsTrigger value="incidents">Incidents</TabsTrigger>
@@ -266,6 +268,10 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
               <div className="sm:col-span-2"><Button onClick={addContact} disabled={!newContact.name.trim()}>Ajouter</Button></div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="comptes">
+          <ClientAccountsTab organizationId={id} />
         </TabsContent>
 
         <TabsContent value="controles">
