@@ -67,6 +67,8 @@ model Organization {
   vulnerabilities ClientVulnerability[]
   policyDocuments ClientPolicyDocument[]
   securityAnswers SecurityAnswer[]
+  governanceMeetings GovernanceMeeting[]
+  leadershipTrainings LeadershipTraining[]
 }
 
 // Contact côté client (module A). Un seul contact principal par organisation à la fois
@@ -1039,6 +1041,51 @@ model SecurityAnswer {
   status String @default("Brouillon") // 'Brouillon' | 'À valider' | 'Validé'
   validatedByName String?
   validatedAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+// Module G : gouvernance dirigeant — comités cyber et revue annuelle (preuve
+// d'implication de la direction, NIS2 article 20). Même mécanique de validation
+// tracée que les modules E et F : "Validé" n'est posé que par le client, nom et
+// date fixés côté serveur.
+model GovernanceMeeting {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  type        String   @default("Comité") // 'Comité' | 'Revue annuelle'
+  title       String
+  meetingDate DateTime
+  attendees   String?  // texte libre : noms et fonctions des participants
+  summary     String?  // compte rendu : sujets abordés, décisions prises
+
+  status String @default("Brouillon") // 'Brouillon' | 'À valider' | 'Validé'
+  validatedByName String?
+  validatedAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+// Module G : preuve de formation cybersécurité des dirigeants (NIS2 article 20 :
+// les organes de direction doivent suivre une formation). Pas de fichier stocké :
+// un lien vers l'attestation, comme ailleurs dans l'application.
+model LeadershipTraining {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  participantName String
+  role            String? // fonction du dirigeant formé (ex. "Président", "DG")
+  trainingTitle   String
+  completedAt     DateTime
+  evidenceLink    String? // lien vers l'attestation / feuille d'émargement
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
