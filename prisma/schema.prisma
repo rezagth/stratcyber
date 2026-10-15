@@ -61,6 +61,7 @@ model Organization {
   contacts  Contact[]
   decisions DecisionLogEntry[]
   internalNotes InternalNote[]
+  controls  Control[]
 }
 
 // Contact côté client (module A). Un seul contact principal par organisation à la fois
@@ -105,6 +106,53 @@ model InternalNote {
   updatedAt      DateTime @updatedAt
 
   @@index([organizationId])
+}
+
+// Module B : un contrôle de sécurité compte pour plusieurs référentiels à la fois
+// (ex. un contrôle MFA compte pour NIS2, RGPD ET ISO 27001) — `frameworks` est un
+// tableau JSON de RegulationScope (voir types/audit.ts), jamais une seule valeur.
+model Control {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+  frameworks  String   // JSON : string[] (RegulationScope)
+  status      String   @default("Non évalué") // 'Conforme' | 'Partiellement conforme' | 'Non conforme' | 'Non applicable' | 'Non évalué'
+  owner       String?  // responsable du contrôle (texte libre, cohérent avec le module D)
+
+  evidences Evidence[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+// Preuve datée rattachée à un contrôle. Pas de fichier stocké : un lien ou une
+// attestation textuelle (voir la contrainte produit : "pas de stockage de fichiers
+// pour l'instant"). L'alerte avant expiration est calculée à la volée (expiresAt),
+// jamais un statut stocké qui pourrait devenir obsolète.
+model Evidence {
+  id             String   @id @default(uuid())
+  controlId      String
+  control        Control  @relation(fields: [controlId], references: [id], onDelete: Cascade)
+  organizationId String   // dénormalisé : cloisonnement direct sans jointure jusqu'à Control
+
+  label        String
+  source       String?   // d'où vient la preuve (export, capture d'écran, rapport d'audit...)
+  owner        String?   // responsable de cette preuve précise (peut différer du responsable du contrôle)
+  evidenceDate DateTime  // date de la preuve elle-même
+  expiresAt    DateTime?
+  link         String?   // lien ou référence vers l'attestation
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([controlId])
+  @@index([expiresAt])
 }
 
 // Module D : action exécutable du plan d'action client (générée depuis un audit, puis
