@@ -66,6 +66,7 @@ model Organization {
   incidents IncidentCase[]
   vulnerabilities ClientVulnerability[]
   policyDocuments ClientPolicyDocument[]
+  securityAnswers SecurityAnswer[]
 }
 
 // Contact côté client (module A). Un seul contact principal par organisation à la fois
@@ -1016,4 +1017,31 @@ model ClientPolicyDocument {
   updatedAt DateTime @updatedAt
 
   @@index([organizationId, type])
+}
+
+// Module F : bibliothèque de réponses aux questionnaires de sécurité (clients grands
+// comptes, assureurs). Chaque réponse est datée et honnête ; un "non applicable" doit
+// toujours être motivé (vérifié côté route, jamais de N/A silencieux). Validation
+// tracée par la direction du client, même mécanique que le module E (ClientPolicyDocument) :
+// le statut "Validé" n'est posé que par le client, nom et date fixés côté serveur.
+model SecurityAnswer {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  question String
+  answer   String?  // peut être vide seulement si isNotApplicable = true
+  isNotApplicable     Boolean @default(false)
+  notApplicableReason String? // requis si isNotApplicable = true
+  category String?
+  answeredAt DateTime // date à laquelle la réponse est donnée/confirmée exacte
+
+  status String @default("Brouillon") // 'Brouillon' | 'À valider' | 'Validé'
+  validatedByName String?
+  validatedAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
 }
