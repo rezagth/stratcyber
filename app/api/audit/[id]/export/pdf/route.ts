@@ -1,26 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import puppeteer from 'puppeteer';
 import { prisma } from '@/lib/db';
-import { getServerSession } from 'next-auth';
+import { withApiAuth } from '@/lib/auth/api-auth';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export const GET = withApiAuth<{ id: string }>(async (_request, { params, user }) => {
   try {
-    const session = await getServerSession();
-    
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
-    }
-
-    const auditId = params.id;
+    const { id: auditId } = await params;
     
     // Récupérer les données de l'audit
     const audit = await prisma.audit.findFirst({
       where: {
         id: auditId,
-        userId: session.user.id,
+        userId: user.id,
       },
       include: {
         responses: true,
@@ -101,15 +92,25 @@ export async function GET(
       { status: 500 }
     );
   }
+});
+
+function esc(value: unknown): string {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function generateAuditHTML(audit: any): string {
+  const auditId: string = audit.id;
   const auditDate = new Date(audit.createdAt).toLocaleDateString('fr-FR');
   const score = audit.score || 0;
   const maturity = audit.maturity || 'Non évalué';
   
   // Calculer les scores par catégorie
-  const categoryScores: Record<string, number> = {};
+  const categoryScores: Record<string, any> = {};
   audit.responses.forEach((response: any) => {
     if (!categoryScores[response.category]) {
       categoryScores[response.category] = [];
@@ -129,7 +130,7 @@ function generateAuditHTML(audit: any): string {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Rapport d'Audit - ${auditId}</title>
+      <title>Rapport d'Audit - ${esc(auditId)}</title>
       <style>
         * {
           margin: 0;
@@ -328,12 +329,12 @@ function generateAuditHTML(audit: any): string {
               <span class="label">Score Global</span>
             </div>
             <div class="score-card ${score >= 80 ? 'score-excellent' : score >= 50 ? 'score-good' : 'score-poor'}">
-              <span class="score">${maturity}</span>
+              <span class="score">${esc(maturity)}</span>
               <span class="label">Maturité</span>
             </div>
           </div>
           
-          <p><strong>Analyse :</strong> Cet audit de cybersécurité révèle un score global de ${score}% avec un niveau de maturité "${maturity}". ${
+          <p><strong>Analyse :</strong> Cet audit de cybersécurité révèle un score global de ${score}% avec un niveau de maturité "${esc(maturity)}". ${
     score >= 80 
       ? '✅ Excellente posture de cybersécurité ! Continuez à maintenir ce niveau élevé.'
       : score >= 50 
@@ -347,7 +348,7 @@ function generateAuditHTML(audit: any): string {
           <h2>📊 Analyse par Domaine</h2>
           ${Object.entries(categoryScores).map(([category, catScore]) => `
             <div style="margin-bottom: 20px;">
-              <h3>${category}</h3>
+              <h3>${esc(category)}</h3>
               <div class="progress-bar">
                 <div class="progress-fill ${catScore >= 70 ? 'progress-excellent' : catScore >= 40 ? 'progress-good' : 'progress-poor'}" 
                      style="width: ${catScore}%;"></div>
@@ -373,9 +374,9 @@ function generateAuditHTML(audit: any): string {
               <tbody>
                 ${audit.strategicActions.slice(0, 15).map((action: any) => `
                   <tr>
-                    <td>${action.title}</td>
-                    <td>${action.category}</td>
-                    <td><span class="badge ${action.priority === 'Haute' ? 'badge-high' : action.priority === 'Moyenne' ? 'badge-medium' : 'badge-low'}">${action.priority}</span></td>
+                    <td>${esc(action.title)}</td>
+                    <td>${esc(action.category)}</td>
+                    <td><span class="badge ${action.priority === 'Haute' ? 'badge-high' : action.priority === 'Moyenne' ? 'badge-medium' : 'badge-low'}">${esc(action.priority)}</span></td>
                     <td>${new Date(action.dueDate).toLocaleDateString('fr-FR')}</td>
                   </tr>
                 `).join('')}
@@ -390,7 +391,7 @@ function generateAuditHTML(audit: any): string {
           <h2>💡 Recommandations Détaillées</h2>
           <ol class="recommendations">
             ${audit.recommendations.split('\n').filter((rec: string) => rec.trim()).slice(0, 10).map((rec: string) => `
-              <li>${rec.trim()}</li>
+              <li>${esc(rec.trim())}</li>
             `).join('')}
           </ol>
         </div>
@@ -413,9 +414,9 @@ function generateAuditHTML(audit: any): string {
             <tbody>
               ${audit.complianceScores.map((cs: any) => `
                 <tr>
-                  <td><strong>${cs.regulation}</strong></td>
+                  <td><strong>${esc(cs.regulation)}</strong></td>
                   <td>${cs.score}%</td>
-                  <td><span class="badge ${cs.score >= 70 ? 'badge-low' : cs.score >= 40 ? 'badge-medium' : 'badge-high'}">${cs.status}</span></td>
+                  <td><span class="badge ${cs.score >= 70 ? 'badge-low' : cs.score >= 40 ? 'badge-medium' : 'badge-high'}">${esc(cs.status)}</span></td>
                 </tr>
               `).join('')}
             </tbody>
@@ -438,9 +439,9 @@ function generateAuditHTML(audit: any): string {
             <tbody>
               ${audit.responses.slice(0, 20).map((response: any) => `
                 <tr>
-                  <td style="max-width: 300px;">${response.question}</td>
-                  <td><strong>${response.answer}</strong></td>
-                  <td>${response.category}</td>
+                  <td style="max-width: 300px;">${esc(response.question)}</td>
+                  <td><strong>${esc(response.answer)}</strong></td>
+                  <td>${esc(response.category)}</td>
                   <td><span class="badge ${(response.score || 0) >= 4 ? 'badge-low' : (response.score || 0) >= 2 ? 'badge-medium' : 'badge-high'}">${response.score || 0}/5</span></td>
                 </tr>
               `).join('')}

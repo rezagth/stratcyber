@@ -13,7 +13,7 @@ export default defineConfig({
   resolve: {
     // Possibilité d'ajouter des alias, pratique pour les imports dans les tests
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      '@': path.resolve(__dirname, '.'),
     },
   },
   test: {

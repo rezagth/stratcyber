@@ -10,14 +10,14 @@ import { useSession } from 'next-auth/react';
 
 export default function Home() {
   const router = useRouter();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
 
   // Ancien comportement: si connecté, redirection immédiate et silencieuse vers /dashboard
   useEffect(() => {
     if (status === 'authenticated') {
-      router.replace('/dashboard');
+      router.replace(session?.user?.role === 'client' ? '/client' : '/dashboard');
     }
-  }, [status, router]);
+  }, [status, session, router]);
 
   if (status === 'loading') {
     // Optionnel: on peut retourner null pour éviter tout flash

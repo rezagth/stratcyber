@@ -33,6 +33,7 @@ export const useSidebarState = () => {
 const LEGACY_ROUTES = [
   '/auth/login',
   '/auth/register',
+  '/client',
 ]
 
 interface IntegratedLayoutProps {

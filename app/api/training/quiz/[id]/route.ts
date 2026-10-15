@@ -1,50 +1,35 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/db';
+import { jsonError, withApiAuth } from '@/lib/auth/api-auth';
+import { ebookVisibleTo } from '@/lib/training/ebooks';
 
-const prisma = new PrismaClient();
+// GET /api/training/quiz/[id] - Un quiz dont l'ebook est visible par l'utilisateur connecté
+export const GET = withApiAuth<{ id: string }>(async (_request, { params, user }) => {
+  const { id } = await params;
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const quiz = await prisma.ebookQuiz.findUnique({
-      where: {
-        id: params.id
+  // Le quiz hérite des droits de son ebook.
+  const quiz = await prisma.ebookQuiz.findFirst({
+    where: { id, ebook: ebookVisibleTo(user) },
+    include: {
+      ebook: {
+        select: {
+          id: true,
+          title: true,
+          author: true,
+        },
       },
-      include: {
-        ebook: {
-          select: {
-            id: true,
-            title: true,
-            author: true
-          }
-        }
-      }
-    });
+    },
+  });
 
-    if (!quiz) {
-      return NextResponse.json(
-        { message: 'Quiz non trouvé' },
-        { status: 404 }
-      );
-    }
-
-    // Parse les questions JSON
-    const processedQuiz = {
-      ...quiz,
-      questions: quiz.questions ? JSON.parse(quiz.questions) : []
-    };
-
-    return NextResponse.json(processedQuiz, { status: 200 });
-  } catch (error) {
-    console.error('Error fetching quiz:', error);
-    return NextResponse.json(
-      { 
-        message: 'Error fetching quiz', 
-        error: error instanceof Error ? error.message : 'Unknown error' 
-      },
-      { status: 500 }
-    );
+  if (!quiz) {
+    return jsonError('Quiz non trouvé', 404);
   }
-}
+
+  return NextResponse.json(
+    {
+      ...quiz,
+      questions: quiz.questions ? JSON.parse(quiz.questions) : [],
+    },
+    { status: 200 }
+  );
+});

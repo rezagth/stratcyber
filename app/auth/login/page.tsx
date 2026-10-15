@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { getSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -50,8 +50,13 @@ export default function LoginPage() {
           duration: 2000,
         });
         
-        // Préchargement des données critiques
+        // Aiguillage selon le rôle : un compte client va dans son espace, jamais dans le tableau de bord.
+        const session = await getSession();
+        const target = session?.user?.role === 'client' ? '/client' : '/dashboard';
+
+        // Préchargement des données critiques (administrateur uniquement)
         try {
+          if (target !== '/dashboard') throw new Error('skip');
           await Promise.all([
             fetch('/api/audits'),
             fetch('/api/roadmap/data')
@@ -61,7 +66,7 @@ export default function LoginPage() {
         }
         
         setTimeout(() => {
-          router.push('/dashboard');
+          router.push(target);
           router.refresh();
         }, 1000);
       }

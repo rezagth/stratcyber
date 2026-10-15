@@ -12,7 +12,7 @@ model User {
   email     String   @unique
   password  String
   name      String?
-  role      String   // 'admin' | 'user'
+  role      String   // 'admin' | 'user' | 'client' (client = compte rattaché à une organisation, lecture seule)
   audits    Audit[]
   sessions  Session[]
   chatHistories ChatHistory[]
@@ -22,7 +22,52 @@ model User {
   progress  LearningProgress[]
   readingSessions ReadingSession[]
   ebookQuizAttempts EbookQuizAttempt[]
+  ownedEbooks Ebook[]
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
+
+  @@index([organizationId])
+}
+
+// Client de l'activité InfraCyb (entreprise suivie). Les comptes 'client' y sont rattachés.
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  sector    String?
+  size      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+  audits    Audit[]
+}
+
+// Statut d'avancement d'une action de la feuille de route (avant : stocké en mémoire du serveur, donc perdu).
+model ActionStatus {
+  id        String   @id @default(uuid())
+  userId    String
+  actionId  String
+  status    String
+  progress  Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, actionId])
+}
+
+// Journal des actions sensibles : qui a fait quoi, quand, sur quel client. Jamais de secret ni de contenu d'audit ici.
+model ActivityLog {
+  id             String   @id @default(uuid())
+  actorId        String?
+  actorRole      String?
+  action         String
+  targetType     String?
+  targetId       String?
+  organizationId String?
+  metadata       String?
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([actorId, createdAt])
 }
 
 model Session {
@@ -52,6 +97,11 @@ model Audit {
   complianceScores ComplianceScore[]
   legalRiskAssessment LegalRiskAssessment?
   legalRiskScore   Float?      // Score de risque légal calculé
+  organizationId   String?     // Client pour lequel l'audit est réalisé
+  organization     Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  sharedWithClient Boolean     @default(false) // visible dans l'espace client seulement si true
+
+  @@index([organizationId])
 }
 
 model AuditResponse {
@@ -97,6 +147,10 @@ model Ebook {
   tags        String?  // JSON array des tags
   thumbnailUrl String?
   isPublished Boolean  @default(false)
+
+  // Propriétaire : null = catalogue commun ; sinon ebook personnalisé visible par ce seul utilisateur
+  ownerId     String?
+  owner       User?    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   
   // Relations
   readingSessions ReadingSession[]
@@ -104,6 +158,8 @@ model Ebook {
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([ownerId])
 }
 
 // Sessions de lecture pour suivre le progrès

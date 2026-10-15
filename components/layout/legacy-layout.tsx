@@ -13,7 +13,8 @@ const NO_NAV_ROUTES = [
   '/auth/login',
   '/auth/register',
   '/auth/forgot-password',
-  '/auth/reset-password'
+  '/auth/reset-password',
+  '/client'
 ]
 
 export function LegacyLayout({ children }: LegacyLayoutProps) {

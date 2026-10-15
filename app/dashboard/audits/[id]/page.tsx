@@ -57,7 +57,7 @@ export default function AuditDetailPage() {
 
       try {
         setLoading(true);
-        const response = await fetch(`/api/audits/${auditId}?userId=${session.user.id}`);
+        const response = await fetch(`/api/audits/${auditId}`);
         
         if (!response.ok) {
           throw new Error('Audit non trouvé ou accès non autorisé');

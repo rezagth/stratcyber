@@ -95,8 +95,9 @@ export async function GET() {
       });
     });
 
+    // Ces trois modèles n'ont pas de propriétaire (ni client) : réservés à l'admin tant qu'ils ne sont pas rattachés à une organisation.
     // Alertes d'incidents critiques non résolus
-    const criticalIncidents = await prisma.incidentReport.findMany({
+    const criticalIncidents = session.user.role !== 'admin' ? [] : await prisma.incidentReport.findMany({
       where: {
         severity: 'critical',
         status: { in: ['open', 'investigating'] }
@@ -120,7 +121,7 @@ export async function GET() {
     });
 
     // Alertes de vulnérabilités critiques
-    const criticalVulnerabilities = await prisma.vulnerability.findMany({
+    const criticalVulnerabilities = session.user.role !== 'admin' ? [] : await prisma.vulnerability.findMany({
       where: {
         severity: 'critical',
         status: 'open'
@@ -221,7 +222,7 @@ export async function GET() {
     }
 
     // Alertes de sécurité non résolues
-    const unresolvedSecurityAlerts = await prisma.securityAlert.findMany({
+    const unresolvedSecurityAlerts = session.user.role !== 'admin' ? [] : await prisma.securityAlert.findMany({
       where: { isResolved: false },
       orderBy: { createdAt: 'desc' },
       take: 5

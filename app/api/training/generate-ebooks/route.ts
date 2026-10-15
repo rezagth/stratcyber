@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/db';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { jsonError, withApiAuth } from '@/lib/auth/api-auth';
 
 interface EbookTemplate {
   title: string;
@@ -343,93 +342,74 @@ ${categoryActions.map((action: any, index: number) => {
   return ebooks;
 }
 
-export async function POST() {
-  try {
-    const session = await getServerSession(authOptions);
+// POST /api/training/generate-ebooks - Génère les ebooks personnalisés de l'utilisateur connecté
+export const POST = withApiAuth(async (_request, { user }) => {
+  // Dernier audit DE L'UTILISATEUR CONNECTÉ, avec ses réponses
+  const latestAudit = await prisma.audit.findFirst({
+    where: {
+      userId: user.id,
+    },
+    include: {
+      responses: true,
+      strategicActions: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
 
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Non autorisé' },
-        { status: 401 }
-      );
-    }
+  if (!latestAudit || latestAudit.responses.length === 0) {
+    return jsonError(
+      "Aucun audit trouvé. Veuillez d'abord compléter un audit pour générer des ebooks personnalisés.",
+      404
+    );
+  }
 
-    // Récupérer le dernier audit avec les réponses
-    const latestAudit = await prisma.audit.findFirst({
-      where: {
-        userId: session.user.id,
-      },
-      include: {
-        responses: true,
-        strategicActions: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+  // Générer les ebooks basés sur l'audit
+  const generatedEbooks = generateEbookFromAudit(latestAudit, latestAudit.strategicActions);
 
-    if (!latestAudit || latestAudit.responses.length === 0) {
-      return NextResponse.json({
-        error: 'Aucun audit trouvé. Veuillez d\'abord compléter un audit pour générer des ebooks personnalisés.'
-      }, { status: 404 });
-    }
+  // Supprimer UNIQUEMENT les anciens ebooks personnalisés de cet utilisateur (par propriétaire,
+  // plus par nom d'auteur : deux utilisateurs homonymes s'effaçaient mutuellement leurs ebooks).
+  await prisma.ebook.deleteMany({
+    where: { ownerId: user.id },
+  });
 
-    // Générer les ebooks basés sur l'audit
-    const generatedEbooks = generateEbookFromAudit(latestAudit, latestAudit.strategicActions);
-
-    // Supprimer les anciens ebooks générés automatiquement pour cet utilisateur
-    await prisma.ebook.deleteMany({
-      where: {
-        author: `Système - ${session.user.name || session.user.email}`,
+  // Sauvegarder les nouveaux ebooks, rattachés à l'utilisateur
+  const savedEbooks = [];
+  for (const ebook of generatedEbooks) {
+    const savedEbook = await prisma.ebook.create({
+      data: {
+        ownerId: user.id,
+        title: ebook.title,
+        author: `Système - ${user.name || user.email}`,
+        description: ebook.description,
+        content: JSON.stringify({
+          chapters: ebook.chapters,
+          metadata: {
+            generatedFrom: latestAudit.id,
+            generatedAt: new Date(),
+            userSpecific: true
+          }
+        }),
+        category: ebook.category,
+        difficulty: ebook.difficulty,
+        duration: ebook.duration,
+        pages: Math.ceil(ebook.chapters.length * 8), // Estimation : 8 pages par chapitre
+        rating: 5.0, // Ebooks personnalisés ont une note maximale
+        downloads: 0,
+        tags: JSON.stringify(ebook.tags),
+        isPublished: true
       }
     });
 
-    // Sauvegarder les nouveaux ebooks
-    const savedEbooks = [];
-    for (const ebook of generatedEbooks) {
-      const savedEbook = await prisma.ebook.create({
-        data: {
-          title: ebook.title,
-          author: `Système - ${session.user.name || session.user.email}`,
-          description: ebook.description,
-          content: JSON.stringify({
-            chapters: ebook.chapters,
-            metadata: {
-              generatedFrom: latestAudit.id,
-              generatedAt: new Date(),
-              userSpecific: true
-            }
-          }),
-          category: ebook.category,
-          difficulty: ebook.difficulty,
-          duration: ebook.duration,
-          pages: Math.ceil(ebook.chapters.length * 8), // Estimation : 8 pages par chapitre
-          rating: 5.0, // Ebooks personnalisés ont une note maximale
-          downloads: 0,
-          tags: JSON.stringify(ebook.tags),
-          isPublished: true
-        }
-      });
-
-      savedEbooks.push(savedEbook);
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: `${generatedEbooks.length} ebooks personnalisés générés avec succès`,
-      ebooks: savedEbooks,
-      auditId: latestAudit.id,
-      generatedAt: new Date()
-    });
-
-  } catch (error) {
-    console.error('Erreur lors de la génération des ebooks:', error);
-    return NextResponse.json(
-      { 
-        error: 'Erreur lors de la génération des ebooks',
-        details: error instanceof Error ? error.message : 'Erreur inconnue'
-      },
-      { status: 500 }
-    );
+    savedEbooks.push(savedEbook);
   }
-}
+
+  return NextResponse.json({
+    success: true,
+    message: `${generatedEbooks.length} ebooks personnalisés générés avec succès`,
+    ebooks: savedEbooks,
+    auditId: latestAudit.id,
+    generatedAt: new Date()
+  });
+});

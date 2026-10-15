@@ -24,7 +24,7 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user) {
-          throw new Error('Utilisateur non trouvé');
+          throw new Error('Identifiants invalides');
         }
 
         const isPasswordValid = await bcrypt.compare(
@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
         );
 
         if (!isPasswordValid) {
-          throw new Error('Mot de passe incorrect');
+          throw new Error('Identifiants invalides');
         }
 
         return user;
@@ -53,6 +53,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.organizationId = user.organizationId ?? null;
       }
       return token;
     },
@@ -60,6 +61,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+        session.user.organizationId = (token.organizationId as string | null | undefined) ?? null;
       }
       return session;
     }

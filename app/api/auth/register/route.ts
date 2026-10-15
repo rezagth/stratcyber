@@ -1,70 +1,59 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/db';
+import { jsonError, withApiAuth } from '@/lib/auth/api-auth';
+import { logActivity } from '@/lib/activity-log';
 
-export async function POST(request: Request) {
-  try {
-    console.log('Registration request received');
-    const { email, password, name } = await request.json();
-    console.log('Registration data:', { email, password: '***', name });
+const MIN_PASSWORD_LENGTH = 12;
 
-    if (!email || !password) {
-      console.log('Missing email or password');
-      return NextResponse.json(
-        { error: 'Email et mot de passe requis' },
-        { status: 400 }
-      );
+/**
+ * Création d'un compte : réservée à l'administrateur (inscription publique fermée).
+ * Les comptes clients (avec organizationId) sont créés ici, jamais en libre-service.
+ * Aucune donnée personnelle ni mot de passe n'est écrit dans les logs.
+ */
+export const POST = withApiAuth(
+  async (request, { user: actor }) => {
+    const body = await request.json().catch(() => null);
+    const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const password = typeof body?.password === 'string' ? body.password : '';
+    const organizationId =
+      typeof body?.organizationId === 'string' && body.organizationId ? body.organizationId : null;
+    const name = typeof body?.name === 'string' && body.name.trim() ? body.name.trim() : null;
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return jsonError('Email invalide', 400);
+    }
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      return jsonError(`Mot de passe trop court (${MIN_PASSWORD_LENGTH} caractères minimum)`, 400);
     }
 
-    // Vérifier si l'utilisateur existe déjà
-    console.log('Checking for existing user with email:', email);
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-    console.log('Existing user check result:', existingUser);
-
-    if (existingUser) {
-      console.log('User already exists');
-      return NextResponse.json(
-        { error: 'Cet email est déjà utilisé' },
-        { status: 400 }
-      );
+    // Compte client : rattaché à une organisation qui doit exister.
+    if (organizationId) {
+      const organization = await prisma.organization.findFirst({
+        where: { id: organizationId },
+        select: { id: true },
+      });
+      if (!organization) return jsonError('Client non trouvé', 404);
     }
 
-    // Hasher le mot de passe
-    console.log('Hashing password');
-    const hashedPassword = await bcrypt.hash(password, 12);
-    console.log('Password hashed successfully');
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      return jsonError('Cet email est déjà utilisé', 400);
+    }
 
-    // Créer le nouvel utilisateur
-    console.log('Creating new user');
     const user = await prisma.user.create({
       data: {
         email,
-        password: hashedPassword,
-        name: name || null,
-        role: 'user', // Rôle par défaut
+        password: await bcrypt.hash(password, 12),
+        name,
+        role: organizationId ? 'client' : 'user',
+        organizationId,
       },
+      select: { id: true, email: true, name: true, role: true, organizationId: true, createdAt: true },
     });
-    console.log('User created successfully:', user);
 
-    // Ne pas renvoyer le mot de passe hashé
-    const { password: userPassword, ...userWithoutPassword } = user;
-
-    return NextResponse.json(
-      { user: userWithoutPassword },
-      { status: 201 }
-    );
-  } catch (error: unknown) {
-    console.error('Erreur lors de l\'inscription:', error);
-    if (error instanceof Error) {
-      console.error('Error name:', error.name);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
-    }
-    return NextResponse.json(
-      { error: 'Erreur lors de la création du compte' },
-      { status: 500 }
-    );
-  }
-}
+    await logActivity(actor, { action: 'user.create', targetType: 'user', targetId: user.id, organizationId: user.organizationId, metadata: { role: user.role } });
+    return NextResponse.json({ user }, { status: 201 });
+  },
+  { roles: ['admin'] }
+);

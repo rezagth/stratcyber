@@ -1,79 +1,48 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/db';
+import { jsonError, withApiAuth } from '@/lib/auth/api-auth';
 
-const prisma = new PrismaClient();
+// POST /api/audits/[id]/duplicate - Dupliquer un audit de l'utilisateur connecté
+export const POST = withApiAuth<{ id: string }>(async (_request, { params, user }) => {
+  const { id } = await params;
 
-// POST /api/audits/[id]/duplicate - Dupliquer un audit
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const auditId = params.id;
+  // Seul le propriétaire peut lire (donc dupliquer) l'audit.
+  const originalAudit = await prisma.audit.findFirst({
+    where: { id, userId: user.id },
+    include: { responses: true },
+  });
 
-    if (!auditId) {
-      return NextResponse.json(
-        { error: 'ID audit requis' },
-        { status: 400 }
-      );
-    }
-
-    // Récupérer l'audit original avec ses réponses
-    const originalAudit = await prisma.audit.findUnique({
-      where: {
-        id: auditId,
-      },
-      include: {
-        responses: true,
-      },
-    });
-
-    if (!originalAudit) {
-      return NextResponse.json(
-        { error: 'Audit non trouvé' },
-        { status: 404 }
-      );
-    }
-
-    // Créer une copie de l'audit
-    const duplicatedAudit = await prisma.audit.create({
-      data: {
-        userId: originalAudit.userId,
-        score: originalAudit.score,
-        maturity: originalAudit.maturity,
-        recommendations: originalAudit.recommendations,
-        companyProfile: originalAudit.companyProfile,
-        createdAt: new Date(), // Nouvelle date de création
-        updatedAt: new Date(),
-        responses: {
-          create: originalAudit.responses.map(response => ({
-            question: response.question,
-            answer: response.answer,
-            score: response.score,
-            category: response.category,
-          })),
-        },
-      },
-      include: {
-        responses: {
-          select: {
-            question: true,
-            answer: true,
-            score: true,
-            category: true,
-          },
-        },
-      },
-    });
-
-    return NextResponse.json(duplicatedAudit);
-  } catch (error) {
-    console.error('Erreur lors de la duplication de l\'audit:', error);
-    return NextResponse.json(
-      { error: 'Erreur interne du serveur' },
-      { status: 500 }
-    );
-  } finally {
-    await prisma.$disconnect();
+  if (!originalAudit) {
+    return jsonError('Audit non trouvé', 404);
   }
-}
+
+  const duplicatedAudit = await prisma.audit.create({
+    data: {
+      userId: user.id, // la copie appartient à l'utilisateur connecté, jamais à une valeur externe
+      score: originalAudit.score,
+      maturity: originalAudit.maturity,
+      recommendations: originalAudit.recommendations,
+      companyProfile: originalAudit.companyProfile,
+      responses: {
+        create: originalAudit.responses.map((response) => ({
+          question: response.question,
+          answer: response.answer,
+          score: response.score,
+          category: response.category,
+        })),
+      },
+    },
+    include: {
+      responses: {
+        select: {
+          question: true,
+          answer: true,
+          score: true,
+          category: true,
+        },
+      },
+    },
+  });
+
+  return NextResponse.json(duplicatedAudit);
+});
