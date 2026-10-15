@@ -31,7 +31,7 @@ export default function OrganizationsPage() {
         {organizations?.map((org) => (
           <li key={org.id}>
             <Link
-              href={`/dashboard/organizations/${org.id}/action-plan`}
+              href={`/dashboard/organizations/${org.id}`}
               className="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <Card className="transition hover:shadow-md">

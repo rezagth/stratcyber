@@ -4,6 +4,7 @@ import { jsonError } from '@/lib/auth/api-auth';
 import type { AuthedUser } from '@/lib/auth/api-auth';
 import { organizationScopeWhere } from '@/lib/auth/access';
 import { pickDefined } from '@/lib/api/whitelist';
+import { toNullableDate, toNullableNumber, toNullableString } from '@/lib/api/validators';
 import { logActivity } from '@/lib/activity-log';
 
 const PRIORITIES = ['Critique', 'Haute', 'Moyenne', 'Faible'];
@@ -28,26 +29,6 @@ const ADMIN_WHITELIST: (keyof AdminFields)[] = [
   'title', 'description', 'category', 'priority', 'responsible', 'dueDate', 'estimatedCost',
 ];
 const CLIENT_WHITELIST: (keyof SharedFields)[] = ['status', 'proofOfCompletion', 'proofDate'];
-
-function toNullableDate(value: unknown): Date | null | undefined {
-  if (value === null) return null;
-  if (typeof value !== 'string' || !value) return undefined;
-  const d = new Date(value);
-  return Number.isNaN(d.getTime()) ? undefined : d;
-}
-
-function toNullableNumber(value: unknown): number | null | undefined {
-  if (value === null) return null;
-  if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) return undefined;
-  return value;
-}
-
-function toNullableString(value: unknown, maxLength: number): string | null | undefined {
-  if (value === null) return null;
-  if (typeof value !== 'string') return undefined;
-  const trimmed = value.trim();
-  return trimmed ? trimmed.slice(0, maxLength) : null;
-}
 
 /**
  * Met à jour une action du plan (module D). Partagé par les deux routes qui l'exposent :

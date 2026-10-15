@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
+import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db';
 import { jsonError, withApiAuth } from '@/lib/auth/api-auth';
 import { logActivity } from '@/lib/activity-log';
+import { parseOrganizationProfile } from '@/lib/api/organization-profile';
 
 /** Liste des clients (organisations) : administrateur uniquement. */
 export const GET = withApiAuth(
@@ -19,15 +21,12 @@ export const GET = withApiAuth(
 export const POST = withApiAuth(
   async (request, { user }) => {
     const body = await request.json().catch(() => null);
-    const name = typeof body?.name === 'string' ? body.name.trim() : '';
-    if (name.length < 2 || name.length > 120) {
-      return jsonError('Nom du client invalide (2 à 120 caractères)', 400);
-    }
-    const clean = (v: unknown) =>
-      typeof v === 'string' && v.trim() ? v.trim().slice(0, 120) : null;
+    const parsed = parseOrganizationProfile(body, { requireName: true });
+    if ('error' in parsed) return jsonError(parsed.error, 400);
 
     const organization = await prisma.organization.create({
-      data: { name, sector: clean(body?.sector), size: clean(body?.size) },
+      // `requireName: true` garantit que `parsed.data.name` est présent (sinon `parseOrganizationProfile` renvoie `error`).
+      data: parsed.data as Prisma.OrganizationUncheckedCreateInput,
       select: { id: true, name: true, sector: true, size: true, createdAt: true },
     });
     await logActivity(user, { action: 'organization.create', targetType: 'organization', targetId: organization.id, organizationId: organization.id });

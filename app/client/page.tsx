@@ -34,17 +34,30 @@ export default function ClientHomePage() {
         </Button>
       </header>
 
-      <div className="mb-8">
+      <div className="mb-8 grid gap-4 sm:grid-cols-2">
         <Link
           href="/client/action-plan"
-          className="inline-block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <Card className="transition hover:shadow-md">
+          <Card className="h-full transition hover:shadow-md">
             <CardHeader>
               <CardTitle className="text-base">Mon plan d&apos;action →</CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               Suivez vos actions recommandées et mettez à jour votre avancement.
+            </CardContent>
+          </Card>
+        </Link>
+        <Link
+          href="/client/profile"
+          className="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <Card className="h-full transition hover:shadow-md">
+            <CardHeader>
+              <CardTitle className="text-base">Mon profil →</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              Votre profil, votre périmètre de mission et vos contacts.
             </CardContent>
           </Card>
         </Link>

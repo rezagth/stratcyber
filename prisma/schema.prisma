@@ -35,12 +35,76 @@ model Organization {
   id        String   @id @default(uuid())
   name      String
   sector    String?
-  size      String?
+  size      String?   // catégorie INSEE-like : 'TPE' | 'PME' | 'ETI' | 'GE'
+  headcount Int?      // effectif précis (nombre de salariés)
+  annualRevenue Float? // chiffre d'affaires annuel (euros)
+
+  // Périmètre de la mission StratCyber pour ce client (texte libre : ce qui est inclus,
+  // ce qui ne l'est pas).
+  missionScope String?
+
+  // Test d'applicabilité réglementaire (module A) : indicatif, à confirmer avec un
+  // juriste. La transposition française de NIS2 n'est pas finalisée à ce jour.
+  nis2Applicability String?   // 'Oui' | 'Non' | 'Incertain'
+  nis2Note          String?
+  rgpdApplicability String?   // 'Oui' | 'Non'
+  rgpdNote          String?
+  iso27001Status    String?   // 'Non engagé' | 'En cours' | 'Certifié'
+  iso27001Note      String?
+  applicabilityAssessedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   users     User[]
   audits    Audit[]
   actionPlanItems ActionPlanItem[]
+  contacts  Contact[]
+  decisions DecisionLogEntry[]
+  internalNotes InternalNote[]
+}
+
+// Contact côté client (module A). Un seul contact principal par organisation à la fois
+// (appliqué par la route, pas par une contrainte de base).
+model Contact {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  role           String?  // fonction (ex. "DSI", "Dirigeant")
+  email          String?
+  phone          String?
+  isPrimary      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+// Historique des décisions prises avec/pour ce client (ex. "report de la MFA au Q3,
+// faute de budget"). Distinct du journal technique ActivityLog (qui trace les actions
+// dans l'outil, pas les décisions métier).
+model DecisionLogEntry {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  title          String
+  description    String?
+  decidedAt      DateTime
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId])
+}
+
+// Notes internes sur un client : JAMAIS exposées par une route /api/client/*.
+model InternalNote {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  content        String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([organizationId])
 }
 
 // Module D : action exécutable du plan d'action client (générée depuis un audit, puis
