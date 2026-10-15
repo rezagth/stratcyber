@@ -69,6 +69,7 @@ model Organization {
   securityAnswers SecurityAnswer[]
   governanceMeetings GovernanceMeeting[]
   leadershipTrainings LeadershipTraining[]
+  suppliers Supplier[]
 }
 
 // Contact côté client (module A). Un seul contact principal par organisation à la fois
@@ -1091,4 +1092,51 @@ model LeadershipTraining {
   updatedAt DateTime @updatedAt
 
   @@index([organizationId])
+}
+
+// Module H : registre des fournisseurs (risque tiers / chaîne d'approvisionnement,
+// NIS2 article 21 — mesures de sécurité de la chaîne d'approvisionnement). Même
+// mécanique que le module B (Control/Evidence) : un fournisseur porte des preuves
+// annuelles datées, l'alerte avant expiration est calculée à la volée, jamais stockée.
+model Supplier {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String?  // service ou prestation fournie
+  dataLocation String?  // localisation des données traitées/hébergées par ce fournisseur
+  criticality String   @default("Moyenne") // 'Faible' | 'Moyenne' | 'Haute' | 'Critique'
+  hasSecurityClause       Boolean @default(false)
+  securityClauseReference String? // référence/lien vers la clause de sécurité du contrat
+  lastReviewDate DateTime? // dernière revue de sécurité de ce fournisseur
+  status      String   @default("Actif") // 'Actif' | 'Inactif'
+
+  evidences SupplierEvidence[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+// Preuve annuelle rattachée à un fournisseur (ex. certification, rapport d'audit du
+// sous-traitant, attestation). Pas de fichier stocké : un lien, comme ailleurs.
+model SupplierEvidence {
+  id             String   @id @default(uuid())
+  supplierId     String
+  supplier       Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  organizationId String   // dénormalisé : cloisonnement direct sans jointure jusqu'à Supplier
+
+  label        String
+  evidenceDate DateTime  // date de la preuve elle-même
+  expiresAt    DateTime?
+  link         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([supplierId])
+  @@index([expiresAt])
 }

@@ -37,6 +37,8 @@ const TABLES = [
   'securityAnswer',
   'governanceMeeting',
   'leadershipTraining',
+  'supplier',
+  'supplierEvidence',
 ] as const;
 type Table = (typeof TABLES)[number];
 
@@ -59,9 +61,13 @@ const HAS_MANY: Partial<Record<Table, Record<string, { table: Table; fk: string 
     decisions: { table: 'decisionLogEntry', fk: 'organizationId' },
     internalNotes: { table: 'internalNote', fk: 'organizationId' },
     controls: { table: 'control', fk: 'organizationId' },
+    suppliers: { table: 'supplier', fk: 'organizationId' },
   },
   control: {
     evidences: { table: 'evidence', fk: 'controlId' },
+  },
+  supplier: {
+    evidences: { table: 'supplierEvidence', fk: 'supplierId' },
   },
   ebook: {
     readingSessions: { table: 'readingSession', fk: 'ebookId' },
@@ -268,6 +274,8 @@ export const fakePrisma = {
   securityAnswer: model('securityAnswer'),
   governanceMeeting: model('governanceMeeting'),
   leadershipTraining: model('leadershipTraining'),
+  supplier: model('supplier'),
+  supplierEvidence: model('supplierEvidence'),
   async $transaction(ops: Array<Promise<unknown>>) {
     return Promise.all(ops);
   },
