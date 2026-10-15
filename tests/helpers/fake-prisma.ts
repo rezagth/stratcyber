@@ -32,6 +32,8 @@ const TABLES = [
   'risk',
   'incidentCase',
   'clientVulnerability',
+  'policyTemplate',
+  'clientPolicyDocument',
 ] as const;
 type Table = (typeof TABLES)[number];
 
@@ -258,6 +260,8 @@ export const fakePrisma = {
   risk: model('risk'),
   incidentCase: model('incidentCase'),
   clientVulnerability: model('clientVulnerability'),
+  policyTemplate: model('policyTemplate'),
+  clientPolicyDocument: model('clientPolicyDocument'),
   async $transaction(ops: Array<Promise<unknown>>) {
     return Promise.all(ops);
   },

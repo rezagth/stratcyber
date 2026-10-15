@@ -65,6 +65,7 @@ model Organization {
   risks     Risk[]
   incidents IncidentCase[]
   vulnerabilities ClientVulnerability[]
+  policyDocuments ClientPolicyDocument[]
 }
 
 // Contact côté client (module A). Un seul contact principal par organisation à la fois
@@ -971,4 +972,48 @@ model ClientVulnerability {
   updatedAt DateTime @updatedAt
 
   @@index([organizationId])
+}
+
+// Module E : catalogue global de modèles de politiques (confidentialité, PSSI,
+// sauvegarde, accès, incident, PCA), avec variables {{nom_variable}} à substituer
+// pour générer le document final d'un client. Catalogue partagé entre tous les
+// clients, pas cloisonné par organisation (ce sont des modèles, pas des documents).
+// Contenu "à adapter, à faire relire par un juriste" — jamais du conseil juridique.
+model PolicyTemplate {
+  id        String   @id @default(uuid())
+  type      String   // 'Confidentialité' | 'PSSI' | 'Sauvegarde' | 'Accès' | 'Incident' | 'PCA'
+  name      String
+  content   String   // texte avec variables au format {{nom_variable}}
+
+  documents ClientPolicyDocument[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Document de politique généré pour un client à partir d'un modèle (variables déjà
+// substituées). Versionné : une nouvelle version repart de "Brouillon" et ne touche
+// pas l'historique des versions précédentes. La validation est tracée par la
+// direction du CLIENT (nom + date renseignés côté serveur au moment de la validation,
+// jamais fournis par le corps de la requête — pour que la preuve soit fiable).
+model ClientPolicyDocument {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  templateId     String?
+  template       PolicyTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  type    String   // même énumération que PolicyTemplate.type
+  title   String
+  content String   // contenu final, variables déjà substituées
+  version Int      @default(1)
+  status  String   @default("Brouillon") // 'Brouillon' | 'À valider' | 'Validé'
+
+  validatedByName String?  // nom du compte client qui a validé (jamais fourni par le client lui-même dans le corps de la requête)
+  validatedAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId, type])
 }

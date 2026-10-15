@@ -16,6 +16,7 @@ import { ControlsTab } from '@/components/dossier/controls-tab';
 import { RisksTab } from '@/components/dossier/risks-tab';
 import { IncidentsTab } from '@/components/dossier/incidents-tab';
 import { VulnerabilitiesTab } from '@/components/dossier/vulnerabilities-tab';
+import { PoliciesTab } from '@/components/dossier/policies-tab';
 
 type Organization = {
   id: string; name: string; sector: string | null; size: string | null;
@@ -133,6 +134,7 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
           <TabsTrigger value="risques">Risques</TabsTrigger>
           <TabsTrigger value="incidents">Incidents</TabsTrigger>
           <TabsTrigger value="vulnerabilites">Vulnérabilités</TabsTrigger>
+          <TabsTrigger value="politiques">Politiques</TabsTrigger>
           <TabsTrigger value="decisions">Décisions ({decisions.length})</TabsTrigger>
           <TabsTrigger value="notes">Notes internes ({notes.length})</TabsTrigger>
         </TabsList>
@@ -266,6 +268,10 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
 
         <TabsContent value="vulnerabilites">
           <VulnerabilitiesTab organizationId={id} />
+        </TabsContent>
+
+        <TabsContent value="politiques">
+          <PoliciesTab organizationId={id} />
         </TabsContent>
 
         <TabsContent value="decisions" className="space-y-4">

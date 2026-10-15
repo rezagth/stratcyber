@@ -21,7 +21,12 @@ export default function OrganizationsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-semibold">Clients</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Clients</h1>
+        <Link href="/dashboard/policy-templates" className="text-sm text-muted-foreground hover:underline">
+          Modèles de politiques →
+        </Link>
+      </div>
 
       {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
       {!error && organizations === null && <p className="text-sm text-muted-foreground">Chargement…</p>}
