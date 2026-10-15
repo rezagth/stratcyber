@@ -53,6 +53,8 @@ const BELONGS_TO: Partial<Record<Table, Record<string, { table: Table; fk: strin
   ebookQuiz: { ebook: { table: 'ebook', fk: 'ebookId' } },
   readingSession: { ebook: { table: 'ebook', fk: 'ebookId' } },
   ebookQuizAttempt: { quiz: { table: 'ebookQuiz', fk: 'quizId' } },
+  evidence: { control: { table: 'control', fk: 'controlId' } },
+  supplierEvidence: { supplier: { table: 'supplier', fk: 'supplierId' } },
 };
 // Relation « a plusieurs » (include)
 const HAS_MANY: Partial<Record<Table, Record<string, { table: Table; fk: string }>>> = {

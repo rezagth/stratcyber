@@ -54,6 +54,19 @@ export default function ClientHomePage() {
           </Card>
         </Link>
         <Link
+          href="/client/evidence"
+          className="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <Card className="h-full transition hover:shadow-md">
+            <CardHeader>
+              <CardTitle className="text-base">Mes preuves →</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              Toutes vos preuves (contrôles et fournisseurs) en un seul endroit, triées par échéance.
+            </CardContent>
+          </Card>
+        </Link>
+        <Link
           href="/client/profile"
           className="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
