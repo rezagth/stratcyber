@@ -22,6 +22,7 @@ import { GovernanceTab } from '@/components/dossier/governance-tab';
 import { SuppliersTab } from '@/components/dossier/suppliers-tab';
 import { BudgetTab } from '@/components/dossier/budget-tab';
 import { TrainingTab } from '@/components/dossier/training-tab';
+import { MonthlyReportButton } from '@/components/monthly-report-button';
 
 type Organization = {
   id: string; name: string; sector: string | null; size: string | null;
@@ -122,11 +123,14 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       <Link href="/dashboard/organizations" className="text-sm text-muted-foreground hover:underline">← Clients</Link>
-      <div className="mt-2 mb-6 flex items-center justify-between">
+      <div className="mt-2 mb-6 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">{org.name}</h1>
-        <Link href={`/dashboard/organizations/${id}/action-plan`}>
-          <Button variant="outline">Plan d&apos;action →</Button>
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <MonthlyReportButton apiBase={`/api/organizations/${id}/monthly-report`} />
+          <Link href={`/dashboard/organizations/${id}/action-plan`}>
+            <Button variant="outline">Plan d&apos;action →</Button>
+          </Link>
+        </div>
       </div>
 
       {feedback && <p role="status" className="mb-4 text-sm">{feedback}</p>}

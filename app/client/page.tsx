@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { MonthlyReportButton } from '@/components/monthly-report-button';
 
 type ClientAudit = { id: string; createdAt: string; score: number | null; maturity: string | null };
 
@@ -33,6 +34,10 @@ export default function ClientHomePage() {
           Se déconnecter
         </Button>
       </header>
+
+      <div className="mb-8">
+        <MonthlyReportButton apiBase="/api/client/monthly-report" />
+      </div>
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2">
         <Link

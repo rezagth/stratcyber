@@ -109,6 +109,16 @@ function matches(table: Table, row: Row, where: Row | undefined): boolean {
       if ('startsWith' in cond) {
         return typeof row[key] === 'string' && row[key].startsWith(cond.startsWith);
       }
+      if ('gte' in cond || 'lte' in cond || 'gt' in cond || 'lt' in cond) {
+        const value = row[key];
+        if (value == null) return false;
+        const num = (v: unknown) => (v instanceof Date ? +v : (v as number));
+        if ('gte' in cond && !(num(value) >= num(cond.gte))) return false;
+        if ('lte' in cond && !(num(value) <= num(cond.lte))) return false;
+        if ('gt' in cond && !(num(value) > num(cond.gt))) return false;
+        if ('lt' in cond && !(num(value) < num(cond.lt))) return false;
+        return true;
+      }
       throw new Error(`fake-prisma : opérateur non géré sur ${table}.${key} : ${JSON.stringify(cond)}`);
     }
     return row[key] === cond;
