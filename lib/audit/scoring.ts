@@ -132,14 +132,46 @@ export function computeAuditResult(answers: AuditAnswer[]): AuditResult {
 
   // Construire une map pour retrouver rapidement les questions par id
   const questionMap = new Map(allAuditQuestions.map(q => [q.id, q]));
+  const answerByQuestionId = new Map(answers.map(a => [a.questionId, a]));
 
-  // Parcourir uniquement les réponses fournies
+  const unansweredByCategory: Record<AuditCategory, number> = {
+    Gouvernance: 0, Technique: 0, Organisationnel: 0, GRC: 0, Sensibilisation: 0,
+    RGPD: 0, NIS2: 0, DORA: 0, CRA: 0, LPM: 0, Incidents: 0, SupplyChain: 0, Cloud: 0, Secteur: 0,
+    ISO27001: 0, EBIOS: 0,
+  };
+
+  // Catégories réellement concernées par cet audit (déduites des réponses fournies, jamais
+  // du catalogue global : une entreprise hors périmètre DORA ne doit pas être pénalisée pour
+  // ne pas avoir répondu à des questions DORA qui ne lui ont jamais été posées).
+  const presentCategories = new Set<AuditCategory>();
   answers.forEach(ans => {
     const q = questionMap.get(ans.questionId);
-    if (!q) return; // Question inconnue (au cas où)
+    if (q) presentCategories.add(q.category);
+  });
+  // Les questions sectorielles couvrent TOUS les secteurs dans le catalogue global : impossible
+  // de distinguer ici le secteur de l'entreprise, donc on ne complète pas cette catégorie au-delà
+  // des réponses fournies (pas de risque de compter les questions d'un autre secteur).
+  const SECTOR_SENSITIVE_CATEGORIES: AuditCategory[] = ['Secteur'];
 
+  // Parcourir toutes les questions des catégories concernées par cet audit : une question
+  // applicable mais non répondue compte comme un score de 0 (elle ne doit jamais être
+  // silencieusement exclue du dénominateur, sous peine de gonfler artificiellement le score).
+  allAuditQuestions.forEach(q => {
+    if (!presentCategories.has(q.category)) return;
+
+    const ans = answerByQuestionId.get(q.id);
+    const isSectorSensitive = SECTOR_SENSITIVE_CATEGORIES.includes(q.category);
+    if (!ans && isSectorSensitive) return;
+
+    const hasAnswer = !!ans && typeof ans.answer === 'string' && ans.answer.trim() !== '';
     const weight = q.weight || 1;
-    const score = ans.score !== undefined ? ans.score : 0;
+    // Une note hors de l'échelle 0–5 (ou non numérique, ou absente) ne doit jamais gonfler ni fausser le score.
+    const rawScore = hasAnswer && typeof ans!.score === 'number' && Number.isFinite(ans!.score) ? ans!.score : 0;
+    const score = Math.min(5, Math.max(0, rawScore));
+
+    if (!hasAnswer) {
+      unansweredByCategory[q.category] += 1;
+    }
 
     scoresByCategory[q.category] += score * weight;
     maxByCategory[q.category] += 5 * weight;
@@ -148,7 +180,8 @@ export function computeAuditResult(answers: AuditAnswer[]): AuditResult {
     max += 5 * weight;
   });
 
-  const globalScore = Math.round((total / max) * 100);
+  // Aucune réponse exploitable : score 0 (et non NaN, qui serait stocké en base et affiché dans le rapport).
+  const globalScore = max > 0 ? Math.round((total / max) * 100) : 0;
   const maturity = maturityLevels.slice().reverse().find(m => globalScore >= m.min)?.label || 'Faible';
 
   // Normaliser les scores par catégorie en pourcentage
@@ -171,59 +204,64 @@ export function computeAuditResult(answers: AuditAnswer[]): AuditResult {
     }
   });
 
-  // Calcul des scores de conformité par réglementation
-  const complianceScores: ComplianceScore[] = [
-    {
-      regulation: 'RGPD',
-      score: normalizedScoresByCategory.RGPD || 0,
-      mandatoryGaps: [],
-      riskLevel: 'LOW',
-      estimatedFine: 0,
+  // Plafonds légaux indicatifs par réglementation. Montants maximaux publiés au niveau
+  // du texte (hors calcul % du CA, non disponible ici). Toujours à faire valider par un
+  // juriste avant diffusion à un client — voir `fineNote`.
+  // `null` = pas de plafond chiffré harmonisé : afficher une note plutôt qu'un montant.
+  const REGULATION_FINE_CEILINGS: Partial<Record<AuditCategory, { amount: number; note: string } | null>> = {
+    RGPD: {
+      amount: 20_000_000,
+      note: "Plafond maximal (RGPD, art. 83) : 20 M€ ou 4 % du chiffre d'affaires annuel mondial, le montant le plus élevé étant retenu. Montant indicatif, à confirmer avec un juriste.",
     },
-    {
-      regulation: 'NIS2',
-      score: normalizedScoresByCategory.NIS2 || 0,
-      mandatoryGaps: [],
-      riskLevel: 'LOW',
-      estimatedFine: 0,
+    NIS2: {
+      amount: 10_000_000,
+      note: "Plafond indicatif pour les entités essentielles (NIS2, art. 34) : 10 M€ ou 2 % du CA mondial. Transposition française non finalisée à ce jour — montant à titre indicatif.",
     },
-    {
-      regulation: 'DORA',
-      score: normalizedScoresByCategory.DORA || 0,
-      mandatoryGaps: [],
-      riskLevel: 'LOW',
-      estimatedFine: 0,
+    CRA: {
+      amount: 15_000_000,
+      note: "Plafond maximal (Cyber Resilience Act, art. 64) pour un manquement aux exigences essentielles : 15 M€ ou 2,5 % du CA mondial. Montant indicatif.",
     },
-    {
-      regulation: 'CRA',
-      score: normalizedScoresByCategory.CRA || 0,
-      mandatoryGaps: [],
-      riskLevel: 'LOW',
-      estimatedFine: 0,
-    },
-    {
-      regulation: 'LPM',
-      score: normalizedScoresByCategory.LPM || 0,
-      mandatoryGaps: [],
-      riskLevel: 'LOW',
-      estimatedFine: 0,
-    }
-  ];
+    DORA: null,
+    LPM: null,
+  };
+  const NO_HARMONIZED_CEILING_NOTE: Record<string, string> = {
+    DORA: "DORA ne fixe pas de plafond d'amende harmonisé pour les entités financières : les sanctions sont déterminées par l'autorité nationale compétente. Les fournisseurs TIC critiques s'exposent à des astreintes de l'ordre de 1 % du chiffre d'affaires journalier moyen. À faire valider avec un juriste.",
+    LPM: "Le régime de sanctions LPM (opérateurs d'importance vitale, code de la défense) n'est pas un pourcentage du CA et dépend du manquement constaté. Pas de montant générique fiable à afficher ici — à faire valider avec un juriste.",
+  };
 
-  // Mise à jour des niveaux de risque en fonction des scores
-  complianceScores.forEach(score => {
-    if (score.score < 40) {
-      score.riskLevel = 'CRITICAL';
-      score.estimatedFine = 10000000; // 10M€ pour RGPD
-    } else if (score.score < 60) {
-      score.riskLevel = 'HIGH';
-      score.estimatedFine = 2000000; // 2M€
-    } else if (score.score < 80) {
-      score.riskLevel = 'MEDIUM';
-      score.estimatedFine = 200000; // 200K€
+  // Calcul des scores de conformité par réglementation
+  const complianceScores: ComplianceScore[] = (['RGPD', 'NIS2', 'DORA', 'CRA', 'LPM'] as const).map(regulation => ({
+    regulation,
+    score: normalizedScoresByCategory[regulation] || 0,
+    mandatoryGaps: [],
+    riskLevel: 'LOW' as const,
+    estimatedFine: 0,
+  }));
+
+  // Mise à jour des niveaux de risque et de l'amende indicative en fonction du score.
+  // Le plafond légal (ou son absence) dépend de la réglementation, pas d'un barème unique.
+  complianceScores.forEach(compliance => {
+    if (compliance.score < 40) {
+      compliance.riskLevel = 'CRITICAL';
+    } else if (compliance.score < 60) {
+      compliance.riskLevel = 'HIGH';
+    } else if (compliance.score < 80) {
+      compliance.riskLevel = 'MEDIUM';
     } else {
-      score.riskLevel = 'LOW';
-      score.estimatedFine = 0;
+      compliance.riskLevel = 'LOW';
+    }
+
+    const ceiling = REGULATION_FINE_CEILINGS[compliance.regulation as AuditCategory];
+    if (ceiling === null || ceiling === undefined) {
+      compliance.estimatedFine = 0;
+      if (compliance.riskLevel !== 'LOW') {
+        compliance.fineNote = NO_HARMONIZED_CEILING_NOTE[compliance.regulation];
+      }
+    } else if (compliance.riskLevel === 'LOW') {
+      compliance.estimatedFine = 0;
+    } else {
+      compliance.estimatedFine = ceiling.amount;
+      compliance.fineNote = ceiling.note;
     }
   });
 
@@ -233,6 +271,7 @@ export function computeAuditResult(answers: AuditAnswer[]): AuditResult {
   return {
     globalScore,
     scoresByCategory: normalizedScoresByCategory,
+    unansweredByCategory,
     maturity,
     recommendations,
     roadmap,

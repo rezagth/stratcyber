@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/db';
 import { authOptions } from '../../auth/[...nextauth]/route';
-import { getActionStatuses } from '../actions/route';
+import { getActionStatuses } from '@/lib/roadmap/action-status';
 
 interface ActionPlan {
   id: string;
@@ -623,6 +623,7 @@ export async function GET(request: Request) {
       return NextResponse.json({
         actions: [],
         milestones: [],
+        quarters: [],
         score: 0,
         lastAuditDate: new Date().toISOString(),
         statistics: {
@@ -631,12 +632,21 @@ export async function GET(request: Request) {
           criticalActions: 0,
           overdueActions: 0,
           avgProgress: 0,
-        }
+        },
+        analyticsData: {
+          summary: {
+            totalActions: 0,
+            completedActions: 0,
+            criticalActions: 0,
+            budgetTotal: 0,
+            riskDistribution: {},
+          },
+        },
       });
     }
 
     // Récupérer les statuts des actions sauvegardés
-    const actionStatuses = getActionStatuses(session.user.id);
+    const actionStatuses = await getActionStatuses(session.user.id);
     
     // Générer les actions basées sur les réponses réelles
     const generatedActions = generateActionsFromResponses(audit.responses);

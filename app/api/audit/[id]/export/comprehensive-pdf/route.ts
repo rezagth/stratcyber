@@ -1678,7 +1678,7 @@ function generateRoadmapSection(data: ComprehensiveReportData): string {
       <h3 class="subsection-title">5.1 Jalons stratégiques</h3>
       
       <div class="timeline">
-        ${data.actionPlan.milestones.map((milestone: any, index: number) => `
+        ${(data.actionPlan.milestones || []).map((milestone: any, index: number) => `
           <div class="timeline-item">
             <h4 style="margin-top: 0; color: #1e40af;">${milestone.title}</h4>
             <div style="display: flex; justify-content: space-between; margin-bottom: 0.5em;">
@@ -1773,7 +1773,7 @@ function generateRoadmapSection(data: ComprehensiveReportData): string {
           </tr>
         </thead>
         <tbody>
-          ${data.actionPlan.quarters.map((quarter: any) => `
+          ${(data.actionPlan.quarters || []).map((quarter: any) => `
             <tr>
               <td><strong>${quarter.quarter}</strong></td>
               <td>${quarter.budget?.toLocaleString('fr-FR') || '0'}€</td>
@@ -1958,7 +1958,7 @@ function generateComplianceAnalysis(data: ComprehensiveReportData): string {
                 </div>
               </td>
               <td><span class="risk-badge risk-${compliance.riskLevel.toLowerCase()}">${compliance.riskLevel}</span></td>
-              <td>${compliance.estimatedFine > 0 ? compliance.estimatedFine.toLocaleString('fr-FR') + '€' : 'Négligeable'}</td>
+              <td>${compliance.estimatedFine > 0 ? 'Jusqu\'à ' + compliance.estimatedFine.toLocaleString('fr-FR') + '€ (indicatif)' : compliance.fineNote ? 'Pas de plafond harmonisé' : 'Négligeable'}</td>
               <td>${getComplianceActions(compliance.regulation, compliance.score)}</td>
             </tr>
           `).join('')}
@@ -1971,8 +1971,10 @@ function generateComplianceAnalysis(data: ComprehensiveReportData): string {
           .filter((c: any) => c.score < 50)
           .map((compliance: any) => `
             <div style="margin: 1em 0;">
-              <strong>${compliance.regulation} :</strong> Score critique de ${compliance.score}%. 
-              Risque d'amende jusqu'à ${compliance.estimatedFine.toLocaleString('fr-FR')}€. 
+              <strong>${compliance.regulation} :</strong> Score critique de ${compliance.score}%.
+              ${compliance.estimatedFine > 0
+                ? `Risque de sanction jusqu'à ${compliance.estimatedFine.toLocaleString('fr-FR')}€ (plafond indicatif, à confirmer avec un juriste).`
+                : (compliance.fineNote || 'Risque de non-conformité à traiter en priorité.')}
               Actions immédiates requises.
             </div>
           `).join('')}

@@ -86,13 +86,21 @@ export type ComplianceScore = {
   score: number;
   mandatoryGaps: string[];
   riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  /** Plafond légal indicatif (montant fixe maximal). 0 si non applicable (voir fineNote). */
   estimatedFine: number;
+  /**
+   * Précision sur le montant ci-dessus : base légale, ou explication quand aucun plafond
+   * chiffré harmonisé n'existe (ex. DORA, LPM). Toujours à faire valider par un juriste.
+   */
+  fineNote?: string;
   deadline?: Date;
 };
 
 export type AuditResult = {
   globalScore: number;
   scoresByCategory: Record<AuditCategory, number>;
+  /** Nombre de questions applicables mais non répondues, par catégorie (comptées à 0 dans le score). */
+  unansweredByCategory?: Record<AuditCategory, number>;
   complianceScores: ComplianceScore[];
   maturity: string;
   recommendations: string[];
