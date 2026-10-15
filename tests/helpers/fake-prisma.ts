@@ -41,6 +41,7 @@ const TABLES = [
   'supplierEvidence',
   'budgetEnvelope',
   'budgetExpense',
+  'ebookQuizAttempt',
 ] as const;
 type Table = (typeof TABLES)[number];
 
@@ -50,6 +51,8 @@ const db: Record<Table, Row[]> = Object.fromEntries(TABLES.map((t) => [t, []])) 
 const BELONGS_TO: Partial<Record<Table, Record<string, { table: Table; fk: string }>>> = {
   auditResponse: { audit: { table: 'audit', fk: 'auditId' } },
   ebookQuiz: { ebook: { table: 'ebook', fk: 'ebookId' } },
+  readingSession: { ebook: { table: 'ebook', fk: 'ebookId' } },
+  ebookQuizAttempt: { quiz: { table: 'ebookQuiz', fk: 'quizId' } },
 };
 // Relation « a plusieurs » (include)
 const HAS_MANY: Partial<Record<Table, Record<string, { table: Table; fk: string }>>> = {
@@ -77,6 +80,10 @@ const HAS_MANY: Partial<Record<Table, Record<string, { table: Table; fk: string 
   },
   actionPlanItem: {
     reminders: { table: 'actionReminder', fk: 'actionPlanItemId' },
+  },
+  user: {
+    readingSessions: { table: 'readingSession', fk: 'userId' },
+    ebookQuizAttempts: { table: 'ebookQuizAttempt', fk: 'userId' },
   },
 };
 
@@ -189,6 +196,9 @@ function model(table: Table) {
     async findUnique(args: Row) {
       return model(table).findFirst(args);
     },
+    async count(args: Row = {}) {
+      return find(args).length;
+    },
     async findMany(args: Row = {}) {
       const rows = sortRows(find(args), args.orderBy);
       return rows.map((r) => withIncludes(table, project(r, args.select, table), args.include));
@@ -280,6 +290,7 @@ export const fakePrisma = {
   supplierEvidence: model('supplierEvidence'),
   budgetEnvelope: model('budgetEnvelope'),
   budgetExpense: model('budgetExpense'),
+  ebookQuizAttempt: model('ebookQuizAttempt'),
   async $transaction(ops: Array<Promise<unknown>>) {
     return Promise.all(ops);
   },

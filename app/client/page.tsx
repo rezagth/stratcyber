@@ -152,6 +152,19 @@ export default function ClientHomePage() {
             </CardContent>
           </Card>
         </Link>
+        <Link
+          href="/client/training"
+          className="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <Card className="h-full transition hover:shadow-md">
+            <CardHeader>
+              <CardTitle className="text-base">Formation →</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              Ebooks de sensibilisation et quiz à votre rythme.
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       <h2 className="mb-3 text-lg font-medium">Vos diagnostics</h2>
