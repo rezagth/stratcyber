@@ -139,6 +139,19 @@ export default function ClientHomePage() {
             </CardContent>
           </Card>
         </Link>
+        <Link
+          href="/client/budget"
+          className="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <Card className="h-full transition hover:shadow-md">
+            <CardHeader>
+              <CardTitle className="text-base">Mon budget →</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              Budget alloué, coûts prévisionnels et dépenses réelles de cybersécurité.
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       <h2 className="mb-3 text-lg font-medium">Vos diagnostics</h2>

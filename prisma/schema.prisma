@@ -70,6 +70,8 @@ model Organization {
   governanceMeetings GovernanceMeeting[]
   leadershipTrainings LeadershipTraining[]
   suppliers Supplier[]
+  budgetEnvelopes BudgetEnvelope[]
+  budgetExpenses  BudgetExpense[]
 }
 
 // Contact côté client (module A). Un seul contact principal par organisation à la fois
@@ -1139,4 +1141,43 @@ model SupplierEvidence {
   @@index([organizationId])
   @@index([supplierId])
   @@index([expiresAt])
+}
+
+// Module I : budget cybersécurité du client — enveloppe allouée par exercice et
+// dépenses réelles. Le coût prévisionnel vient du module D (ActionPlanItem.estimatedCost),
+// jamais dupliqué ici : le tableau de bord le relit à la volée (lib/budget/dashboard.ts).
+model BudgetEnvelope {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  fiscalYear      Int
+  allocatedAmount Float
+  note            String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([organizationId, fiscalYear])
+}
+
+// Dépense réelle rattachée à un exercice budgétaire (facture payée, abonnement...).
+model BudgetExpense {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  fiscalYear  Int
+  category    String?  // 'Outils et licences' | 'Formation' | 'Audit et conseil' | 'Assurance cyber' | 'Personnel' | 'Autre'
+  label       String
+  amount      Float
+  expenseDate DateTime
+  note        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([organizationId, fiscalYear])
 }

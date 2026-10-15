@@ -39,6 +39,8 @@ const TABLES = [
   'leadershipTraining',
   'supplier',
   'supplierEvidence',
+  'budgetEnvelope',
+  'budgetExpense',
 ] as const;
 type Table = (typeof TABLES)[number];
 
@@ -276,6 +278,8 @@ export const fakePrisma = {
   leadershipTraining: model('leadershipTraining'),
   supplier: model('supplier'),
   supplierEvidence: model('supplierEvidence'),
+  budgetEnvelope: model('budgetEnvelope'),
+  budgetExpense: model('budgetExpense'),
   async $transaction(ops: Array<Promise<unknown>>) {
     return Promise.all(ops);
   },
