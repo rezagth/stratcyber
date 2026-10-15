@@ -54,3 +54,7 @@ next-env.d.ts
 dev.db
 dev-test.db
 *.db-journal
+
+# Données locales/de secours : jamais dans le repo (contiennent des hash de mots de passe)
+backup-data.json
+*.backup.json
