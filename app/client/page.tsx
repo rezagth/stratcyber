@@ -34,6 +34,22 @@ export default function ClientHomePage() {
         </Button>
       </header>
 
+      <div className="mb-8">
+        <Link
+          href="/client/action-plan"
+          className="inline-block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <Card className="transition hover:shadow-md">
+            <CardHeader>
+              <CardTitle className="text-base">Mon plan d&apos;action →</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              Suivez vos actions recommandées et mettez à jour votre avancement.
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
+
       <h2 className="mb-3 text-lg font-medium">Vos diagnostics</h2>
       {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
       {!error && audits === null && <p className="text-sm text-muted-foreground">Chargement…</p>}

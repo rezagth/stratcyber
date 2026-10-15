@@ -104,23 +104,9 @@ export const baseQuestions: AuditQuestion[] = [
     type: 'scale',
     weight: 2,
   },
-  // RGPD
-  {
-    id: 'rgpd1',
-    category: 'RGPD',
-    question: "Un DPO est-il désigné et les obligations RGPD sont-elles respectées ?",
-    description: "DPO interne ou externe, registre des traitements, droits des personnes.",
-    type: 'boolean',
-    weight: 1,
-  },
-  {
-    id: 'rgpd2',
-    category: 'RGPD',
-    question: "Les traitements de données personnelles sont-ils documentés et cartographiés ?",
-    description: "Registre des traitements à jour.",
-    type: 'scale',
-    weight: 1,
-  },
+  // RGPD : voir lib/audit/questions-extended.ts (rgpdQuestions), qui porte les questions
+  // RGPD complètes avec leurs recommandations — ne pas en redéfinir ici (un doublon d'id
+  // masquait silencieusement ces recommandations, voir rgpd1/rgpd2/rgpd3 avant ce commit).
   // Sensibilisation
   {
     id: 's1',
@@ -160,15 +146,6 @@ export const baseQuestions: AuditQuestion[] = [
   weight: 2,
 },
 
-// Questions sur la Conformité
-{
-  id: 'rgpd3',
-  category: 'RGPD',
-  question: "Les analyses d'impact (AIPD) sont-elles réalisées pour les traitements sensibles ?",
-  description: "Conformément aux exigences du RGPD pour les traitements à risque.",
-  type: 'boolean',
-  weight: 2,
-}
 ];
 
 /**
