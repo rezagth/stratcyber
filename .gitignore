@@ -58,3 +58,11 @@ dev-test.db
 # Données locales/de secours : jamais dans le repo (contiennent des hash de mots de passe)
 backup-data.json
 *.backup.json
+
+# Scripts de test locaux (mots de passe en clair) et bases locales : jamais dans le repo
+scripts/test-register*
+scripts/test-db.*
+prisma/dev.db*
+prisma/*.db
+prisma/*.db-journal
+.claude/
