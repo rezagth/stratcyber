@@ -5,9 +5,18 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import {
+  AlertTriangle,
   BookOpen,
+  Building2,
   ChevronDown,
+  ClipboardList,
+  FileText,
+  FolderCheck,
   Home,
+  Landmark,
+  ListChecks,
+  Users,
+  Wallet,
   LayoutDashboard,
   LogOut,
   Settings,
@@ -40,7 +49,7 @@ interface IntegratedSidebarProps {
 }
 
 // Configuration des éléments de navigation
-const navigationItems = [
+const navigationItems: NavItem[] = [
   {
     title: 'Accueil',
     url: '/',
@@ -50,6 +59,7 @@ const navigationItems = [
     title: 'Tableau de bord',
     url: '/dashboard',
     icon: LayoutDashboard,
+    exact: true,
     items: [
       {
         title: 'Roadmap',
@@ -78,6 +88,7 @@ const navigationItems = [
       {
         title: 'Vue d\'ensemble',
         url: '/compliance',
+        exact: true,
       },
       {
         title: 'RGPD',
@@ -118,6 +129,50 @@ const navigationItems = [
   // },
 ]
 
+type NavItem = {
+  title: string
+  url?: string
+  icon: React.ComponentType<{ className?: string }>
+  exact?: boolean // surbrillance seulement si l'adresse correspond exactement
+  items?: { title: string; url: string; exact?: boolean }[]
+}
+
+// Cockpit InfraCyb : entrées réservées à l'admin, ajoutées aux menus de base
+const adminItems: NavItem[] = [
+  {
+    title: 'Clients',
+    url: '/dashboard/organizations',
+    icon: Users,
+  },
+  {
+    title: 'Modèles de politiques',
+    url: '/dashboard/policy-templates',
+    icon: FileText,
+  },
+]
+
+// Espace client (lecture seule) : un menu dédié, aligné sur les cartes de /client
+const clientItems: NavItem[] = [
+  { title: 'Accueil', url: '/client', icon: Home, exact: true },
+  { title: 'Plan d\'action', url: '/client/action-plan', icon: ListChecks },
+  { title: 'Mes preuves', url: '/client/evidence', icon: FolderCheck },
+  { title: 'Contrôles', url: '/client/controls', icon: ShieldCheck },
+  { title: 'Risques et incidents', url: '/client/risks', icon: AlertTriangle },
+  { title: 'Politiques', url: '/client/policies', icon: FileText },
+  { title: 'Questionnaires', url: '/client/security-answers', icon: ClipboardList },
+  { title: 'Gouvernance', url: '/client/governance', icon: Landmark },
+  { title: 'Fournisseurs', url: '/client/suppliers', icon: Building2 },
+  { title: 'Budget', url: '/client/budget', icon: Wallet },
+  { title: 'Formation', url: '/client/training', icon: BookOpen },
+  { title: 'Profil', url: '/client/profile', icon: User2 },
+]
+
+// Actif sur l'adresse exacte ou sur ses sous-pages (/dashboard/organizations/<id>)
+function isUrlActive(pathname: string, url: string, exact?: boolean) {
+  if (exact || url === '/') return pathname === url
+  return pathname === url || pathname.startsWith(`${url}/`)
+}
+
 export function IntegratedSidebar({ 
   isOpen, 
   isCompact, 
@@ -126,6 +181,11 @@ export function IntegratedSidebar({
 }: IntegratedSidebarProps) {
   const { data: session } = useSession()
   const pathname = usePathname()
+
+  // Menu selon le rôle : client = espace dédié, admin = menus de base + cockpit
+  const role = session?.user?.role
+  const menuItems: NavItem[] =
+    role === 'client' ? clientItems : role === 'admin' ? [...navigationItems, ...adminItems] : navigationItems
 
   const sidebarWidth = isCompact ? 'w-16' : 'w-60'
   const showLabels = !isCompact
@@ -177,9 +237,9 @@ export function IntegratedSidebar({
 
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto p-2 space-y-1">
-            {navigationItems.map((item) => {
-              const isActive = item.url ? pathname === item.url : 
-                item.items?.some(subItem => pathname === subItem.url)
+            {menuItems.map((item) => {
+              const isActive = item.url ? isUrlActive(pathname, item.url, item.exact) : 
+                item.items?.some(subItem => isUrlActive(pathname, subItem.url, subItem.exact))
 
               if (item.items) {
                 // Menu avec sous-éléments
@@ -213,7 +273,7 @@ export function IntegratedSidebar({
                           <Button
                             key={subItem.url}
                             asChild
-                            variant={pathname === subItem.url ? 'secondary' : 'ghost'}
+                            variant={isUrlActive(pathname, subItem.url, subItem.exact) ? 'secondary' : 'ghost'}
                             size="sm"
                             className="w-full justify-start h-8"
                           >
