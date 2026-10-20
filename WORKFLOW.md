@@ -210,7 +210,7 @@ npm run safe-commit           # Voir ce qui va être commité
 **Pour la branche `master` (production) :**
 ```
 DATABASE_URL = votre-url-neon-production
-NEXTAUTH_SECRET = (générer une valeur secrète, ex. `openssl rand -hex 32` — ne jamais committer la vraie valeur)
+NEXTAUTH_SECRET="changez-moi"   # générer avec `openssl rand -base64 32`, ne jamais committer la vraie valeur
 NEXTAUTH_URL = https://stratcyber.vercel.app
 NODE_ENV = production
 ```
