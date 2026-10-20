@@ -108,4 +108,15 @@ describe('gabarit HTML du rapport d\'audit', () => {
     expect(summaryHtml).not.toContain('NIS2');
     expect(summaryHtml).toContain('Activer la MFA');
   });
+
+  it("règles de pagination : seules la synthèse et les lignes ne se coupent pas, l'en-tête de tableau se répète", async () => {
+    const html = buildAuditReportHtml((await buildAuditReportData(userA, 'audit-a'))!);
+    expect(html).toMatch(/\.section \{[^}]*\}/);
+    expect(html.match(/\.section \{[^}]*\}/)![0]).not.toContain('avoid');
+    expect(html).toContain('.section.keep { break-inside: avoid; }');
+    expect(html).toContain('break-after: avoid');
+    expect(html).toContain('thead { display: table-header-group; }');
+    expect(html).toContain('tr { break-inside: avoid; }');
+    expect(html.match(/class="section keep"/g)).toHaveLength(1);
+  });
 });

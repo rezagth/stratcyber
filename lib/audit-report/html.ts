@@ -11,8 +11,8 @@ function esc(value: unknown): string {
 
 const fmtDate = (d: Date | string) => new Date(d).toLocaleDateString('fr-FR');
 
-function section(title: string, body: string): string {
-  return `<div class="section"><h2>${esc(title)}</h2>${body}</div>`;
+function section(title: string, body: string, keep = false): string {
+  return `<div class="section${keep ? ' keep' : ''}"><h2>${esc(title)}</h2>${body}</div>`;
 }
 
 function table(headers: string[], rows: string[][]): string {
@@ -41,8 +41,11 @@ export function buildAuditReportHtml(data: AuditReportData): string {
   body { font-family: 'Segoe UI', Arial, sans-serif; color: #1e293b; font-size: 12px; line-height: 1.5; }
   .header { background: linear-gradient(135deg, #1d4ed8, #2563eb); color: #fff; padding: 28px; border-radius: 8px; margin-bottom: 24px; }
   .header h1 { font-size: 22px; margin-bottom: 6px; }
-  .section { margin-bottom: 20px; padding: 16px 18px; border-radius: 8px; background: #f8fafc; border-left: 4px solid #2563eb; page-break-inside: avoid; }
-  .section h2 { font-size: 15px; margin-bottom: 10px; color: #1e3a8a; }
+  .section { margin-bottom: 20px; padding: 16px 18px; border-radius: 8px; background: #f8fafc; border-left: 4px solid #2563eb; }
+  .section.keep { break-inside: avoid; }
+  .section h2 { font-size: 15px; margin-bottom: 10px; color: #1e3a8a; break-after: avoid; }
+  .domain { break-inside: avoid; }
+  li { break-inside: avoid; }
   .stats { display: flex; gap: 12px; margin-bottom: 8px; }
   .stat { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px; min-width: 110px; }
   .stat-value { display: block; font-size: 18px; font-weight: 700; color: #1d4ed8; }
@@ -50,6 +53,8 @@ export function buildAuditReportHtml(data: AuditReportData): string {
   .bar { height: 10px; background: #e2e8f0; border-radius: 5px; overflow: hidden; margin: 3px 0 8px; }
   .bar > div { height: 100%; background: #2563eb; }
   table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
   th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid #e2e8f0; font-size: 11px; }
   th { color: #475569; font-weight: 600; background: #f1f5f9; }
   ol { padding-left: 18px; }
@@ -68,10 +73,10 @@ export function buildAuditReportHtml(data: AuditReportData): string {
       <div class="stat"><span class="stat-value">${esc(audit.score === null ? '—' : `${Math.round(score)} %`)}</span><span class="stat-label">Score global</span></div>
       <div class="stat"><span class="stat-value">${esc(audit.maturity ?? 'Non évalué')}</span><span class="stat-label">Maturité</span></div>
     </div>
-  `)}
+  `, true)}
 
   ${detail === 'full' && categoryScores.length > 0 ? section('Analyse par domaine', categoryScores.map((c) => `
-    <div><strong>${esc(c.category)}</strong> — ${esc(c.percent)} %<div class="bar"><div style="width:${Math.max(0, Math.min(100, c.percent))}%"></div></div></div>
+    <div class="domain"><strong>${esc(c.category)}</strong> — ${esc(c.percent)} %<div class="bar"><div style="width:${Math.max(0, Math.min(100, c.percent))}%"></div></div></div>
   `).join('')) : ''}
 
   ${recommendations.length > 0 ? section('Recommandations', `<ol>${recommendations.map((r) => `<li>${esc(r)}</li>`).join('')}</ol>`) : ''}
