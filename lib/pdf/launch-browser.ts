@@ -1,9 +1,7 @@
 /**
  * Lance un navigateur headless pour générer un PDF côté serveur : Chromium embarqué
  * (@sparticuz/chromium) sur Vercel, Chrome déjà installé en développement local si trouvé,
- * sinon le même Chromium embarqué en repli — même logique que le générateur existant
- * (app/api/audit/[id]/export/comprehensive-pdf), extraite ici pour être réutilisée sans
- * dupliquer sa journalisation de debug.
+ * sinon le même Chromium embarqué en repli. Partagé par le rapport d'audit et le rapport mensuel.
  */
 // Ni --single-process ni --no-zygote : les deux font planter un vrai binaire Chrome.app
 // au lancement sur macOS (vérifié localement) — ils ne conviennent qu'aux builds Chromium
