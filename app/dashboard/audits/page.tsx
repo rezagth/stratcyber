@@ -160,7 +160,7 @@ export default function AuditsHistoryPage() {
     try {
       setGeneratingPdf(auditId);
       
-      const response = await fetch(`/api/audit/${auditId}/export/comprehensive-pdf`);
+      const response = await fetch(`/api/audits/${auditId}/report-pdf`);
       
       if (!response.ok) {
         throw new Error('Erreur lors de la génération du rapport');

@@ -82,18 +82,17 @@ export default function AuditDetailPage() {
     try {
       setGeneratingPdf(true);
       
-      const response = await fetch(`/api/audit/${audit.id}/export/comprehensive-pdf`);
+      const response = await fetch(`/api/audits/${audit.id}/report-pdf`);
       
       if (!response.ok) {
         throw new Error('Erreur lors de la génération du rapport');
       }
       
-      const htmlContent = await response.text();
-      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const blob = new Blob([await response.arrayBuffer()], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `rapport-audit-${audit.id}.html`);
+      link.setAttribute('download', `rapport-audit-${audit.id}.pdf`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -111,7 +110,7 @@ export default function AuditDetailPage() {
     if (!audit) return;
     
     try {
-      const url = `/api/audit/${audit.id}/export/comprehensive-pdf`;
+      const url = `/api/audits/${audit.id}/report-pdf`;
       window.open(url, '_blank');
     } catch (error) {
       console.error('Erreur ouverture rapport:', error);

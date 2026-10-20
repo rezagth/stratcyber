@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 type PlanItem = {
   id?: string;
@@ -66,6 +67,9 @@ export default function ClientAuditPage() {
           <h1 className="text-2xl font-semibold">
             Diagnostic du {new Date(audit.createdAt).toLocaleDateString('fr-FR')}
           </h1>
+          <Button asChild variant="outline" size="sm">
+            <a href={`/api/audits/${audit.id}/report-pdf`}>Télécharger le rapport PDF</a>
+          </Button>
           <Card>
             <CardContent className="pt-6 text-lg">
               Score : <strong>{audit.score ?? '—'}</strong> / 100 — Maturité : <strong>{audit.maturity ?? '—'}</strong>

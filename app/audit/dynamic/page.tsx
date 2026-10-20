@@ -455,9 +455,9 @@ export default function DashboardPage() {
                         <Link href={`/audit/${audit.id}`}>
                           <Button variant="outline" size="sm">Détail</Button>
                         </Link>
-                        <Link href={`/audit/${audit.id}/pdf`}>
-                          <Button variant="outline" size="sm">PDF</Button>
-                        </Link>
+                        <Button asChild variant="outline" size="sm">
+                          <a href={`/api/audits/${audit.id}/report-pdf`}>PDF</a>
+                        </Button>
                       </div>
                     </li>
                   ))}

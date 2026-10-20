@@ -202,7 +202,7 @@ export default function DashboardPage() {
       setGeneratingPdf(auditId);
       
       // Appel à l'API pour générer le rapport PDF
-      const response = await fetch(`/api/audit/${auditId}/export/comprehensive-pdf`);
+      const response = await fetch(`/api/audits/${auditId}/report-pdf`);
       
       if (!response.ok) {
         throw new Error('Erreur lors de la génération du rapport');
@@ -233,7 +233,7 @@ export default function DashboardPage() {
   // Ouvrir le rapport dans un nouvel onglet
   const handleViewPdfReport = async (auditId: string) => {
     try {
-      const url = `/api/audit/${auditId}/export/comprehensive-pdf`;
+      const url = `/api/audits/${auditId}/report-pdf`;
       window.open(url, '_blank');
     } catch (error) {
       console.error('Erreur ouverture rapport:', error);
