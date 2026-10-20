@@ -42,8 +42,15 @@ const TABLES = [
   'budgetEnvelope',
   'budgetExpense',
   'ebookQuizAttempt',
+  'emailLog',
 ] as const;
 type Table = (typeof TABLES)[number];
+
+const advisoryLocks = new Map<string, Promise<unknown>>();
+const releasers = new Map<string, () => void>();
+
+// Colonnes @unique : une seconde insertion échoue comme en base (P2002)
+const UNIQUE: Partial<Record<Table, string[]>> = { emailLog: ['key'] };
 
 const db: Record<Table, Row[]> = Object.fromEntries(TABLES.map((t) => [t, []])) as any;
 
@@ -230,6 +237,9 @@ function model(table: Table) {
           row[k] = v;
         }
       }
+      for (const col of UNIQUE[table] ?? []) {
+        if (db[table].some((r) => r[col] === row[col])) throw Object.assign(new Error(`Unique constraint failed on ${table}.${col}`), { code: 'P2002' });
+      }
       db[table].push(row);
       for (const [childTable, fk, items] of nested) {
         for (const item of items) db[childTable].push({ id: newId(childTable), ...item, [fk]: row.id });
@@ -306,8 +316,33 @@ export const fakePrisma = {
   budgetEnvelope: model('budgetEnvelope'),
   budgetExpense: model('budgetExpense'),
   ebookQuizAttempt: model('ebookQuizAttempt'),
-  async $transaction(ops: Array<Promise<unknown>>) {
-    return Promise.all(ops);
+  emailLog: model('emailLog'),
+  /**
+   * Deux formes : tableau de promesses, ou callback interactif (reçoit le faux client). Dans le second
+   * cas, `$executeRaw\`SELECT pg_advisory_xact_lock(...)\`` se comporte comme en base : le verrou sur une clé
+   * est exclusif jusqu'à la fin du callback (les autres transactions attendent).
+   */
+  async $transaction(arg: Array<Promise<unknown>> | ((tx: any) => Promise<unknown>)) {
+    if (Array.isArray(arg)) return Promise.all(arg);
+    const held: string[] = [];
+    const tx = {
+      ...fakePrisma,
+      async $executeRaw(strings: TemplateStringsArray, ...values: unknown[]) {
+        if (!strings.join('?').includes('pg_advisory_xact_lock')) throw new Error('fake-prisma : $executeRaw non géré');
+        const key = String(values[0]);
+        while (advisoryLocks.has(key)) await advisoryLocks.get(key);
+        let release!: () => void;
+        advisoryLocks.set(key, new Promise<void>((r) => (release = r)).then(() => advisoryLocks.delete(key)));
+        releasers.set(key, release);
+        held.push(key);
+        return 0;
+      },
+    };
+    try {
+      return await arg(tx);
+    } finally {
+      for (const key of held) releasers.get(key)?.();
+    }
   },
 };
 

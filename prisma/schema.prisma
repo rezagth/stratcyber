@@ -223,6 +223,31 @@ model ActionReminder {
   @@index([actionPlanItemId])
 }
 
+// Journal d'envoi des e-mails automatiques ET garde anti-doublon : une ligne par envoi logique,
+// identifiée par `key` (type + organisation/objet + fenêtre, voir lib/email/keys.ts). La ligne est
+// créée à l'état 'pending' AVANT l'envoi (sous verrou consultatif), passe à 'sent' ou 'failed' après.
+// Jamais de corps de message ici : uniquement le sujet et le destinataire.
+model EmailLog {
+  id             String    @id @default(uuid())
+  key            String    @unique
+  kind           String    // ex. 'action_overdue', 'evidence_expiring', 'monthly_report'
+  organizationId String?
+  recipient      String
+  subject        String
+  status         String    @default("pending") // 'pending' | 'sent' | 'failed'
+  simulated      Boolean   @default(false)     // true : mode simulation, rien n'est parti
+  attempts       Int       @default(1)
+  providerId     String?
+  error          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  sentAt         DateTime?
+
+  @@index([organizationId, createdAt])
+  @@index([kind, createdAt])
+  @@index([status, updatedAt])
+}
+
 // Statut d'avancement d'une action de la feuille de route (avant : stocké en mémoire du serveur, donc perdu).
 model ActionStatus {
   id        String   @id @default(uuid())
