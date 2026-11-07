@@ -455,7 +455,7 @@ const TimelineItem = ({
                       <div className="space-y-3">
                         {(() => {
                           const category = action.category;
-                          let resources: { name: string; type: string; description: string; link?: string; isInternal?: boolean }[] = [];
+                          const resources: { name: string; type: string; description: string; link?: string; isInternal?: boolean }[] = [];
                           
                           // Ajouter automatiquement la documentation interne si disponible
                           const docForCategory = complianceDocs[category];

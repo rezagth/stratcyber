@@ -51,7 +51,7 @@ const sectorIcons = {
   Autre: '🏢'
 };
 
-const categoryColors = {
+const categoryColors: Partial<Record<AuditCategory, string>> = {
   Gouvernance: 'bg-blue-100 text-blue-800',
   Technique: 'bg-green-100 text-green-800',
   Organisationnel: 'bg-purple-100 text-purple-800',

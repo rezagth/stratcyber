@@ -134,7 +134,7 @@ const ActionStatusChart = ({
     return acc;
   }, {} as Record<string, number>);
 
-  const statusEntries = Object.entries(statusCounts);
+  const statusEntries = Object.entries(statusCounts) as [string, number][];
   const total = actions.length;
 
   return (
@@ -404,7 +404,7 @@ export default function AdvancedAnalytics() {
               'Moyen': 0,
               'Faible': 0
             },
-            categoryProgress: {}
+            categoryProgress: {} as AnalyticsData['summary']['categoryProgress']
           },
           actions: [],
           auditHistory: [],

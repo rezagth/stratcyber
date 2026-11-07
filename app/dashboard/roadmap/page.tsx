@@ -125,7 +125,7 @@ export default function RoadmapDashboard() {
       if (roadmapData) {
         const updatedActions = roadmapData.actions.map(action => 
           action.id === actionId 
-            ? { ...action, status, progress }
+            ? { ...action, status: status as ActionPlanItem['status'], progress }
             : action
         );
         

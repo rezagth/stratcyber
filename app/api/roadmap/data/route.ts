@@ -77,7 +77,7 @@ function generateActionsFromResponses(responses: any[]): ActionPlan[] {
   }, {} as Record<string, any>);
 
   // Génération d'actions basées sur les scores faibles (échelle 0-5)
-  Object.entries(categoriesAnalysis).forEach(([category, data]) => {
+  Object.entries(categoriesAnalysis).forEach(([category, data]: [string, any]) => {
     const avgScore = data.avgScore;
     const avgScorePercent = Math.round((avgScore / 5) * 100);
     const lowScoreResponses = data.responses.filter((r: any) => (r.score || 0) < 3); // Score < 3 sur 5
@@ -656,7 +656,7 @@ export async function GET(request: Request) {
       const savedStatus = actionStatuses[action.id];
       return {
         ...action,
-        status: savedStatus?.status || action.status,
+        status: (savedStatus?.status || action.status) as ActionPlan['status'],
         progress: savedStatus?.progress || action.progress
       };
     });

@@ -1,6 +1,6 @@
-import { AuditAnswer, AuditCategory, AuditResult, AuditQuestion, ComplianceScore } from '../../types/audit';
+import { AuditAnswer, AuditCategory, AuditResult, AuditQuestion, ComplianceScore, AUDIT_CATEGORIES } from '../../types/audit';
 import { auditQuestions } from './questions';
-import { rgpdQuestions, nis2Questions, doraQuestions, lmpQuestions, incidentQuestions, supplyChainQuestions, cloudQuestions, craQuestions, sectorSpecificQuestions } from './questions-extended';
+import { rgpdQuestions, nis2Questions, doraQuestions, lmpQuestions, incidentQuestions, supplyChainQuestions, cloudQuestions, craQuestions, isoQuestions, ebiosQuestions, sectorSpecificQuestions } from './questions-extended';
 
 const maturityLevels = [
   { min: 0, label: 'Faible' },
@@ -75,6 +75,14 @@ const recommendationsByCategory: Record<AuditCategory, string[]> = {
     "Adapter la gouvernance cyber aux spécificités du secteur.",
     "Identifier les obligations réglementaires sectorielles.",
     "Mettre en place des mesures de sécurité spécifiques au secteur."
+  ],
+  ISO27001: [
+    "Définir le périmètre du SMSI et rédiger la déclaration d'applicabilité.",
+    "Planifier un audit interne et une revue de direction."
+  ],
+  EBIOS: [
+    "Conduire une analyse de risques EBIOS RM sur le périmètre critique.",
+    "Mettre à jour l'analyse de risques au moins une fois par an."
   ]
 };
 
@@ -90,6 +98,9 @@ const allAuditQuestions: AuditQuestion[] = [
   ...supplyChainQuestions,
   ...cloudQuestions,
   ...craQuestions,
+  // Posées par le questionnaire adaptatif : elles doivent compter dans le score.
+  ...isoQuestions,
+  ...ebiosQuestions,
   // Flatten sector specific questions from all sectors
   ...Object.values(sectorSpecificQuestions).flat()
 ];
@@ -111,7 +122,9 @@ export function computeAuditResult(answers: AuditAnswer[]): AuditResult {
     Incidents: 0,
     SupplyChain: 0,
     Cloud: 0,
-    Secteur: 0
+    Secteur: 0,
+    ISO27001: 0,
+    EBIOS: 0
   };
   const maxByCategory: Record<AuditCategory, number> = {
     Gouvernance: 0,
@@ -127,7 +140,9 @@ export function computeAuditResult(answers: AuditAnswer[]): AuditResult {
     Incidents: 0,
     SupplyChain: 0,
     Cloud: 0,
-    Secteur: 0
+    Secteur: 0,
+    ISO27001: 0,
+    EBIOS: 0
   };
 
   // Construire une map pour retrouver rapidement les questions par id
@@ -313,6 +328,8 @@ export type ActionPlanItem = {
   owner: string;
   compliance?: string[]; // RGPD, NIS2, DORA, etc.
   status?: ActionStatus; // 'En cours', 'Terminé', ...
+  /** Coût estimé en euros, quand il est connu. */
+  cost?: number;
 };
 
 
@@ -331,6 +348,9 @@ export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]):
     ...supplyChainQuestions,
     ...cloudQuestions,
     ...craQuestions,
+    // Posées par le questionnaire adaptatif (questions-extended) : elles doivent compter dans le score.
+    ...isoQuestions,
+    ...ebiosQuestions,
     // Add sector specific questions
     ...Object.values(sectorSpecificQuestions).flat()
   ];
@@ -350,7 +370,9 @@ export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]):
     Incidents: 'DSI',
     SupplyChain: 'RSSI',
     Cloud: 'DSI',
-    Secteur: 'Direction'
+    Secteur: 'Direction',
+    ISO27001: 'RSSI',
+    EBIOS: 'RSSI'
   };
   
   // Generate actions based on individual question responses
@@ -409,8 +431,8 @@ export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]):
           actionPlan.push({
             action,
             category: question.category,
-            priority: answer.score <= 1 ? 'Haute' : 'Moyenne',
-            deadline: answer.score <= 1 ? '1 mois' : '3 mois',
+            priority: (answer.score ?? 0) <= 1 ? 'Haute' : 'Moyenne',
+            deadline: (answer.score ?? 0) <= 1 ? '1 mois' : '3 mois',
             owner,
             compliance: inferComplianceFromCategory(question.category),
             status: 'En cours',
@@ -440,8 +462,8 @@ export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]):
           actionPlan.push({
             action,
             category: question.category,
-            priority: answer.score <= 1 ? 'Haute' : 'Moyenne',
-            deadline: answer.score <= 1 ? '1 mois' : '3 mois',
+            priority: (answer.score ?? 0) <= 1 ? 'Haute' : 'Moyenne',
+            deadline: (answer.score ?? 0) <= 1 ? '1 mois' : '3 mois',
             owner,
             compliance: inferComplianceFromCategory(question.category),
             status: 'En cours',
@@ -456,29 +478,16 @@ export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]):
 
 // Ajout d'une fonction pour calculer les tendances
 export function calculateTrends(audits: AuditResult[]): Record<AuditCategory, number> {
-  if (audits.length < 2) return {
-    Gouvernance: 0,
-    Technique: 0,
-    Organisationnel: 0,
-    GRC: 0,
-    Sensibilisation: 0,
-    RGPD: 0,
-  };
-  
-  const trends: Record<AuditCategory, number> = {
-    Gouvernance: 0,
-    Technique: 0,
-    Organisationnel: 0,
-    GRC: 0,
-    Sensibilisation: 0,
-    RGPD: 0,
-  };
+  const trends = Object.fromEntries(AUDIT_CATEGORIES.map((c) => [c, 0])) as Record<AuditCategory, number>;
+  if (audits.length < 2) return trends;
+
   const categories = Object.keys(audits[0].scoresByCategory) as AuditCategory[];
   
   categories.forEach(category => {
     const current = audits[0].scoresByCategory[category];
     const previous = audits[1].scoresByCategory[category];
-    trends[category] = ((current - previous) / previous) * 100;
+    // Pas de tendance calculable sans valeur de référence (évite NaN et Infinity).
+    trends[category] = previous ? ((current - previous) / previous) * 100 : 0;
   });
   
   return trends;

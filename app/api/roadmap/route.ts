@@ -34,9 +34,9 @@ export async function GET() {
     const latestAudit = audits[0];
 
     // TODO: Implement logic to generate actions, milestones, and quarters from audit responses.
-    const actions = [];
-    const milestones = [];
-    const quarters = [];
+    const actions: unknown[] = [];
+    const milestones: unknown[] = [];
+    const quarters: unknown[] = [];
 
     return NextResponse.json({ actions, milestones, quarters });
 

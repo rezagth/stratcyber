@@ -19,6 +19,9 @@ export interface SubTask {
 export interface ActionPlanItem {
   id: string;
   title: string;
+  /** Libellé brut de l'action générée par l'audit (renvoyé par /api/audits/[id]/actions). */
+  action?: string;
+  estimatedHours?: number;
   description: string;
   category: AuditCategory;
   priority: Priority;

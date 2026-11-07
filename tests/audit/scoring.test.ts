@@ -108,3 +108,12 @@ describe('computeAuditResult', () => {
     expect(strong.recommendations).toHaveLength(0);
   });
 });
+
+describe('computeAuditResult — catégories ISO 27001 et EBIOS', () => {
+  it('compte les réponses ISO 27001 dans le score (elles étaient ignorées)', () => {
+    const r = computeAuditResult([{ questionId: 'iso_1', answer: 'x', score: 5 }]);
+    expect(r.scoresByCategory.ISO27001).toBeGreaterThan(0);
+    expect(Number.isNaN(r.globalScore)).toBe(false);
+    expect(r.globalScore).toBeGreaterThan(0);
+  });
+});

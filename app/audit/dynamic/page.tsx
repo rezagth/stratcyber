@@ -97,13 +97,14 @@ export default function DashboardPage() {
   }
   
   // Utiliser computeAuditResult pour obtenir les scores si des audits existent
-  const auditResult = lastAudit?.responses ? computeAuditResult(
-    lastAudit.responses.map(r => ({
-      questionId: r.question,
-      answer: r.answer,
-      score: r.score || 0
-    }))
-  ) : null;
+  const lastAnswers = lastAudit?.responses
+    ? lastAudit.responses.map(r => ({
+        questionId: r.question,
+        answer: r.answer,
+        score: r.score || 0
+      }))
+    : [];
+  const auditResult = lastAudit?.responses ? computeAuditResult(lastAnswers) : null;
 
   const scores = auditResult ? auditResult.scoresByCategory : {
     Gouvernance: 0,
@@ -117,13 +118,8 @@ export default function DashboardPage() {
   // Calculer le Crazy Score
   const crazyScore = auditResult ? calculateCrazyScore(auditResult) : null;
   
-  const actionPlan = lastAudit && auditResult ? generateActionPlan({
-    globalScore: auditResult.globalScore || 0,
-    scoresByCategory: scores,
-    maturity: auditResult.maturity || '',
-    recommendations: lastAudit.recommendations?.split('\n') || [],
-    roadmap: [],
-  }) : [];
+  // generateActionPlan a besoin des réponses : sans elles, la page plantait (answers.forEach sur undefined).
+  const actionPlan = lastAudit && auditResult ? generateActionPlan(auditResult, lastAnswers) : [];
 
   // Calcul de la progression si on a au moins 2 audits
   const progressionPercentage = () => {

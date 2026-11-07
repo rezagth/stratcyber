@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { tomorrow } from 'react-syntax-highlighter/dist/styles/tomorrow';
+import tomorrow from 'react-syntax-highlighter/dist/styles/tomorrow';
 import { 
   ArrowLeftIcon, 
   BookOpenIcon, 
@@ -180,7 +180,7 @@ export default function EbookPage({ params }: Props) {
     sections.forEach((section, index) => {
       const lines = section.trim().split('\n');
       const title = lines[0]?.replace(/^#+\s*/, '') || `Section ${index + 1}`;
-      let content = lines.slice(1).join('\n').trim();
+      const content = lines.slice(1).join('\n').trim();
       
       // Si le contenu est trop long, le diviser en plusieurs slides
       const maxContentLength = 500; // Caractères max par slide
@@ -549,7 +549,7 @@ export default function EbookPage({ params }: Props) {
               }`}>
                 {listPoints.map((item: string, i: number) => {
                   // Nettoyer le texte
-                  let cleanText = item
+                  const cleanText = item
                     .replace(/^[\-\*\+\d\.\s]+/, '') // Enlever puces et numéros
                     .replace(/^[✅❌⚠️📊🎯🔒🛡️📋📝🚀💡⭐]\s*/, '') // Enlever émojis
                     .replace(/\*\*(.+?)\*\*/g, '$1') // Enlever markdown gras
@@ -657,9 +657,10 @@ export default function EbookPage({ params }: Props) {
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
-                  code({node, inline, className, children, ...props}) {
+                  code({className, children, ...props}) {
                     const match = /language-(\w+)/.exec(className || '');
-                    return !inline && match ? (
+                    // react-markdown v10 ne fournit plus `inline` : un bloc de code se reconnaît à sa classe language-xxx.
+                    return match ? (
                       <SyntaxHighlighter
                         style={tomorrow}
                         language={match[1]}
@@ -760,7 +761,7 @@ export default function EbookPage({ params }: Props) {
                   }`}>
                     {contentPoints.map((point: string, index: number) => {
                       // Nettoyage avancé du texte
-                      let cleanText = point
+                      const cleanText = point
                         .replace(/^[\-\*\+\d\.\s]+/, '') // Enlever puces/numéros
                         .replace(/^[✅❌⚠️📊🎯🔒🛡️📋📝🚀💡⭐]\s*/, '') // Enlever émojis
                         .replace(/\*\*(.+?)\*\*/g, '$1') // Enlever markdown gras
@@ -811,7 +812,7 @@ export default function EbookPage({ params }: Props) {
                     className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 max-h-96 overflow-y-auto max-w-4xl mx-auto"
                   >
                     {(() => {
-                      let ultraCleanContent = currentSlideData.content
+                      const ultraCleanContent = currentSlideData.content
                         // Supprimer tout le markdown
                         .replace(/^#{1,6}\s+.*$/gm, '')
                         .replace(/```[\s\S]*?```/g, '') // Supprimer blocs de code
@@ -826,7 +827,7 @@ export default function EbookPage({ params }: Props) {
                         .replace(/\n\s*\n\s*\n/g, '\n\n') // Espaces multiples
                         .trim();
                       
-                      return ultraCleanContent.split('\n\n').filter(p => p.trim()).map((paragraph, i) => (
+                      return ultraCleanContent.split('\n\n').filter((p: string) => p.trim()).map((paragraph: string, i: number) => (
                         <motion.p
                           key={i}
                           initial={{ opacity: 0, y: 10 }}

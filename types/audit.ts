@@ -16,6 +16,12 @@ export type AuditCategory =
   | 'ISO27001'
   | 'EBIOS';
 
+/** Liste exhaustive des catégories : sert à construire des tableaux complets (aucune catégorie oubliée). */
+export const AUDIT_CATEGORIES: readonly AuditCategory[] = [
+  'Gouvernance', 'Technique', 'Organisationnel', 'GRC', 'Sensibilisation', 'RGPD', 'NIS2', 'DORA',
+  'CRA', 'LPM', 'Incidents', 'SupplyChain', 'Cloud', 'Secteur', 'ISO27001', 'EBIOS',
+];
+
 export type CompanySector =
   | 'Finance'
   | 'Santé'

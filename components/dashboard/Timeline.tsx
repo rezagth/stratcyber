@@ -26,13 +26,13 @@ interface TimelineItem {
   id: string;
   type: 'action' | 'milestone';
   title: string;
-  description?: string;
+  description?: string | null;
   date: Date;
   status: string;
   priority?: string;
   progress?: number;
   category: string;
-  owner?: string;
+  owner?: string | null;
   data: DashboardAction | DashboardMilestone;
 }
 

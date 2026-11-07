@@ -76,13 +76,13 @@ export interface HeatmapData {
 export interface DashboardAction {
   id: string;
   title: string;
-  description?: string;
+  description?: string | null;
   category: string;
   priority: 'Critique' | 'Haute' | 'Moyenne' | 'Basse';
   status: 'Non commencé' | 'En cours' | 'Terminé' | 'En retard';
   progress: number;
   dueDate: Date;
-  owner?: string;
+  owner?: string | null;
   assignees?: string[];
   dependencies?: string[];
   kpis?: string[];
@@ -97,16 +97,16 @@ export interface DashboardRisk {
   impact: number;
   probability: number;
   riskLevel: 'Faible' | 'Moyen' | 'Élevé' | 'Critique';
-  mitigationPlan?: string;
+  mitigationPlan?: string | null;
   status: 'Ouvert' | 'En cours' | 'Mitigé' | 'Fermé';
-  owner?: string;
+  owner?: string | null;
 }
 
 // Types pour les jalons
 export interface DashboardMilestone {
   id: string;
   title: string;
-  description?: string;
+  description?: string | null;
   category: string;
   dueDate: Date;
   status: 'Non commencé' | 'En cours' | 'Terminé';
@@ -134,7 +134,7 @@ export interface DashboardIncident {
   severity: 'low' | 'medium' | 'high' | 'critical';
   status: 'open' | 'investigating' | 'resolved' | 'closed';
   detectedAt: Date;
-  resolvedAt?: Date;
+  resolvedAt?: Date | null;
   affectedSystems?: string[];
   dataImpacted: boolean;
 }

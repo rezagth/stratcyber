@@ -89,7 +89,7 @@ export async function GET(
       })),
       milestones: [],
       quarters: [],
-      score: audit.score || Math.round(auditResult.overallScore),
+      score: audit.score || Math.round(auditResult.globalScore),
       lastAuditDate: audit.createdAt.toISOString(),
       statistics: {
         totalActions: actionPlan.length,

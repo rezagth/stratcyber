@@ -27,8 +27,12 @@ interface AuditWithResponses extends Audit {
     score: number | null;
     category: string;
   }[];
-  legalRiskScore?: number;
+  legalRiskScore: number | null;
 }
+
+// Action affichée : soit générée localement depuis l'audit, soit renvoyée par /api/audits/[id]/actions
+// (qui ajoute un id et une date d'échéance ISO).
+type DashboardActionRow = ActionPlanItem & { id?: string; dueDate?: string };
 
 // Compliance regulation data
 const REGULATIONS = {
@@ -251,10 +255,10 @@ export default function DashboardPage() {
   })) || [];
   
   // Utiliser les actions de roadmap en priorité
-  const actionPlan = roadmapData?.actions || (auditResult ? generateActionPlan(auditResult, answers) : []);
+  const actionPlan: DashboardActionRow[] = roadmapData?.actions || (auditResult ? generateActionPlan(auditResult, answers) : []);
 
 // Filtrage contextuel des actions de conformité
-const filterActionsByCompliance = (actions: ActionPlanItem[], context: AuditWithResponses | null) => {
+const filterActionsByCompliance = (actions: DashboardActionRow[], context: AuditWithResponses | null) => {
   if (!context) return actions;
   return actions.filter(action => {
     const complianceCategories = inferComplianceFromCategory(action.category);
@@ -669,16 +673,16 @@ const priorityFiltered = actionPlan.filter(a => {
                 <ol className="relative border-l border-primary/30 ml-2">
                   {actionPlan.slice(0, 5).map((item, i) => (
                     <li key={item.id || i} className="mb-8 ml-4">
-                      <div className={`absolute w-4 h-4 rounded-full -left-2 border-2 border-white ${item.priority === 'Critique' ? 'bg-destructive' : item.priority === 'Haute' ? 'bg-orange-500' : item.priority === 'Moyenne' ? 'bg-amber-500' : 'bg-green-500'}`} />
+                      <div className={`absolute w-4 h-4 rounded-full -left-2 border-2 border-white ${item.priority === 'Haute' ? 'bg-orange-500' : item.priority === 'Moyenne' ? 'bg-amber-500' : 'bg-green-500'}`} />
                       <div className="flex flex-col">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-bold text-lg">Étape {i + 1}</span>
-                          <Badge variant={item.priority === 'Critique' ? 'destructive' : item.priority === 'Haute' ? 'destructive' : item.priority === 'Moyenne' ? 'secondary' : 'default'}>
+                          <Badge variant={item.priority === 'Haute' ? 'destructive' : item.priority === 'Moyenne' ? 'secondary' : 'default'}>
                             {item.priority}
                           </Badge>
-                          <span className="text-sm text-muted-foreground">• {new Date(item.dueDate).toLocaleDateString('fr-FR') || item.deadline}</span>
+                          <span className="text-sm text-muted-foreground">• {item.dueDate ? new Date(item.dueDate).toLocaleDateString('fr-FR') : item.deadline}</span>
                         </div>
-                        <p className="mb-1 text-base">{item.action || item.title}</p>
+                        <p className="mb-1 text-base">{item.action}</p>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <span>Domaine: <Badge variant="secondary">{item.category}</Badge></span>
                           <span>Responsable: <Badge variant="outline">{item.owner}</Badge></span>
@@ -793,7 +797,7 @@ const priorityFiltered = actionPlan.filter(a => {
                         <tbody>
 {(showAllActions ? filteredActionPlan : filteredActionPlan.slice(0,5)).map((item, index) => (
                           <tr
-                            key={item.id || index}
+                            key={`${item.category}-${index}`}
                             className={
                               `border-b border-muted/30 hover:bg-muted/30 transition-colors duration-150`
                             }
@@ -801,15 +805,13 @@ const priorityFiltered = actionPlan.filter(a => {
                             <td className="p-4 text-base font-medium max-w-md">
                               <div className="flex items-start gap-3">
                                 <span className={
-                                  item.priority === 'Critique' 
-                                  ? 'bg-destructive/20 text-destructive border-destructive/30' 
-                                  : item.priority === 'Haute' 
+                                  item.priority === 'Haute' 
                                   ? 'bg-orange-500/20 text-orange-700 border-orange-500/30'
                                   : item.priority === 'Moyenne' 
                                   ? 'bg-amber-500/20 text-amber-700 border-amber-500/30' 
                                   : 'bg-green-500/20 text-green-700 border-green-500/30'
                                 }></span>
-                                <span>{item.action || item.title}</span>
+                                <span>{item.action}</span>
                               </div>
                             </td>
                             <td className="p-4">
@@ -819,7 +821,7 @@ const priorityFiltered = actionPlan.filter(a => {
                             </td>
                             <td className="p-4">
                               <Badge 
-                                variant={item.priority === 'Critique' ? 'destructive' : item.priority === 'Haute' ? 'destructive' : item.priority === 'Moyenne' ? 'secondary' : 'default'}
+                                variant={item.priority === 'Haute' ? 'destructive' : item.priority === 'Moyenne' ? 'secondary' : 'default'}
                                 className="rounded-full px-2 py-1 text-xs"
                               >
                                 {item.priority}
@@ -827,7 +829,7 @@ const priorityFiltered = actionPlan.filter(a => {
                             </td>
                             <td className="p-4">
                               <span className="bg-muted px-2 py-1 rounded-full text-xs">
-                                {new Date(item.dueDate).toLocaleDateString('fr-FR') || item.deadline}
+                                {item.dueDate ? new Date(item.dueDate).toLocaleDateString('fr-FR') : item.deadline}
                               </span>
                             </td>
                             <td className="p-4">

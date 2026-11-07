@@ -51,7 +51,7 @@ export async function getDashboardKPIs(userId: string): Promise<DashboardKPIs> {
 
     // Calculer le score de maturité en utilisant la vraie logique de scoring
     let globalMaturityScore = 0;
-    let complianceScores: Record<string, number> = {};
+    const complianceScores: Record<string, number> = {};
     let legalRiskScore = 0;
     
     if (lastAudit.responses && lastAudit.responses.length > 0) {
