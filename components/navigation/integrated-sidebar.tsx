@@ -13,6 +13,7 @@ import {
   FileText,
   FolderCheck,
   Home,
+  KeyRound,
   Landmark,
   ListChecks,
   Users,
@@ -149,6 +150,11 @@ const adminItems: NavItem[] = [
     url: '/dashboard/policy-templates',
     icon: FileText,
   },
+  {
+    title: 'Sécurité du compte',
+    url: '/account/security',
+    icon: KeyRound,
+  },
 ]
 
 // Espace client (lecture seule) : un menu dédié, aligné sur les cartes de /client
@@ -165,6 +171,7 @@ const clientItems: NavItem[] = [
   { title: 'Budget', url: '/client/budget', icon: Wallet },
   { title: 'Formation', url: '/client/training', icon: BookOpen },
   { title: 'Profil', url: '/client/profile', icon: User2 },
+  { title: 'Sécurité du compte', url: '/account/security', icon: KeyRound },
 ]
 
 // Actif sur l'adresse exacte ou sur ses sous-pages (/dashboard/organizations/<id>)

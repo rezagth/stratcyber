@@ -27,7 +27,22 @@ model User {
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
 
+  // Double authentification (TOTP). Les secrets sont chiffrés (lib/auth/secret-box.ts).
+  mfaEnabled       Boolean @default(false)
+  mfaSecret        String?  // secret actif, chiffré
+  mfaPendingSecret String?  // secret en cours d'enrôlement, chiffré, en attente du premier code
+  mfaRecoveryCodes String?  // JSON : empreintes SHA-256 des codes de secours restants
+  mfaLastStep      Int?     // dernier pas TOTP accepté (refus du rejeu)
+
   @@index([organizationId])
+}
+
+// Limitation des tentatives de connexion (clé « email:… » ou « ip:… »).
+model LoginAttempt {
+  key         String    @id
+  count       Int       @default(0)
+  windowStart DateTime
+  lockedUntil DateTime?
 }
 
 // Client de l'activité InfraCyb (entreprise suivie). Les comptes 'client' y sont rattachés.

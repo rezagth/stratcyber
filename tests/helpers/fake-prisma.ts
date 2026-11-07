@@ -43,6 +43,7 @@ const TABLES = [
   'budgetExpense',
   'ebookQuizAttempt',
   'emailLog',
+  'loginAttempt',
 ] as const;
 type Table = (typeof TABLES)[number];
 
@@ -115,6 +116,9 @@ function matches(table: Table, row: Row, where: Row | undefined): boolean {
 
     if (cond === null) return row[key] == null;
     if (typeof cond === 'object' && !(cond instanceof Date)) {
+      if ('in' in cond) {
+        return Array.isArray(cond.in) && cond.in.includes(row[key]);
+      }
       if ('startsWith' in cond) {
         return typeof row[key] === 'string' && row[key].startsWith(cond.startsWith);
       }
@@ -317,6 +321,7 @@ export const fakePrisma = {
   budgetExpense: model('budgetExpense'),
   ebookQuizAttempt: model('ebookQuizAttempt'),
   emailLog: model('emailLog'),
+  loginAttempt: model('loginAttempt'),
   /**
    * Deux formes : tableau de promesses, ou callback interactif (reçoit le faux client). Dans le second
    * cas, `$executeRaw\`SELECT pg_advisory_xact_lock(...)\`` se comporte comme en base : le verrou sur une clé

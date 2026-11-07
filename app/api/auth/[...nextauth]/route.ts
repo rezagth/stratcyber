@@ -3,7 +3,8 @@ import { NextAuthOptions } from 'next-auth';
 import type { Adapter } from 'next-auth/adapters';
 import NextAuth from 'next-auth/next';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import bcrypt from 'bcryptjs';
+import { authenticate } from '@/lib/auth/authenticate';
+import { clientIp } from '@/lib/auth/login-guard';
 import { prisma } from '@/lib/db';
 
 export const authOptions: NextAuthOptions = {
@@ -14,31 +15,15 @@ export const authOptions: NextAuthOptions = {
       name: 'credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
+        password: { label: 'Password', type: 'password' },
+        totp: { label: 'Code de vérification', type: 'text' },
       },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error('Identifiants requis');
-        }
-
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
-        });
-
-        if (!user) {
-          throw new Error('Identifiants invalides');
-        }
-
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.password
+      // Mot de passe + second facteur + limitation des tentatives : voir lib/auth/authenticate.ts
+      async authorize(credentials, req) {
+        return authenticate(
+          { email: credentials?.email, password: credentials?.password, totp: credentials?.totp },
+          clientIp(req?.headers as Record<string, string | string[] | undefined> | undefined)
         );
-
-        if (!isPasswordValid) {
-          throw new Error('Identifiants invalides');
-        }
-
-        return user;
       }
     })
   ],

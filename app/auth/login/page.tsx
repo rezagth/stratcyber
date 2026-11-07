@@ -11,6 +11,8 @@ export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  // Second facteur : affiché quand le serveur répond MFA_REQUIRED (mot de passe correct, MFA activée).
+  const [needsTotp, setNeedsTotp] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,6 +22,7 @@ export default function LoginPage() {
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
+    const totp = (formData.get('totp') as string | null) ?? '';
 
     // Toast de chargement
     const loadingToast = toast.loading('Connexion en cours...', {
@@ -30,10 +33,15 @@ export default function LoginPage() {
       const result = await signIn('credentials', {
         email,
         password,
+        totp,
         redirect: false,
       });
 
-      if (result?.error) {
+      if (result?.error === 'MFA_REQUIRED') {
+        toast.dismiss(loadingToast);
+        setNeedsTotp(true);
+        setError(null);
+      } else if (result?.error) {
         // Dismiss loading toast et afficher erreur
         toast.dismiss(loadingToast);
         setError(result.error);
@@ -121,6 +129,25 @@ export default function LoginPage() {
               />
             </div>
           </div>
+
+          {needsTotp && (
+            <div className="space-y-1">
+              <label htmlFor="totp" className="block text-sm font-medium text-gray-700">
+                Code de l&apos;application d&apos;authentification (ou code de secours)
+              </label>
+              <input
+                id="totp"
+                name="totp"
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                autoFocus
+                required
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                placeholder="123456"
+              />
+            </div>
+          )}
 
           <div>
             <Button

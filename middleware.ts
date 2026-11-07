@@ -21,7 +21,14 @@ export async function middleware(request: NextRequest) {
   if (token) {
     // Compte client : confiné à l'espace client (pages /client et API /api/client uniquement).
     if (token.role === 'client') {
-      const allowed = pathname === '/client' || pathname.startsWith('/client/') || pathname.startsWith('/api/client/');
+      const allowed =
+        pathname === '/client' ||
+        pathname.startsWith('/client/') ||
+        pathname.startsWith('/api/client/') ||
+        // Sécurité de son propre compte (double authentification) : ouverte à tous les rôles.
+        pathname === '/account' ||
+        pathname.startsWith('/account/') ||
+        pathname.startsWith('/api/account/');
       if (!allowed) {
         if (pathname.startsWith('/api/')) {
           return NextResponse.json({ error: 'Accès interdit' }, { status: 403 });
@@ -55,6 +62,7 @@ export const config = {
     '/strategie/:path*',
     '/audit/:path*',
     '/client/:path*',
+    '/account/:path*',
     '/api/:path*',
   ],
 };

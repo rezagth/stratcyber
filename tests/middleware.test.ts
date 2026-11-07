@@ -56,10 +56,10 @@ describe('middleware', () => {
 
   it("confine un compte client à /client et /api/client", async () => {
     vi.mocked(getToken).mockResolvedValue({ id: 'c1', role: 'client', organizationId: 'org-1' } as never);
-    for (const path of ['/client', '/client/audits/abc', '/api/client/audits']) {
+    for (const path of ['/client', '/client/audits/abc', '/api/client/audits', '/account/security', '/api/account/mfa']) {
       expect((await call(path)).headers.get('x-middleware-next')).toBe('1');
     }
-    for (const path of ['/api/audits/abc', '/api/dashboard/kpis', '/api/training/ebook', '/api/organizations', '/api/roadmap/data']) {
+    for (const path of ['/api/accountx', '/api/audits/abc', '/api/dashboard/kpis', '/api/training/ebook', '/api/organizations', '/api/roadmap/data']) {
       expect((await call(path)).status).toBe(403);
     }
     for (const path of ['/dashboard', '/strategie', '/audit/dynamic']) {
