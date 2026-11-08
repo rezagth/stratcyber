@@ -128,6 +128,22 @@ describe('cycle de vie et validation tracée (module E)', () => {
     expect((await res.json()).status).toBe('À valider');
   });
 
+  it("refuse d'envoyer un document contenant encore une {{variable}} non remplie", async () => {
+    loginAs(admin);
+    tables.clientPolicyDocument[0].content = 'Charte de {{entreprise}}, dirigeant : {{dirigeant}}.';
+    const res = await UPDATE_POLICY(req('/api/policies/doc-x', patch({ status: 'À valider' })), ctx({ id: 'doc-x' }));
+    expect(res.status).toBe(422);
+    expect((await res.json()).error).toContain('entreprise');
+    expect(tables.clientPolicyDocument[0].status).toBe('Brouillon');
+  });
+
+  it("accepte l'envoi si le contenu corrigé dans la même requête n'a plus de variable", async () => {
+    loginAs(admin);
+    tables.clientPolicyDocument[0].content = 'Charte de {{entreprise}}.';
+    const res = await UPDATE_POLICY(req('/api/policies/doc-x', patch({ content: 'Charte de Client X.', status: 'À valider' })), ctx({ id: 'doc-x' }));
+    expect(res.status).toBe(200);
+  });
+
   it("l'admin ne peut pas poser le statut \"Validé\" directement", async () => {
     loginAs(admin);
     const res = await UPDATE_POLICY(req('/api/policies/doc-x', patch({ status: 'Validé' })), ctx({ id: 'doc-x' }));

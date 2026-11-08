@@ -13,7 +13,7 @@ import { parsePolicyDocumentUpdate, DOCUMENT_SELECT } from '@/lib/api/policy-fie
 export const PATCH = withApiAuth<{ id: string }>(
   async (request, { params, user }) => {
     const { id } = await params;
-    const existing = await prisma.clientPolicyDocument.findFirst({ where: { id }, select: { id: true, organizationId: true, status: true } });
+    const existing = await prisma.clientPolicyDocument.findFirst({ where: { id }, select: { id: true, organizationId: true, status: true, content: true } });
     if (!existing) return jsonError('Document non trouvé', 404);
     if (existing.status === 'Validé') {
       return jsonError('Ce document est déjà validé : générez une nouvelle version pour le modifier', 409);
@@ -23,6 +23,15 @@ export const PATCH = withApiAuth<{ id: string }>(
     const parsed = parsePolicyDocumentUpdate(body);
     if ('error' in parsed) return jsonError(parsed.error, 400);
     if (Object.keys(parsed.data).length === 0) return jsonError('Aucun champ valide à mettre à jour', 400);
+
+    // Un document envoyé au client ne doit plus contenir de {{variable}} non remplie.
+    if (parsed.data.status === 'À valider') {
+      const finalContent = String(parsed.data.content ?? existing.content ?? '');
+      const missing = [...new Set([...finalContent.matchAll(/\{\{\s*([\w.]+)\s*\}\}/g)].map((m) => m[1]))];
+      if (missing.length > 0) {
+        return jsonError(`Envoi impossible : ${missing.length} champ(s) à remplir dans le texte (${missing.slice(0, 5).join(', ')}${missing.length > 5 ? '…' : ''}). Complétez-les avant de l'envoyer au client.`, 422);
+      }
+    }
 
     const document = await prisma.clientPolicyDocument.update({ where: { id }, data: parsed.data, select: DOCUMENT_SELECT });
     await logActivity(user, { action: 'policy-document.update', targetType: 'policy-document', targetId: id, organizationId: existing.organizationId });

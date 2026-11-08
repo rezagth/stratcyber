@@ -4,11 +4,13 @@
   "functions": {
     "app/api/audits/[id]/report-pdf/route.ts": {
       "maxDuration": 60
+    },
+    "app/api/organizations/[id]/monthly-report/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/client/monthly-report/route.ts": {
+      "maxDuration": 60
     }
-  },
-  "env": {
-    "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true",
-    "PUPPETEER_EXECUTABLE_PATH": "/usr/bin/google-chrome"
   },
   "crons": [
     {
