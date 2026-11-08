@@ -17,6 +17,7 @@ const TABLES = [
   'activityLog',
   'audit',
   'auditResponse',
+  'report',
   'strategicAction',
   'complianceScore',
   'ebook',
@@ -60,6 +61,7 @@ const db: Record<Table, Row[]> = Object.fromEntries(TABLES.map((t) => [t, []])) 
 // Relation « appartient à » (filtre where imbriqué + include)
 const BELONGS_TO: Partial<Record<Table, Record<string, { table: Table; fk: string }>>> = {
   auditResponse: { audit: { table: 'audit', fk: 'auditId' } },
+  report: { audit: { table: 'audit', fk: 'auditId' } },
   ebookQuiz: { ebook: { table: 'ebook', fk: 'ebookId' } },
   readingSession: { ebook: { table: 'ebook', fk: 'ebookId' } },
   ebookQuizAttempt: { quiz: { table: 'ebookQuiz', fk: 'quizId' } },
@@ -304,6 +306,7 @@ export const fakePrisma = {
   complianceScore: model('complianceScore'),
   audit: model('audit'),
   auditResponse: model('auditResponse'),
+  report: model('report'),
   strategicAction: model('strategicAction'),
   ebook: model('ebook'),
   ebookQuiz: model('ebookQuiz'),

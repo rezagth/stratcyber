@@ -47,9 +47,13 @@ describe('DELETE /api/organizations/[id]', () => {
   it('supprime uniquement le client demandé, avec ses audits', async () => {
     loginAs(admin);
     tables.audit.push({ id: 'a1', organizationId: 'org-x' }, { id: 'a2', organizationId: 'org-y' });
+    tables.auditResponse.push({ id: 'r1', auditId: 'a1' }, { id: 'r2', auditId: 'a2' });
+    tables.report.push({ id: 'p1', auditId: 'a1' }, { id: 'p2', auditId: 'a2' });
     const res = await DELETE(req('/api/organizations/org-x', del({ confirmName: 'Client X' })) as never, ctx({ id: 'org-x' }) as never);
     expect(res.status).toBe(200);
     expect(tables.organization.map((o) => o.id)).toEqual(['org-y']);
     expect(tables.audit.map((a) => a.id)).toEqual(['a2']);
+    expect(tables.auditResponse.map((a) => a.id)).toEqual(['r2']);
+    expect(tables.report.map((a) => a.id)).toEqual(['p2']);
   });
 });

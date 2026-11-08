@@ -67,7 +67,10 @@ export const DELETE = withApiAuth<{ id: string }>(
     }
 
     // Les audits ne sont que détachés (SetNull) par la suppression du client : on les supprime avec lui.
+    // Leurs réponses et leur rapport n'ont pas de suppression en cascade : on les retire d'abord.
     await prisma.$transaction([
+      prisma.auditResponse.deleteMany({ where: { audit: { organizationId: id } } }),
+      prisma.report.deleteMany({ where: { audit: { organizationId: id } } }),
       prisma.audit.deleteMany({ where: { organizationId: id } }),
       prisma.organization.delete({ where: { id } }),
     ]);
