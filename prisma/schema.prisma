@@ -990,10 +990,55 @@ model IncidentCase {
   finalReportSentAt  DateTime? // échéance : detectedAt + 1 mois
 
   personalDataInvolved Boolean @default(false) // pertinent pour une notification RGPD à la CNIL
+  cnilNotifiedAt       DateTime?              // notification de violation de données à la CNIL (RGPD art. 33 : 72 h)
+
+  // Mode urgence : journal horodaté (append-only) et checklist de réponse à incident.
+  logEntries IncidentLogEntry[]
+  checklist  IncidentChecklistItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([organizationId])
+}
+
+// Mode urgence : journal des décisions, actions et communications d'un incident. Append-only :
+// aucune route de modification ni de suppression (la chronologie doit rester opposable).
+model IncidentLogEntry {
+  id             String       @id @default(uuid())
+  incidentId     String
+  incident       IncidentCase @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  organizationId String       // dénormalisé : cloisonnement par organisation
+
+  kind       String   @default("note") // 'decision' | 'action' | 'communication' | 'note'
+  message    String
+  authorId   String?
+  authorName String?
+  occurredAt DateTime @default(now())   // moment réel de l'événement (peut être antérieur à la saisie)
+  createdAt  DateTime @default(now())   // moment de la saisie
+
+  @@index([incidentId, occurredAt])
+  @@index([organizationId])
+}
+
+// Mode urgence : checklist de réponse à incident, créée à la demande depuis le modèle
+// lib/incidents/checklist-template.ts (`templateKey` évite les doublons si on la recrée).
+model IncidentChecklistItem {
+  id             String       @id @default(uuid())
+  incidentId     String
+  incident       IncidentCase @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  organizationId String
+
+  templateKey String
+  phase       String
+  label       String
+  position    Int
+  done        Boolean   @default(false)
+  doneAt      DateTime?
+  doneById    String?
+
+  @@unique([incidentId, templateKey])
+  @@index([incidentId, position])
   @@index([organizationId])
 }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -78,7 +79,10 @@ export function IncidentsTab({ organizationId }: { organizationId: string }) {
                     <Badge variant={incident.severity === 'Critique' || incident.severity === 'Haute' ? 'destructive' : 'secondary'}>{incident.severity}</Badge>
                     {incident.personalDataInvolved && <Badge variant="outline">Données personnelles</Badge>}
                   </div>
-                  <Button size="sm" variant="outline" onClick={() => deleteIncident(incident.id)}>Supprimer</Button>
+                  <div className="flex gap-2">
+                    <Button size="sm" asChild><Link href={`/dashboard/organizations/${organizationId}/incidents/${incident.id}`}>Mode urgence</Link></Button>
+                    <Button size="sm" variant="outline" onClick={() => deleteIncident(incident.id)}>Supprimer</Button>
+                  </div>
                 </div>
                 <p className="text-xs text-muted-foreground">Détecté le {new Date(incident.detectedAt).toLocaleString('fr-FR')}</p>
               </CardHeader>

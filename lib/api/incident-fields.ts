@@ -15,11 +15,12 @@ type IncidentFields = {
   earlyWarningSentAt: string | null;
   notificationSentAt: string | null;
   finalReportSentAt: string | null;
+  cnilNotifiedAt: string | null;
   personalDataInvolved: boolean;
 };
 const WHITELIST: (keyof IncidentFields)[] = [
   'title', 'description', 'severity', 'category', 'status', 'owner', 'detectedAt',
-  'earlyWarningSentAt', 'notificationSentAt', 'finalReportSentAt', 'personalDataInvolved',
+  'earlyWarningSentAt', 'notificationSentAt', 'finalReportSentAt', 'cnilNotifiedAt', 'personalDataInvolved',
 ];
 
 export function parseIncidentFields(
@@ -69,7 +70,7 @@ export function parseIncidentFields(
     if (!v) return { error: 'Date de détection invalide' };
     data.detectedAt = v;
   }
-  for (const key of ['earlyWarningSentAt', 'notificationSentAt', 'finalReportSentAt'] as const) {
+  for (const key of ['earlyWarningSentAt', 'notificationSentAt', 'finalReportSentAt', 'cnilNotifiedAt'] as const) {
     if (picked[key] !== undefined) {
       const v = toNullableDate(picked[key]);
       if (v === undefined) return { error: 'Date invalide' };
@@ -87,7 +88,7 @@ export function parseIncidentFields(
 export const INCIDENT_SELECT = {
   id: true, organizationId: true, title: true, description: true, severity: true, category: true,
   status: true, owner: true, detectedAt: true, earlyWarningSentAt: true, notificationSentAt: true,
-  finalReportSentAt: true, personalDataInvolved: true, createdAt: true, updatedAt: true,
+  finalReportSentAt: true, cnilNotifiedAt: true, personalDataInvolved: true, createdAt: true, updatedAt: true,
 };
 
 const HOUR = 60 * 60 * 1000;
