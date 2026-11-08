@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BASE_DELAY_DAYS, PHASE1_DAYS, PHASE1_MAX, WAVE_GAP_DAYS, WAVE_SIZE, estimateEffort, planActions, priorityFor, prioritizeActions } from '@/lib/audit/prioritization';
+import { BASE_DELAY_DAYS, PHASE1_DAYS, PHASE1_MAX, WAVE_GAP_DAYS, WAVE_SIZE, estimateEffort, planActions, priorityFor, proofFor, prioritizeActions } from '@/lib/audit/prioritization';
 import { buildActionPlanFromAudit } from '@/lib/audit/action-plan-generator';
 
 const DAY = 86_400_000;
@@ -119,5 +119,23 @@ describe('planActions : plan réaliste', () => {
     const p1 = plan.filter((p) => p.description.startsWith('Phase 1'));
     expect(p1).toHaveLength(PHASE1_MAX);
     expect(plan.filter((p) => p.priority === 'Haute').length).toBeLessThanOrEqual(PHASE1_MAX);
+  });
+});
+
+describe('classement des engagements et preuves adaptées', () => {
+  it('un engagement contractuel sur les mises à jour n\'est pas Critique ni « rapide »', () => {
+    const t = 'S\'engager sur une durée de fourniture des mises à jour de sécurité du produit.';
+    expect(priorityFor({ title: t, category: 'CRA' })).toBe('Haute');
+    expect(estimateEffort(t)).toBe('moyen');
+    expect(proofFor(t, 'moyen')).toMatch(/contrat|engagement/);
+  });
+  it('une désignation a pour preuve une décision datée, pas une capture d\'écran', () => {
+    const t = 'Désigner un Délégué à la Protection des Données (DPO).';
+    expect(proofFor(t, estimateEffort(t))).toMatch(/désignation/);
+  });
+  it('une mesure technique garde une capture d\'écran comme preuve et reste Critique', () => {
+    const t = 'Activer la double authentification sur tous les accès distants.';
+    expect(priorityFor({ title: t, category: 'Technique' })).toBe('Critique');
+    expect(proofFor(t, estimateEffort(t))).toMatch(/capture/);
   });
 });

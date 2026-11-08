@@ -19,6 +19,9 @@ export type PrioritizableAction = { title: string; category: string };
 const CRITICAL_PATTERN =
   /sauvegard|mfa|multi-?facteur|double authentification|authentification|mot(s)? de passe|correctif|patch|mise(s)? à jour|antivirus|antimalware|chiffrement|rançon|violation|notification|72\s?h|incident|accès privilégi|segmentation|pare-?feu/i;
 
+/** Engagements et clauses : un mot-clé technique (« mises à jour ») n'en fait pas une mesure technique de base. */
+const CONTRACT_PATTERN = /s['\u2019]engager|engagement|dur\u00e9e de fourniture|clause|contrat/i;
+
 const REGULATORY = new Set(['RGPD', 'NIS2', 'DORA', 'CRA', 'LPM', 'SupplyChain']);
 const LOW = new Set(['ISO27001', 'EBIOS', 'Secteur']);
 
@@ -31,7 +34,7 @@ export const WAVE_GAP_DAYS = 14;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export function priorityFor(action: PrioritizableAction): Priority {
-  if (CRITICAL_PATTERN.test(action.title)) return 'Critique';
+  if (CRITICAL_PATTERN.test(action.title) && !CONTRACT_PATTERN.test(action.title)) return 'Critique';
   if (LOW.has(action.category)) return 'Faible';
   if (REGULATORY.has(action.category)) return 'Haute';
   return 'Moyenne';
@@ -77,6 +80,7 @@ const HEAVY_PATTERN =
   /certification|iso\s?27001|ebios|cartograph|analyse de risques|audit|continuité|\bpca\b|\bpra\b|documenter|registre|politique|procédure|formaliser|résilience|programme|schéma directeur/i;
 
 export function estimateEffort(title: string): Effort {
+  if (CONTRACT_PATTERN.test(title)) return 'moyen';
   if (QUICK_PATTERN.test(title) && !HEAVY_PATTERN.test(title)) return 'rapide';
   if (HEAVY_PATTERN.test(title)) return 'lourd';
   return 'moyen';
@@ -88,11 +92,20 @@ const EFFORT_LABEL: Record<Effort, string> = {
   moyen: 'Effort estimé : moyen (quelques jours).',
   lourd: 'Effort estimé : lourd (plusieurs semaines).',
 };
-const PROOF_LABEL: Record<Effort, string> = {
-  rapide: 'Preuve attendue : capture d’écran de la configuration ou confirmation écrite.',
-  moyen: 'Preuve attendue : document ou procédure datée et validée.',
-  lourd: 'Preuve attendue : livrable validé par la direction (document, rapport ou attestation).',
-};
+const PROOF_DESIGNATION = 'Preuve attendue : décision ou courriel de désignation, daté et signé.';
+const PROOF_CONTRACT = 'Preuve attendue : contrat, clause ou engagement écrit et signé.';
+const PROOF_CONFIG = 'Preuve attendue : capture d\u2019écran de la configuration ou confirmation écrite.';
+const PROOF_DOC = 'Preuve attendue : document ou procédure datée et validée.';
+const PROOF_DELIVERABLE = 'Preuve attendue : livrable validé par la direction (document, rapport ou attestation).';
+const DESIGNATION_PATTERN = /désigner|nommer|point de contact|\bdpo\b|référent/i;
+
+/** La preuve dépend du type d'action, pas seulement de l'effort. */
+export function proofFor(title: string, effort: Effort): string {
+  if (CONTRACT_PATTERN.test(title)) return PROOF_CONTRACT;
+  if (DESIGNATION_PATTERN.test(title)) return PROOF_DESIGNATION;
+  if (effort === 'rapide') return PROOF_CONFIG;
+  return effort === 'moyen' ? PROOF_DOC : PROOF_DELIVERABLE;
+}
 
 export type PlannedAction<T> = T & {
   priority: Priority;
@@ -144,7 +157,7 @@ export function planActions<T extends PrioritizableAction>(actions: T[], from: D
       dueDate: new Date(from.getTime() + delay * DAY_MS),
       effort: r.effort,
       phase,
-      description: `${intro} ${EFFORT_LABEL[r.effort]} ${PROOF_LABEL[r.effort]}`,
+      description: `${intro} ${EFFORT_LABEL[r.effort]} ${proofFor(r.action.title, r.effort)}`,
     };
   });
 }
