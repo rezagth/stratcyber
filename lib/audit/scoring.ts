@@ -1,5 +1,6 @@
 import { AuditAnswer, AuditCategory, AuditResult, AuditQuestion, ComplianceScore, AUDIT_CATEGORIES } from '../../types/audit';
 import { auditQuestions } from './questions';
+import { DEFAULT_RECOMMENDATIONS } from './default-recommendations';
 import { rgpdQuestions, nis2Questions, doraQuestions, lmpQuestions, incidentQuestions, supplyChainQuestions, cloudQuestions, craQuestions, isoQuestions, ebiosQuestions, sectorSpecificQuestions } from './questions-extended';
 
 const maturityLevels = [
@@ -378,12 +379,13 @@ export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]):
   // Generate actions based on individual question responses
   answers.forEach((answer) => {
     const question = allQuestions.find(q => q.id === answer.questionId);
-    if (question && question.actionRecommendations) {
+    const recos = question ? (question.actionRecommendations ?? DEFAULT_RECOMMENDATIONS[question.id]) : undefined;
+    if (question && recos) {
       // For boolean questions with negative answers
       if (question.type === 'boolean' && 
           (answer.answer.toLowerCase() === 'non' || answer.answer.toLowerCase() === 'no' || answer.answer.toLowerCase() === 'false') &&
-          question.actionRecommendations.negativeAnswer) {
-        question.actionRecommendations.negativeAnswer.forEach((action) => {
+          recos.negativeAnswer) {
+        recos.negativeAnswer.forEach((action) => {
           let owner = ownersByCategory[question.category] || 'Direction';
           
           // Ajuster le propriétaire pour certaines actions spécifiques
@@ -413,8 +415,8 @@ export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]):
       if (question.type === 'scale' && 
           answer.score !== undefined && 
           answer.score <= 2 &&
-          question.actionRecommendations.lowScore) {
-        question.actionRecommendations.lowScore.forEach((action) => {
+          recos.lowScore) {
+        recos.lowScore.forEach((action) => {
           let owner = ownersByCategory[question.category] || 'Direction';
           
           // Ajuster le propriétaire pour certaines actions spécifiques
@@ -444,8 +446,8 @@ export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]):
       if (question.type === 'choice' && 
           answer.score !== undefined && 
           answer.score <= 2 &&
-          question.actionRecommendations.lowScore) {
-        question.actionRecommendations.lowScore.forEach((action) => {
+          recos.lowScore) {
+        recos.lowScore.forEach((action) => {
           let owner = ownersByCategory[question.category] || 'Direction';
           
           // Ajuster le propriétaire pour certaines actions spécifiques
