@@ -59,7 +59,7 @@ export default function EnhancedRoadmapSection({
         <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Map className="h-6 w-6 text-blue-600" />
+              <Map className="h-6 w-6 text-primary" />
               <CardTitle className="text-xl">Feuille de route stratégique</CardTitle>
             </div>
             <Link href="/dashboard/roadmap">
@@ -94,11 +94,11 @@ export default function EnhancedRoadmapSection({
       <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Map className="h-6 w-6 text-blue-600" />
+            <Map className="h-6 w-6 text-primary" />
             <CardTitle className="text-xl">Feuille de route stratégique</CardTitle>
           </div>
           <Link href="/dashboard/roadmap">
-            <Button variant="outline" size="sm" className="flex items-center gap-2 hover:bg-blue-100">
+            <Button variant="outline" size="sm" className="flex items-center gap-2 hover:bg-accent">
               <Map className="h-4 w-4" />
               Voir la roadmap complète
               <ArrowRight className="h-4 w-4" />
@@ -122,14 +122,14 @@ export default function EnhancedRoadmapSection({
         <div className="space-y-6">
           {/* Statistiques rapides */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+            <div className="bg-accent rounded-lg p-4 border border-primary/30">
               <div className="flex items-center gap-3">
-                <div className="bg-blue-600 rounded-full p-2">
+                <div className="bg-primary rounded-full p-2">
                   <Clock className="h-4 w-4 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm text-blue-600 font-medium">Actions totales</p>
-                  <p className="text-2xl font-bold text-blue-700">{totalActions}</p>
+                  <p className="text-sm text-primary font-medium">Actions totales</p>
+                  <p className="text-2xl font-bold text-primary">{totalActions}</p>
                 </div>
               </div>
             </div>
@@ -188,7 +188,7 @@ export default function EnhancedRoadmapSection({
                     </h4>
                     <div className="space-y-1">
                       <p className="text-xs text-muted-foreground">
-                        <span className="inline-block bg-slate-100 px-2 py-1 rounded text-xs">
+                        <span className="inline-block bg-muted px-2 py-1 rounded text-xs">
                           {item.category}
                         </span>
                       </p>
@@ -196,7 +196,7 @@ export default function EnhancedRoadmapSection({
                         <Clock className="inline h-3 w-3 mr-1" />
                         {item.deadline}
                       </p>
-                      <p className="text-xs text-blue-600 font-medium">{item.owner}</p>
+                      <p className="text-xs text-primary font-medium">{item.owner}</p>
                     </div>
                     
                     {/* Indicateur de progression si disponible */}
@@ -217,7 +217,7 @@ export default function EnhancedRoadmapSection({
           
           {/* Actions supplémentaires et bouton d'accès */}
           {totalActions > 4 && (
-            <div className="text-center pt-6 border-t border-gray-200">
+            <div className="text-center pt-6 border-t border-border">
               <p className="text-sm text-muted-foreground mb-4">
                 Et {totalActions - 4} autres actions dans votre plan complet
               </p>

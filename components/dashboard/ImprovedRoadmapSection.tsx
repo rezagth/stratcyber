@@ -118,7 +118,7 @@ export default function ImprovedRoadmapSection({
         <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Map className="h-6 w-6 text-blue-600" />
+              <Map className="h-6 w-6 text-primary" />
               <CardTitle className="text-xl">Feuille de route stratégique</CardTitle>
             </div>
             <Link href="/dashboard/roadmap">
@@ -153,11 +153,11 @@ export default function ImprovedRoadmapSection({
       <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Map className="h-6 w-6 text-blue-600" />
+            <Map className="h-6 w-6 text-primary" />
             <CardTitle className="text-xl">Feuille de route stratégique</CardTitle>
           </div>
           <Link href="/dashboard/roadmap">
-            <Button variant="outline" size="sm" className="flex items-center gap-2 hover:bg-blue-100">
+            <Button variant="outline" size="sm" className="flex items-center gap-2 hover:bg-accent">
               <Map className="h-4 w-4" />
               Voir la roadmap complète
               <ArrowRight className="h-4 w-4" />
@@ -181,14 +181,14 @@ export default function ImprovedRoadmapSection({
         <div className="space-y-6">
           {/* Statistiques améliorées */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+            <div className="bg-accent rounded-lg p-4 border border-primary/30">
               <div className="flex items-center gap-3">
-                <div className="bg-blue-600 rounded-full p-2">
+                <div className="bg-primary rounded-full p-2">
                   <Target className="h-4 w-4 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm text-blue-600 font-medium">Actions totales</p>
-                  <p className="text-2xl font-bold text-blue-700">{totalActions}</p>
+                  <p className="text-sm text-primary font-medium">Actions totales</p>
+                  <p className="text-2xl font-bold text-primary">{totalActions}</p>
                 </div>
               </div>
             </div>
@@ -342,7 +342,7 @@ export default function ImprovedRoadmapSection({
           )}
 
           {/* Accès roadmap complète */}
-          <div className="text-center pt-6 border-t border-gray-200">
+          <div className="text-center pt-6 border-t border-border">
             <Link href="/dashboard/roadmap">
               <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
                 <Map className="h-4 w-4 mr-2" />

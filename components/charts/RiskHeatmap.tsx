@@ -89,7 +89,7 @@ export function RiskHeatmap({ data, title }: RiskHeatmapProps) {
                 <div
                   key={probabilityIndex}
                   className={`
-                    relative aspect-square border border-gray-300 rounded cursor-pointer 
+                    relative aspect-square border border-border rounded cursor-pointer 
                     transition-all hover:scale-105 hover:shadow-lg
                     ${getRiskColor(riskLevel)}
                     ${riskCount === 0 ? 'opacity-20' : ''}

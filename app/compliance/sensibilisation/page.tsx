@@ -66,10 +66,10 @@ export default function SensibilisationDocumentation() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-4xl font-bold text-foreground mb-2">
               Sensibilisation Cybersécurité
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-muted-foreground">
               Programme complet de sensibilisation aux risques cyber pour vos équipes
             </p>
           </div>
@@ -100,7 +100,7 @@ export default function SensibilisationDocumentation() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-8">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-5">
           <TabsTrigger value="overview">Vue d&apos;ensemble</TabsTrigger>
           <TabsTrigger value="program">Programme</TabsTrigger>
           <TabsTrigger value="methods">Méthodes</TabsTrigger>
@@ -120,7 +120,7 @@ export default function SensibilisationDocumentation() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     95% des cyberattaques réussies sont dues à l&apos;erreur humaine. La sensibilisation est votre 
                     première ligne de défense contre les menaces cyber.
                   </p>
@@ -145,7 +145,7 @@ export default function SensibilisationDocumentation() {
                         <li>• ROI positif démontrable</li>
                       </ul>
                     </div>
-                    <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="bg-accent p-4 rounded-lg">
                       <h4 className="font-semibold text-blue-900 mb-2">Méthodes efficaces</h4>
                       <ul className="text-blue-800 text-sm space-y-1">
                         <li>• Simulations d&apos;attaques</li>
@@ -191,13 +191,13 @@ export default function SensibilisationDocumentation() {
                   <CardTitle className="text-lg">Ressources externes</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Link href="https://www.cybermalveillance.gouv.fr" target="_blank" className="block text-blue-600 hover:underline text-sm">
+                  <Link href="https://www.cybermalveillance.gouv.fr" target="_blank" className="block text-primary hover:underline text-sm">
                     → Cybermalveillance.gouv.fr
                   </Link>
-                  <Link href="https://www.ssi.gouv.fr/particulier/sensibilisation/" target="_blank" className="block text-blue-600 hover:underline text-sm">
+                  <Link href="https://www.ssi.gouv.fr/particulier/sensibilisation/" target="_blank" className="block text-primary hover:underline text-sm">
                     → Sensibilisation ANSSI
                   </Link>
-                  <Link href="https://www.cnil.fr/fr/sensibilisation" target="_blank" className="block text-blue-600 hover:underline text-sm">
+                  <Link href="https://www.cnil.fr/fr/sensibilisation" target="_blank" className="block text-primary hover:underline text-sm">
                     → Sensibilisation CNIL
                   </Link>
                 </CardContent>
@@ -221,7 +221,7 @@ export default function SensibilisationDocumentation() {
                   <AccordionTrigger>1. Évaluation Initiale</AccordionTrigger>
                   <AccordionContent className="space-y-4">
                     <p>Mesurer le niveau de sensibilisation actuel de vos équipes.</p>
-                    <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="bg-muted/50 p-4 rounded-lg">
                       <h4 className="font-semibold mb-2">Méthodes d&apos;évaluation :</h4>
                       <ul className="space-y-1">
                         <li>• Quiz de connaissances par département</li>
@@ -238,7 +238,7 @@ export default function SensibilisationDocumentation() {
                   <AccordionContent className="space-y-4">
                     <p>Adapter la sensibilisation selon les risques et besoins de chaque profil.</p>
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-blue-50 p-4 rounded-lg">
+                      <div className="bg-accent p-4 rounded-lg">
                         <h4 className="font-semibold mb-2">Profils à risque élevé :</h4>
                         <ul className="space-y-1 text-sm">
                           <li>• Direction et C-Level</li>
@@ -337,7 +337,7 @@ export default function SensibilisationDocumentation() {
                 <CardContent>
                   <ul className="space-y-1">
                     {method.details.map((detail, idx) => (
-                      <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
+                      <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
                         <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
                         {detail}
                       </li>
@@ -363,7 +363,7 @@ export default function SensibilisationDocumentation() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {trainingTopics.map((topic, index) => (
                     <div key={index} className={`border rounded-lg p-4 ${
-                      topic.color === 'blue' ? 'border-blue-200 bg-blue-50' :
+                      topic.color === 'blue' ? 'border-primary/30 bg-accent' :
                       topic.color === 'green' ? 'border-green-200 bg-green-50' :
                       topic.color === 'orange' ? 'border-orange-200 bg-orange-50' :
                       'border-purple-200 bg-purple-50'
@@ -389,19 +389,19 @@ export default function SensibilisationDocumentation() {
                 <div className="space-y-4">
                   <div className="border-l-4 border-red-500 pl-4">
                     <h4 className="font-semibold">Simulations de Phishing</h4>
-                    <p className="text-sm text-gray-600">1ère semaine de chaque mois - Rotation par service</p>
+                    <p className="text-sm text-muted-foreground">1ère semaine de chaque mois - Rotation par service</p>
                   </div>
                   <div className="border-l-4 border-blue-500 pl-4">
                     <h4 className="font-semibold">Alertes Sécurité</h4>
-                    <p className="text-sm text-gray-600">Si menace critique - Notification dans les 24h</p>
+                    <p className="text-sm text-muted-foreground">Si menace critique - Notification dans les 24h</p>
                   </div>
                   <div className="border-l-4 border-green-500 pl-4">
                     <h4 className="font-semibold">Formations Spécialisées</h4>
-                    <p className="text-sm text-gray-600">Trimestrielles - Par profil métier</p>
+                    <p className="text-sm text-muted-foreground">Trimestrielles - Par profil métier</p>
                   </div>
                   <div className="border-l-4 border-purple-500 pl-4">
                     <h4 className="font-semibold">Mois Européen de la Cybersécurité</h4>
-                    <p className="text-sm text-gray-600">Octobre - Événement d&apos;envergure avec conférence</p>
+                    <p className="text-sm text-muted-foreground">Octobre - Événement d&apos;envergure avec conférence</p>
                   </div>
                 </div>
               </CardContent>
@@ -426,7 +426,7 @@ export default function SensibilisationDocumentation() {
                     className={`flex items-center gap-3 p-4 rounded-lg border transition-colors ${
                       checkedItems.includes(item.id) 
                         ? 'bg-green-50 border-green-200' 
-                        : 'bg-gray-50 border-gray-200'
+                        : 'bg-muted/50 border-border'
                     }`}
                   >
                     <input
@@ -437,7 +437,7 @@ export default function SensibilisationDocumentation() {
                       className="h-5 w-5 text-green-600"
                     />
                     <label htmlFor={item.id} className="flex-1 cursor-pointer">
-                      <span className={checkedItems.includes(item.id) ? 'line-through text-gray-500' : ''}>
+                      <span className={checkedItems.includes(item.id) ? 'line-through text-muted-foreground' : ''}>
                         {item.text}
                       </span>
                       {item.critical && (
@@ -448,7 +448,7 @@ export default function SensibilisationDocumentation() {
                 ))}
               </div>
               
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-6 p-4 bg-accent rounded-lg">
                 <p className="text-sm text-blue-800">
                   <strong>Progression :</strong> {checkedItems.length} / {checklistItems.length} éléments complétés
                   ({Math.round((checkedItems.length / checklistItems.length) * 100)}%)

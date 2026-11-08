@@ -130,7 +130,7 @@ export default function AccountSecurityPage() {
                 le temps »), ou ouvrez le lien depuis votre téléphone.
               </p>
               <code className="block break-all rounded bg-muted p-3 text-sm font-mono">{setup.secret}</code>
-              <a className="text-sm text-blue-600 underline break-all" href={setup.otpauthUri}>
+              <a className="text-sm text-primary underline break-all" href={setup.otpauthUri}>
                 Ouvrir dans l&apos;application d&apos;authentification
               </a>
               <p className="text-sm">2. Saisissez le code à 6 chiffres affiché par l&apos;application.</p>

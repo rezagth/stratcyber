@@ -316,25 +316,25 @@ const TemplatesPage = () => {
   const getFormatIcon = (format: string) => {
     switch (format) {
       case 'Word':
-        return <FileText className="h-5 w-5 text-blue-600" />;
+        return <FileText className="h-5 w-5 text-primary" />;
       case 'Excel':
         return <FileSpreadsheet className="h-5 w-5 text-green-600" />;
       case 'PowerPoint':
         return <FileImage className="h-5 w-5 text-orange-600" />;
       default:
-        return <FileText className="h-5 w-5 text-gray-600" />;
+        return <FileText className="h-5 w-5 text-muted-foreground" />;
     }
   };
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      'RGPD': 'bg-blue-100 text-blue-800',
+      'RGPD': 'bg-accent text-blue-800',
       'NIS2': 'bg-orange-100 text-orange-800',
       'DORA': 'bg-green-100 text-green-800',
       'ISO 27001': 'bg-indigo-100 text-indigo-800',
-      'Générique': 'bg-gray-100 text-gray-800'
+      'Générique': 'bg-muted text-foreground'
     };
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[category as keyof typeof colors] || 'bg-muted text-foreground';
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -343,7 +343,7 @@ const TemplatesPage = () => {
       'Intermédiaire': 'bg-yellow-100 text-yellow-800',
       'Avancé': 'bg-red-100 text-red-800'
     };
-    return colors[difficulty as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[difficulty as keyof typeof colors] || 'bg-muted text-foreground';
   };
 
   const renderStars = (rating: number) => {
@@ -376,8 +376,8 @@ const TemplatesPage = () => {
             <Download className="h-8 w-8 text-green-600" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Templates & Modèles</h1>
-            <p className="text-lg text-gray-600">Collection de templates professionnels pour accélérer votre conformité</p>
+            <h1 className="text-3xl font-bold text-foreground">Templates & Modèles</h1>
+            <p className="text-lg text-muted-foreground">Collection de templates professionnels pour accélérer votre conformité</p>
           </div>
         </div>
 
@@ -386,8 +386,8 @@ const TemplatesPage = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{templates.length}</div>
-                <div className="text-sm text-gray-600">Templates disponibles</div>
+                <div className="text-2xl font-bold text-primary">{templates.length}</div>
+                <div className="text-sm text-muted-foreground">Templates disponibles</div>
               </div>
             </CardContent>
           </Card>
@@ -397,7 +397,7 @@ const TemplatesPage = () => {
                 <div className="text-2xl font-bold text-green-600">
                   {templates.reduce((acc, t) => acc + t.downloadCount, 0).toLocaleString()}
                 </div>
-                <div className="text-sm text-gray-600">Téléchargements total</div>
+                <div className="text-sm text-muted-foreground">Téléchargements total</div>
               </div>
             </CardContent>
           </Card>
@@ -405,7 +405,7 @@ const TemplatesPage = () => {
             <CardContent className="pt-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-orange-600">{categories.length - 1}</div>
-                <div className="text-sm text-gray-600">Catégories</div>
+                <div className="text-sm text-muted-foreground">Catégories</div>
               </div>
             </CardContent>
           </Card>
@@ -415,7 +415,7 @@ const TemplatesPage = () => {
                 <div className="text-2xl font-bold text-purple-600">
                   {(templates.reduce((acc, t) => acc + t.rating, 0) / templates.length).toFixed(1)}
                 </div>
-                <div className="text-sm text-gray-600">Note moyenne</div>
+                <div className="text-sm text-muted-foreground">Note moyenne</div>
               </div>
             </CardContent>
           </Card>
@@ -424,7 +424,7 @@ const TemplatesPage = () => {
         {/* Recherche et filtres */}
         <div className="space-y-4 mb-8">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Rechercher un template par titre ou description..."
               value={searchTerm}
@@ -436,7 +436,7 @@ const TemplatesPage = () => {
           <div className="flex flex-wrap gap-4">
             {/* Filtres par catégorie */}
             <div className="flex flex-wrap gap-2">
-              <span className="text-sm font-medium text-gray-700">Catégorie:</span>
+              <span className="text-sm font-medium text-muted-foreground">Catégorie:</span>
               {categories.map((category) => (
                 <Button
                   key={category.id}
@@ -454,7 +454,7 @@ const TemplatesPage = () => {
             
             {/* Filtres par format */}
             <div className="flex flex-wrap gap-2">
-              <span className="text-sm font-medium text-gray-700">Format:</span>
+              <span className="text-sm font-medium text-muted-foreground">Format:</span>
               {formats.map((format) => (
                 <Button
                   key={format.id}
@@ -476,7 +476,7 @@ const TemplatesPage = () => {
           <div className="col-span-full">
             <Card>
               <CardContent className="pt-6">
-                <div className="text-center text-gray-500">
+                <div className="text-center text-muted-foreground">
                   <Search className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                   <h3 className="text-lg font-medium mb-2">Aucun template trouvé</h3>
                   <p>Essayez de modifier vos critères de recherche ou vos filtres.</p>
@@ -510,23 +510,23 @@ const TemplatesPage = () => {
               </CardHeader>
               
               <CardContent className="space-y-4">
-                <p className="text-gray-700 text-sm leading-relaxed">{template.description}</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">{template.description}</p>
                 
                 <div className="grid grid-cols-2 gap-4 text-xs">
                   <div className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3 text-gray-500" />
+                    <Calendar className="h-3 w-3 text-muted-foreground" />
                     <span>Mis à jour: {new Date(template.lastUpdate).toLocaleDateString('fr-FR')}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <Eye className="h-3 w-3 text-gray-500" />
+                    <Eye className="h-3 w-3 text-muted-foreground" />
                     <span>{template.downloadCount} téléchargements</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <FileText className="h-3 w-3 text-gray-500" />
+                    <FileText className="h-3 w-3 text-muted-foreground" />
                     <span>{template.format} - {template.size}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <Target className="h-3 w-3 text-gray-500" />
+                    <Target className="h-3 w-3 text-muted-foreground" />
                     <span>{template.difficulty}</span>
                   </div>
                 </div>
@@ -535,7 +535,7 @@ const TemplatesPage = () => {
                   <h4 className="font-semibold text-sm mb-2">Fonctionnalités incluses :</h4>
                   <ul className="space-y-1">
                     {template.features.map((feature, idx) => (
-                      <li key={idx} className="text-xs text-gray-600 flex items-center gap-2">
+                      <li key={idx} className="text-xs text-muted-foreground flex items-center gap-2">
                         <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0" />
                         {feature}
                       </li>
@@ -569,9 +569,9 @@ const TemplatesPage = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="text-center space-y-2">
-                <Zap className="h-8 w-8 mx-auto text-blue-600" />
+                <Zap className="h-8 w-8 mx-auto text-primary" />
                 <h3 className="font-semibold">Guide d'utilisation</h3>
-                <p className="text-sm text-gray-600">Instructions détaillées pour chaque template</p>
+                <p className="text-sm text-muted-foreground">Instructions détaillées pour chaque template</p>
                 <Button variant="outline" size="sm" asChild>
                   <Link href="/compliance/faq">Consulter la FAQ</Link>
                 </Button>
@@ -584,7 +584,7 @@ const TemplatesPage = () => {
               <div className="text-center space-y-2">
                 <Target className="h-8 w-8 mx-auto text-green-600" />
                 <h3 className="font-semibold">Personnalisation</h3>
-                <p className="text-sm text-gray-600">Services d'adaptation à vos besoins</p>
+                <p className="text-sm text-muted-foreground">Services d'adaptation à vos besoins</p>
                 <Button variant="outline" size="sm">
                   Demander un devis
                 </Button>
@@ -597,7 +597,7 @@ const TemplatesPage = () => {
               <div className="text-center space-y-2">
                 <AlertTriangle className="h-8 w-8 mx-auto text-orange-600" />
                 <h3 className="font-semibold">Support technique</h3>
-                <p className="text-sm text-gray-600">Assistance pour l'utilisation des templates</p>
+                <p className="text-sm text-muted-foreground">Assistance pour l'utilisation des templates</p>
                 <Button variant="outline" size="sm">
                   Contacter le support
                 </Button>
@@ -609,7 +609,7 @@ const TemplatesPage = () => {
 
       {/* Footer avec statistiques de recherche */}
       {filteredTemplates.length > 0 && (
-        <div className="mt-8 text-center text-sm text-gray-500">
+        <div className="mt-8 text-center text-sm text-muted-foreground">
           Affichage de {filteredTemplates.length} template{filteredTemplates.length > 1 ? 's' : ''} 
           {selectedCategory !== 'all' && ` dans la catégorie "${categories.find(c => c.id === selectedCategory)?.name}"`}
           {selectedFormat !== 'all' && ` au format "${formats.find(f => f.id === selectedFormat)?.name}"`}

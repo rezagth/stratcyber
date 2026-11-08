@@ -52,7 +52,7 @@ const sectorIcons = {
 };
 
 const categoryColors: Partial<Record<AuditCategory, string>> = {
-  Gouvernance: 'bg-blue-100 text-blue-800',
+  Gouvernance: 'bg-accent text-blue-800',
   Technique: 'bg-green-100 text-green-800',
   Organisationnel: 'bg-purple-100 text-purple-800',
   GRC: 'bg-orange-100 text-orange-800',
@@ -61,7 +61,7 @@ const categoryColors: Partial<Record<AuditCategory, string>> = {
   NIS2: 'bg-indigo-100 text-indigo-800',
   DORA: 'bg-yellow-100 text-yellow-800',
   CRA: 'bg-teal-100 text-teal-800',
-  LPM: 'bg-gray-100 text-gray-800',
+  LPM: 'bg-muted text-foreground',
   Incidents: 'bg-rose-100 text-rose-800',
   SupplyChain: 'bg-cyan-100 text-cyan-800',
   Cloud: 'bg-sky-100 text-sky-800',
@@ -78,11 +78,39 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
   const [profile, setProfile] = useState<CompanyProfile>(initialProfile || defaultProfile);
   const [questions, setQuestions] = useState<AuditQuestion[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Choix du client pour lequel l'audit est réalisé (liste disponible pour l'administrateur seulement).
+  const [clients, setClients] = useState<Array<{ id: string; name: string }>>([]);
+  const [organizationId, setOrganizationId] = useState('');
+  useEffect(() => {
+    fetch('/api/organizations')
+      .then((r) => (r.ok ? r.json() : []))
+      .then((list: Array<{ id: string; name: string }>) => setClients(Array.isArray(list) ? list : []))
+      .catch(() => setClients([]));
+  }, []);
 
   const profileForm = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: profile,
   });
+
+  // Choisir un client préremplit le secteur et la taille connus de son dossier (modifiables ensuite).
+  async function chooseClient(id: string) {
+    setOrganizationId(id);
+    if (!id) return;
+    try {
+      const res = await fetch(`/api/organizations/${id}`);
+      if (!res.ok) return;
+      const org = await res.json();
+      if (typeof org?.sector === 'string' && org.sector in sectorIcons) {
+        profileForm.setValue('sector', org.sector as ProfileFormData['sector'], { shouldDirty: true });
+      }
+      if (['TPE', 'PME', 'ETI', 'GE'].includes(org?.size)) {
+        profileForm.setValue('size', org.size as ProfileFormData['size'], { shouldDirty: true });
+      }
+    } catch {
+      // Le préremplissage est un confort : en cas d'échec, le formulaire reste utilisable à la main.
+    }
+  }
 
   const {
     control,
@@ -179,10 +207,10 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
         actionPlan: finalActionPlan as any, // cast for type compatibility
       };
 
-      const result = await saveAudit(auditData);
+      const result = await saveAudit(auditData, organizationId || null);
       
       if (result.success) {
-        router.push('/dashboard');
+        router.push(organizationId ? `/dashboard/organizations/${organizationId}/action-plan` : '/dashboard');
       } else {
         console.error('Erreur lors de la sauvegarde:', result.error);
         alert("Erreur lors de la sauvegarde de l'audit. Veuillez réessayer.");
@@ -205,7 +233,7 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
             <div className="text-center space-y-4">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
               <h3 className="text-lg font-semibold">Finalisation de votre audit...</h3>
-              <p className="text-gray-600">Calcul des scores et génération du plan d'action</p>
+              <p className="text-muted-foreground">Calcul des scores et génération du plan d'action</p>
             </div>
           </CardContent>
         </Card>
@@ -219,22 +247,22 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
         {/* En-tête */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <Shield className="h-12 w-12 text-blue-600 mr-3" />
-            <h1 className="text-4xl font-bold text-gray-900">Audit de Cybersécurité</h1>
+            <Shield className="h-12 w-12 text-primary mr-3" />
+            <h1 className="text-4xl font-bold text-foreground">Audit de Cybersécurité</h1>
           </div>
-          <p className="text-lg text-gray-600 mb-6">
+          <p className="text-lg text-muted-foreground mb-6">
             Évaluez la maturité cybersécurité de votre organisation selon les dernières réglementations
           </p>
           
           {/* Indicateur d'étapes */}
           <div className="flex items-center justify-center space-x-4 mb-8">
-            <div className={`flex items-center space-x-2 px-4 py-2 rounded-full ${step === 'profile' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>
+            <div className={`flex items-center space-x-2 px-4 py-2 rounded-full ${step === 'profile' ? 'bg-accent text-blue-800' : 'bg-green-100 text-green-800'}`}>
               <Building2 className="h-4 w-4" />
               <span className="font-medium">Profil</span>
               {step !== 'profile' && <CheckCircle className="h-4 w-4" />}
             </div>
-            <ArrowRight className="h-4 w-4 text-gray-400" />
-            <div className={`flex items-center space-x-2 px-4 py-2 rounded-full ${step === 'questions' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'}`}>
+            <ArrowRight className="h-4 w-4 text-muted-foreground" />
+            <div className={`flex items-center space-x-2 px-4 py-2 rounded-full ${step === 'questions' ? 'bg-accent text-blue-800' : 'bg-muted text-muted-foreground'}`}>
               <FileText className="h-4 w-4" />
               <span className="font-medium">Questions</span>
             </div>
@@ -246,7 +274,7 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
           <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Building2 className="h-5 w-5 text-blue-600" />
+                <Building2 className="h-5 w-5 text-primary" />
                 <span>Profil de votre organisation</span>
               </CardTitle>
               <CardDescription>
@@ -255,10 +283,21 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
             </CardHeader>
             <CardContent>
               <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-6">
+                {clients.length > 0 && (
+                  <div className="space-y-2">
+                    <label htmlFor="audit-client" className="text-sm font-medium text-muted-foreground">Client audité</label>
+                    <select id="audit-client" className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
+                      value={organizationId} onChange={(e) => void chooseClient(e.target.value)}>
+                      <option value="">Aucun (audit personnel, non rattaché à un client)</option>
+                      {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                    <p className="text-xs text-muted-foreground">Rattache l'audit au dossier du client pour générer son plan d'action.</p>
+                  </div>
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Secteur d'activité */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Secteur d'activité</label>
+                    <label className="text-sm font-medium text-muted-foreground">Secteur d'activité</label>
                     <Controller
                       control={profileForm.control}
                       name="sector"
@@ -271,8 +310,8 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
                               onClick={() => field.onChange(sector)}
                               className={`p-3 rounded-lg border-2 transition-all ${
                                 field.value === sector
-                                  ? 'border-blue-500 bg-blue-50'
-                                  : 'border-gray-200 hover:border-gray-300'
+                                  ? 'border-blue-500 bg-accent'
+                                  : 'border-border hover:border-border'
                               }`}
                             >
                               <div className="text-2xl mb-1">{icon}</div>
@@ -286,7 +325,7 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
 
                   {/* Taille de l'entreprise */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Taille de l'organisation</label>
+                    <label className="text-sm font-medium text-muted-foreground">Taille de l'organisation</label>
                     <Controller
                       control={profileForm.control}
                       name="size"
@@ -304,8 +343,8 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
                               onClick={() => field.onChange(size.value)}
                               className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
                                 field.value === size.value
-                                  ? 'border-blue-500 bg-blue-50'
-                                  : 'border-gray-200 hover:border-gray-300'
+                                  ? 'border-blue-500 bg-accent'
+                                  : 'border-border hover:border-border'
                               }`}
                             >
                               <div className="flex items-center space-x-3">
@@ -322,7 +361,7 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
 
                 {/* Caractéristiques spéciales */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Caractéristiques de votre organisation</h3>
+                  <h3 className="text-lg font-semibold text-foreground">Caractéristiques de votre organisation</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[
                       { name: 'hasPersonalData', label: 'Traitement de données personnelles', icon: '🔒', required: true },
@@ -336,15 +375,15 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
                         control={profileForm.control}
                         name={characteristic.name as keyof ProfileFormData}
                         render={({ field }) => (
-                          <label className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                          <label className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:bg-muted/50 cursor-pointer">
                             <input
                               type="checkbox"
                               checked={!!field.value}
                               onChange={e => field.onChange(e.target.checked)}
-                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              className="rounded border-border text-primary focus:ring-blue-500"
                             />
                             <span className="text-lg">{characteristic.icon}</span>
-                            <span className="font-medium text-gray-700">{characteristic.label}</span>
+                            <span className="font-medium text-muted-foreground">{characteristic.label}</span>
                             {characteristic.required && <Badge variant="secondary">Obligatoire</Badge>}
                           </label>
                         )}
@@ -369,8 +408,8 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">Progression de l'audit</span>
-                  <span className="text-sm text-gray-500">{progress}/{totalQuestions} questions</span>
+                  <span className="text-sm font-medium text-muted-foreground">Progression de l'audit</span>
+                  <span className="text-sm text-muted-foreground">{progress}/{totalQuestions} questions</span>
                 </div>
                 <Progress value={progressPercentage} className="w-full" />
               </CardContent>
@@ -382,21 +421,21 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
                 <Card key={category} className="shadow-lg">
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
-                      <Badge className={categoryColors[category as AuditCategory] || 'bg-gray-100 text-gray-800'}>
+                      <Badge className={categoryColors[category as AuditCategory] || 'bg-muted text-foreground'}>
                         {category}
                       </Badge>
-                      <span className="text-sm text-gray-500">({categoryQuestions.length} questions)</span>
+                      <span className="text-sm text-muted-foreground">({categoryQuestions.length} questions)</span>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {categoryQuestions.map((question, globalIndex) => {
                       const questionIndex = questions.findIndex(q => q.id === question.id);
                       return (
-                        <div key={question.id} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                        <div key={question.id} className="p-4 border border-border rounded-lg bg-muted/50">
                           <div className="mb-3">
-                            <h4 className="font-semibold text-gray-900 mb-1">{question.question}</h4>
+                            <h4 className="font-semibold text-foreground mb-1">{question.question}</h4>
                             {question.description && (
-                              <p className="text-sm text-gray-600">{question.description}</p>
+                              <p className="text-sm text-muted-foreground">{question.description}</p>
                             )}
                           </div>
                           
@@ -415,7 +454,7 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
                                             value={option}
                                             checked={field.value === option}
                                             onChange={field.onChange}
-                                            className="text-blue-600 focus:ring-blue-500"
+                                            className="text-primary focus:ring-blue-500"
                                           />
                                           <span className="capitalize font-medium">{option}</span>
                                         </label>
@@ -425,7 +464,7 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
                                 case 'scale':
                                   return (
                                     <div className="space-y-2">
-                                      <div className="flex justify-between text-sm text-gray-600">
+                                      <div className="flex justify-between text-sm text-muted-foreground">
                                         <span>Très faible</span>
                                         <span>Très élevé</span>
                                       </div>
@@ -437,7 +476,7 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
                                               value={value.toString()}
                                               checked={field.value === value.toString()}
                                               onChange={field.onChange}
-                                              className="text-blue-600 focus:ring-blue-500 mb-1"
+                                              className="text-primary focus:ring-blue-500 mb-1"
                                             />
                                             <span className="text-sm font-medium">{value}</span>
                                           </label>
@@ -455,7 +494,7 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
                                             value={option}
                                             checked={field.value === option}
                                             onChange={e => field.onChange(e.target.value)}
-                                            className="text-blue-600 focus:ring-blue-500"
+                                            className="text-primary focus:ring-blue-500"
                                           />
                                           <span>{option}</span>
                                         </label>
@@ -467,7 +506,7 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
                                     <input
                                       type="text"
                                       {...field}
-                                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                      className="w-full p-2 border border-border rounded-md focus:ring-blue-500 focus:border-blue-500"
                                       placeholder="Votre réponse..."
                                     />
                                   );

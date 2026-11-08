@@ -104,7 +104,7 @@ const CategoryProgressChart = ({
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                  className="bg-primary h-2 rounded-full transition-all duration-300" 
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -148,7 +148,7 @@ const ActionStatusChart = ({
             const percentage = total > 0 ? (count / total) * 100 : 0;
             const color = 
               status === 'Terminée' ? 'bg-green-600' :
-              status === 'En cours' ? 'bg-blue-600' :
+              status === 'En cours' ? 'bg-primary' :
               status === 'En retard' ? 'bg-red-600' :
               'bg-gray-400';
             
@@ -203,19 +203,19 @@ const TimelineChart = ({
             const daysUntilDue = Math.ceil((dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
             
             return (
-              <div key={index} className="flex items-center space-x-4 p-3 border-l-4 border-blue-500 bg-blue-50 rounded">
+              <div key={index} className="flex items-center space-x-4 p-3 border-l-4 border-blue-500 bg-accent rounded">
                 <div className="flex-shrink-0">
-                  <Calendar className="h-5 w-5 text-blue-600" />
+                  <Calendar className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 truncate">{action.title}</p>
-                  <p className="text-sm text-gray-600">{action.category}</p>
+                  <p className="font-medium text-foreground truncate">{action.title}</p>
+                  <p className="text-sm text-muted-foreground">{action.category}</p>
                 </div>
                 <div className="flex-shrink-0 text-right">
-                  <p className="text-sm font-medium text-blue-600">
+                  <p className="text-sm font-medium text-primary">
                     {daysUntilDue > 0 ? `${daysUntilDue} jours` : 'Aujourd\'hui'}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     {dueDate.toLocaleDateString('fr-FR')}
                   </p>
                 </div>
@@ -273,7 +273,7 @@ const BenchmarkComparison = ({ benchmarks, currentScore }: { benchmarks: any; cu
           <div className="flex items-center">
             <div className="w-32 bg-gray-200 rounded-full h-2 mr-2">
               <div 
-                className="bg-blue-600 h-2 rounded-full" 
+                className="bg-primary h-2 rounded-full" 
                 style={{ width: `${currentScore}%` }}
               ></div>
             </div>
@@ -325,9 +325,9 @@ const PredictiveInsights = ({ data }: { data: AnalyticsData }) => (
     </CardHeader>
     <CardContent>
       <div className="space-y-4">
-        <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+        <div className="p-4 bg-accent rounded-lg border-l-4 border-blue-500">
           <div className="flex items-center mb-2">
-            <TrendingUp className="h-5 w-5 text-blue-600 mr-2" />
+            <TrendingUp className="h-5 w-5 text-primary mr-2" />
             <h4 className="font-medium text-blue-900">Projection de Maturité</h4>
           </div>
           <p className="text-sm text-blue-800">
@@ -495,7 +495,7 @@ export default function AdvancedAnalytics() {
 
       {/* Onglets analytics */}
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-5">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="trends">Tendances</TabsTrigger>
           <TabsTrigger value="risks">Risques</TabsTrigger>
@@ -639,8 +639,8 @@ export default function AdvancedAnalytics() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="text-center p-6 bg-blue-50 rounded-lg">
-                    <div className="text-3xl font-bold text-blue-600">Top 25%</div>
+                  <div className="text-center p-6 bg-accent rounded-lg">
+                    <div className="text-3xl font-bold text-primary">Top 25%</div>
                     <p className="text-blue-800">de votre secteur</p>
                   </div>
                   <div className="grid grid-cols-2 gap-4 text-center">
@@ -669,8 +669,8 @@ export default function AdvancedAnalytics() {
               <CardContent>
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-4 text-center">
-                    <div className="p-3 bg-blue-50 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">
+                    <div className="p-3 bg-accent rounded-lg">
+                      <div className="text-2xl font-bold text-primary">
                         {Math.round((data.summary.overallProgress || 0) + (data.summary.totalActions * 1.5))}%
                       </div>
                       <p className="text-xs text-blue-800">Score dans 3 mois</p>

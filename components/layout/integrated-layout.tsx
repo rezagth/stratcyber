@@ -67,6 +67,11 @@ export function IntegratedLayout({ children }: IntegratedLayoutProps) {
     }
   }, [isMobile])
 
+  // Fermer le menu mobile après une navigation
+  useEffect(() => {
+    setShowMobileOverlay(false)
+  }, [pathname])
+
   // Sauvegarder l'état dans localStorage
   useEffect(() => {
     if (!isMobile) {
@@ -146,7 +151,7 @@ export function IntegratedLayout({ children }: IntegratedLayoutProps) {
         {/* Overlay pour mobile */}
         {isMobile && showMobileOverlay && (
           <div 
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40"
             onClick={() => setShowMobileOverlay(false)}
           />
         )}
@@ -159,7 +164,7 @@ export function IntegratedLayout({ children }: IntegratedLayoutProps) {
           }}
         >
           {/* Header */}
-          <header className="h-16 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center gap-4 px-4 shrink-0">
+          <header className="sticky top-0 z-30 h-14 sm:h-16 border-b border-border bg-background/80 backdrop-blur-md flex items-center gap-2 sm:gap-4 px-3 sm:px-4 shrink-0">
             <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
@@ -210,8 +215,8 @@ export function IntegratedLayout({ children }: IntegratedLayoutProps) {
           </header>
           
           {/* Contenu principal */}
-          <main className="flex-1 overflow-auto">
-            <div className="container mx-auto p-6">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden">
+            <div className="mx-auto w-full max-w-[1400px] p-4 sm:p-6 lg:p-8">
               {children}
             </div>
           </main>

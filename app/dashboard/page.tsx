@@ -14,7 +14,8 @@ import { AlertCircle, Download, Shield, FileText, Eye } from 'lucide-react';
 import { generateActionPlan, calculateCrazyScore, computeAuditResult, ActionPlanItem, inferComplianceFromCategory } from '../../lib/audit/scoring';
 import { Audit } from '@prisma/client';
 import RadarChart from '../../components/charts/RadarChart';
-import BarChart from '../../components/charts/BarChart';
+import { AdminCockpit } from '@/components/dashboard/AdminCockpit';
+import { DashboardOverview } from '@/components/dashboard/DashboardOverview';
 import { AuditCategory } from '../../types/audit';
 
 
@@ -97,7 +98,7 @@ const calculateComplianceScores = (lastAudit: AuditWithResponses | null, categor
   return complianceScores;
 };
 
-export default function DashboardPage() {
+function PersonalDashboard() {
   const { data: session } = useSession();
   const [audits, setAudits] = useState<AuditWithResponses[]>([]);
   const [lastAudit, setLastAudit] = useState<AuditWithResponses | null>(null);
@@ -323,10 +324,10 @@ const priorityFiltered = actionPlan.filter(a => {
               <AlertCircle className="h-12 w-12 text-red-600 animate-pulse" />
             </div>
             <div className="space-y-2">
-              <h2 className="text-2xl font-semibold text-gray-900">
+              <h2 className="text-2xl font-semibold text-foreground">
                 Erreur de chargement
               </h2>
-              <p className="text-lg text-gray-600">
+              <p className="text-lg text-muted-foreground">
                 Impossible de récupérer vos données
               </p>
               <p className="text-sm text-red-600 mt-4">{error}</p>
@@ -342,258 +343,57 @@ const priorityFiltered = actionPlan.filter(a => {
   
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
-      <div className="text-center mb-10">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">Tableau de bord StratCyber</h1>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">Surveillance continue de votre conformité cybersécurité et plan d&apos;action personnalisé</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Tableau de bord</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Conformité, risques et plan d&apos;action
+            {lastAudit && <> · dernier audit le {new Date(lastAudit.createdAt).toLocaleDateString('fr-FR')}</>}
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button asChild variant="outline"><Link href="/dashboard/roadmap">Roadmap</Link></Button>
+          <Button asChild><Link href="/strategie">Nouvel audit</Link></Button>
+        </div>
       </div>
       {audits.length === 0 ? (
-        <div className="text-center text-muted-foreground">Aucun audit réalisé pour l&apos;instant.</div>
+        <div className="rounded-2xl border border-dashed bg-card p-10 text-center text-muted-foreground">
+          Aucun audit réalisé pour l&apos;instant.
+          <div className="mt-4"><Button asChild><Link href="/strategie">Démarrer un audit</Link></Button></div>
+        </div>
       ) : (
         <>
-          {/* Crazy Score - Indicateur ludique */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="text-center text-2xl">Crazy Score {crazyScore?.emoji}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col items-center justify-center">
-                <div className="text-5xl font-bold mb-2">
-                  {crazyScore?.score || 0}
-                </div>
-                <div className="text-xl font-semibold text-primary">
-                  {crazyScore?.label || 'N/A'}
-                </div>
-                <div className="text-sm text-muted-foreground mt-2 text-center max-w-md">
-                  Le Crazy Score est un indicateur ludique qui combine votre score global avec des bonus/malus en fonction des domaines critiques et conformes.
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          {/* Indicateurs clés de performance */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Score Global</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-center">
-                  {auditResult?.globalScore || 0}%
-                </div>
-                <div className="text-sm text-muted-foreground text-center">
-                  Niveau de maturité: {auditResult?.maturity || 'N/A'}
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* Compliance Indicators */}
-            <Card className="col-span-1 md:col-span-2">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5" />
-                  Indicateurs de Conformité
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {visibleRegs.map(regKey => {
-                    const reg = REGULATIONS[regKey as keyof typeof REGULATIONS];
-                    const score = complianceScores[regKey] || 0;
-                    const status = score < 40 ? 'Critique' : score < 70 ? 'À améliorer' : 'Conforme';
-                    const badgeVariant = score < 40 ? 'destructive' : score < 70 ? 'secondary' : 'default';
-                    const isUrgent = new Date(reg.deadline) < new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
-                    
-                    return (
-                      <div key={regKey} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-full ${reg.color} flex items-center justify-center text-white font-bold`}>
-                            {regKey}
-                          </div>
-                          <div>
-                            <div className="font-medium">{reg.name}</div>
-                            <div className="text-sm text-muted-foreground">
-                              Échéance : {new Date(reg.deadline).toLocaleDateString('fr-FR')}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end">
-                          <div className="text-xl font-bold">{score}/100</div>
-                          <Badge variant={badgeVariant} className="mt-1">
-                            {status}
-                            {isUrgent && ' • Urgent'}
-                          </Badge>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Réponses</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-center">
-                  {lastAudit?.responses?.length || 0}
-                </div>
-                <div className="text-sm text-muted-foreground text-center">
-                  questions répondues
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Actions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                        <div className="text-3xl font-bold text-center">
-                          {roadmapData?.statistics?.totalActions || actionPlan.length}
-                        </div>
-                        <div className="text-sm text-muted-foreground text-center">
-                          actions recommandées
-                        </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Risque Légal</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className={`text-3xl font-bold text-center ${legalRiskColor} text-white rounded p-2`}>
-                  {legalRisk}/100
-                </div>
-                <div className="text-center mt-1">
-                  <Badge variant={legalRisk >= 80 ? 'destructive' : legalRisk >= 60 ? 'secondary' : 'default'}>
-                    {legalRiskLevel}
-                  </Badge>
-                </div>
-                <div className="text-xs text-muted-foreground text-center mt-2">
-                  Plus le score de conformité est bas, plus le risque légal est élevé. <br/>
-                  <span className="font-semibold">Réglementations critiques&nbsp;:</span>
-                  <div className="space-y-2 mt-2">
-                    {visibleRegs.map(regKey => {
-                      const reg = REGULATIONS[regKey as keyof typeof REGULATIONS];
-                      const score = complianceScores[regKey] || 0;
-                      const status = score < 40 ? 'Critique' : score < 70 ? 'À améliorer' : 'Conforme';
-                      const badgeVariant = score < 40 ? 'destructive' : score < 70 ? 'secondary' : 'default';
-                      
-                      return (
-                        <div key={regKey} className="flex items-center justify-between p-2 border rounded">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-6 h-6 rounded-full ${reg.color} flex items-center justify-center text-white text-xs font-bold`}>
-                              {regKey}
-                            </div>
-                            <span className="font-medium">{reg.name}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold">{score}/100</span>
-                            <Badge variant={badgeVariant} className="text-xs">
-                              {status}
-                            </Badge>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-                {legalRisk >= 80 && (
-                  <div className="mt-2 text-red-600 text-center font-bold animate-pulse">Risque légal critique&nbsp;: mettez en œuvre les actions urgentes !</div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-          
-          {/* KPIs */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 shadow-lg">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-blue-800">
-                  <Shield className="h-5 w-5" />
-                  Score global
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold text-blue-700">{lastAudit?.score || 0}%</div>
-                <p className="text-sm text-blue-600 mt-1">Niveau: {lastAudit?.maturity || 'Non évalué'}</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 shadow-lg">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-green-800">
-                  <Shield className="h-5 w-5" />
-                  Conformité
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold text-green-700">{scores ? Object.values(scores).reduce((a, b) => a + b, 0) / Object.keys(scores).length : 0}%</div>
-                <p className="text-sm text-green-600 mt-1">Moyenne des domaines</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200 shadow-lg">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-amber-800">
-                  <AlertCircle className="h-5 w-5" />
-                  Domaines critiques
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold text-amber-700">
-                  {Object.values(scores).filter(s => Number(s) < 50).length}
-                </div>
-                <p className="text-sm text-amber-600 mt-1">À améliorer</p>
-              </CardContent>
-            </Card>
-            
-            <Card className={`bg-gradient-to-br ${legalRisk >= 80 ? 'from-red-50 to-red-100 border-red-200' : legalRisk >= 60 ? 'from-amber-50 to-amber-100 border-amber-200' : 'from-green-50 to-green-100 border-green-200'} shadow-lg`}>
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5" />
-                  Risque Légal
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className={`text-4xl font-bold ${legalRisk >= 80 ? 'text-red-700' : legalRisk >= 60 ? 'text-amber-700' : 'text-green-700'}`}>
-                  {legalRisk}/100
-                </div>
-                <Badge className="mt-1" variant={legalRisk >= 80 ? 'destructive' : legalRisk >= 60 ? 'secondary' : 'default'}>
-                  {legalRiskLevel}
-                </Badge>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Graphiques */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Répartition par Catégorie</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <RadarChart scores={scores || {}} />
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Score Global par Domaine</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <BarChart scores={scores || {}} />
-              </CardContent>
-            </Card>
-          </div>
+          <DashboardOverview
+            globalScore={Math.round(auditResult?.globalScore || 0)}
+            maturity={auditResult?.maturity || ''}
+            crazy={crazyScore ? { score: crazyScore.score, label: crazyScore.label, emoji: crazyScore.emoji } : null}
+            legalRisk={legalRisk}
+            legalRiskLevel={legalRiskLevel}
+            regs={visibleRegs.map((k) => {
+              const r = REGULATIONS[k as keyof typeof REGULATIONS];
+              return { key: k, name: r.name, score: complianceScores[k] || 0, deadline: r.deadline, color: r.color };
+            })}
+            actionCounts={{
+              critical: actionPlan.filter((a) => (a.priority as string) === 'Critique').length,
+              high: actionPlan.filter((a) => a.priority === 'Haute').length,
+              medium: actionPlan.filter((a) => a.priority === 'Moyenne').length,
+              low: actionPlan.filter((a) => a.priority === 'Basse' || (a.priority as string) === 'Faible').length,
+              total: roadmapData?.statistics?.totalActions || actionPlan.length,
+            }}
+            scores={(scores || {}) as Record<string, number>}
+            history={[...audits]
+              .sort((x, y) => new Date(x.createdAt).getTime() - new Date(y.createdAt).getTime())
+              .slice(-8)
+              .map((x) => ({ date: new Date(x.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }), score: Math.round(x.score ?? 0) }))}
+            answersCount={lastAudit?.responses?.length || 0}
+            radar={<RadarChart scores={scores || {}} />}
+          />
 
           {/* Synthèse par domaine */}
           <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-blue-600" />
+                <Shield className="h-5 w-5 text-primary" />
                 Synthèse par domaine
               </CardTitle>
             </CardHeader>
@@ -692,7 +492,7 @@ const priorityFiltered = actionPlan.filter(a => {
                   ))}
                   {actionPlan.length > 5 && (
                     <div className="text-center mt-4">
-                      <Link href="/dashboard/roadmap" className="text-blue-600 hover:underline">
+                      <Link href="/dashboard/roadmap" className="text-primary hover:underline">
                         Voir toutes les {actionPlan.length} actions dans la roadmap interactive
                       </Link>
                     </div>
@@ -707,7 +507,7 @@ const priorityFiltered = actionPlan.filter(a => {
             <CardHeader>
               <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <span className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-blue-600" />
+                  <Shield className="h-5 w-5 text-primary" />
                   Plan d&apos;action personnalisé
                 </span>
                 <div className="flex gap-2">
@@ -878,7 +678,7 @@ const priorityFiltered = actionPlan.filter(a => {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-blue-600" />
+                  <FileText className="h-5 w-5 text-primary" />
                   Historique des Audits
                 </div>
                 <Link href="/dashboard/audits">
@@ -971,15 +771,15 @@ const priorityFiltered = actionPlan.filter(a => {
               )}
               
               {audits.length > 0 && (
-                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="mt-6 p-4 bg-accent border border-primary/30 rounded-lg">
                   <div className="flex items-start gap-3">
-                    <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
+                    <FileText className="h-5 w-5 text-primary mt-0.5" />
                     <div>
                       <h4 className="font-medium text-blue-900 mb-1">À propos des rapports PDF</h4>
-                      <p className="text-sm text-blue-700">
+                      <p className="text-sm text-primary">
                         Les rapports générés incluent une analyse complète de votre audit avec :
                       </p>
-                      <ul className="text-sm text-blue-700 mt-2 space-y-1">
+                      <ul className="text-sm text-primary mt-2 space-y-1">
                         <li>• Analyse détaillée des résultats par domaine</li>
                         <li>• Plan d'action personnalisé avec budgets et échéances</li>
                         <li>• Feuille de route stratégique sur 24 mois</li>
@@ -996,4 +796,11 @@ const priorityFiltered = actionPlan.filter(a => {
       )}
     </div>
   );
+}
+export default function DashboardPage() {
+  const { data: session, status } = useSession();
+  if (status === 'loading') return <DashboardSkeleton />;
+  // L'admin pilote des clients : son accueil montre le portefeuille, pas un score personnel.
+  if (session?.user?.role === 'admin') return <AdminCockpit />;
+  return <PersonalDashboard />;
 }

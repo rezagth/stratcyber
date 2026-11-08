@@ -155,10 +155,16 @@ export default function DashboardPage() {
         <div className="text-center text-muted-foreground py-12">
           <AlertCircle className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
           <h2 className="text-xl font-semibold mb-2">Aucun audit réalisé</h2>
-          <p className="mb-4">Commencez par réaliser votre premier audit de cybersécurité.</p>
-          <Link href="/audit">
-            <Button>Démarrer un audit</Button>
-          </Link>
+          {session?.user?.role === 'client' ? (
+            <>
+              <p className="mb-4">Les audits sont réalisés par ton consultant : ils apparaîtront ici dès qu&apos;il t&apos;en partagera un.</p>
+            </>
+          ) : (
+            <>
+              <p className="mb-4">Lance l&apos;audit et choisis le client concerné : son plan d&apos;action sera généré dans son dossier.</p>
+              <Link href="/strategie"><Button>Démarrer un audit</Button></Link>
+            </>
+          )}
         </div>
       ) : (
         <>

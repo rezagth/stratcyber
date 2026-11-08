@@ -72,7 +72,7 @@
     //     <div className="container mx-auto px-4 py-8">
     //       <div className="text-center">
     //         <h1 className="text-2xl font-bold mb-4">Accès restreint</h1>
-    //         <p className="text-gray-600 mb-4">
+    //         <p className="text-muted-foreground mb-4">
     //           Vous devez être administrateur pour créer des ebooks.
     //         </p>
     //         <Link href="/training">
@@ -86,7 +86,7 @@
     return (
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="mb-6">
-          <Link href="/training" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700">
+          <Link href="/training" className="inline-flex items-center text-sm text-muted-foreground hover:text-muted-foreground">
             <ArrowLeft className="h-4 w-4 mr-1" />
             Retour à la formation
           </Link>
@@ -141,7 +141,7 @@
                   placeholder="https://example.com/ebook.pdf"
                   required
                 />
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   Lien direct vers le fichier PDF ou autre format de l'ebook
                 </p>
               </div>

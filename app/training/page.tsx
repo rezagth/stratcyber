@@ -131,7 +131,7 @@ export default function TrainingPage() {
       case 'Débutant': return 'bg-green-100 text-green-800';
       case 'Intermédiaire': return 'bg-yellow-100 text-yellow-800';
       case 'Avancé': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-muted text-foreground';
     }
   };
 
@@ -236,7 +236,7 @@ export default function TrainingPage() {
       <main className="container mx-auto px-4 py-8" role="main">
         <section className="text-center">
           <h1 className="text-2xl font-bold mb-4">Accès restreint</h1>
-          <p className="text-gray-600 mb-4">Vous devez être connecté pour accéder au module de formation.</p>
+          <p className="text-muted-foreground mb-4">Vous devez être connecté pour accéder au module de formation.</p>
           <Link href="/auth/login" passHref>
             <Button asChild aria-label="Se connecter">
               Se connecter
@@ -253,10 +253,10 @@ export default function TrainingPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-3">
-            <BookOpen className="h-8 w-8 text-blue-600" />
+            <BookOpen className="h-8 w-8 text-primary" />
             Formation Cybersécurité
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-muted-foreground mt-1">
             Bibliothèque d&apos;ebooks spécialisés en sécurité informatique
           </p>
         </div>
@@ -290,15 +290,15 @@ export default function TrainingPage() {
 
       {/* Statistiques rapides */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
+        <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-primary/30">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-blue-700">Total Ebooks</p>
+                <p className="text-sm font-medium text-primary">Total Ebooks</p>
                 <p className="text-2xl font-bold text-blue-900">{ebooks.filter(e => e.isPublished).length}</p>
-                <p className="text-xs text-blue-600 mt-1">Disponibles maintenant</p>
+                <p className="text-xs text-primary mt-1">Disponibles maintenant</p>
               </div>
-              <BookOpen className="h-8 w-8 text-blue-600" />
+              <BookOpen className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -364,10 +364,10 @@ export default function TrainingPage() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {getMonthlyStats().map(([month, count]) => (
-                <div key={month} className="text-center p-3 bg-gray-50 rounded-lg">
-                  <p className="text-sm font-medium text-gray-600">{month}</p>
-                  <p className="text-2xl font-bold text-blue-600">{count}</p>
-                  <p className="text-xs text-gray-500">ebook{count > 1 ? 's' : ''}</p>
+                <div key={month} className="text-center p-3 bg-muted/50 rounded-lg">
+                  <p className="text-sm font-medium text-muted-foreground">{month}</p>
+                  <p className="text-2xl font-bold text-primary">{count}</p>
+                  <p className="text-xs text-muted-foreground">ebook{count > 1 ? 's' : ''}</p>
                 </div>
               ))}
             </div>
@@ -381,7 +381,7 @@ export default function TrainingPage() {
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Barre de recherche */}
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Rechercher un ebook..."
                 className="pl-10"
@@ -465,10 +465,10 @@ export default function TrainingPage() {
                     <span className="font-medium">{ebook.rating}/5</span>
                   </div>
                 </div>
-                <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+                <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
                   {ebook.description || 'Découvrez ce contenu enrichissant sur la cybersécurité, spécialement conçu pour approfondir vos connaissances dans ce domaine critique.'}
                 </p>
-                <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                   <span>Publié {getTimeAgo(ebook.createdAt)}</span>
                   <span>•</span>
                   <span>Mis à jour {formatMonth(ebook.updatedAt)}</span>
@@ -479,25 +479,25 @@ export default function TrainingPage() {
                 {/* Tags */}
                 <div className="flex flex-wrap gap-1.5">
                   {ebook.tags?.slice(0, 4).map((tag, index) => (
-                    <Badge key={index} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100">
+                    <Badge key={index} variant="outline" className="text-xs bg-accent text-primary border-primary/30 hover:bg-accent">
                       {tag}
                     </Badge>
                   )) || (
-                    <Badge variant="outline" className="text-xs bg-gray-50 text-gray-700">
+                    <Badge variant="outline" className="text-xs bg-muted/50 text-muted-foreground">
                       {ebook.category}
                     </Badge>
                   )}
                   {ebook.tags && ebook.tags.length > 4 && (
-                    <Badge variant="outline" className="text-xs bg-gray-100 text-gray-600">
+                    <Badge variant="outline" className="text-xs bg-muted text-muted-foreground">
                       +{ebook.tags.length - 4}
                     </Badge>
                   )}
                 </div>
 
                 {/* Métadonnées enrichies */}
-                <div className="bg-gray-50 rounded-lg p-3 space-y-2">
+                <div className="bg-muted/50 rounded-lg p-3 space-y-2">
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="flex items-center gap-1.5 text-blue-600">
+                    <div className="flex items-center gap-1.5 text-primary">
                       <Clock className="h-3.5 w-3.5" />
                       <span className="font-medium">{ebook.duration || '2h 30min'}</span>
                     </div>
@@ -518,7 +518,7 @@ export default function TrainingPage() {
 
                 {/* Barre de progression simulée */}
                 <div className="space-y-2">
-                  <div className="flex justify-between text-xs text-gray-600">
+                  <div className="flex justify-between text-xs text-muted-foreground">
                     <span>Progression</span>
                     <span>0%</span>
                   </div>
@@ -535,7 +535,7 @@ export default function TrainingPage() {
                   </Link>
                   {ebook.url && (
                     <a href={ebook.url} target="_blank" rel="noopener noreferrer" download>
-                      <Button variant="outline" size="sm" className="px-3 hover:bg-gray-50">
+                      <Button variant="outline" size="sm" className="px-3 hover:bg-muted/50">
                         <Download className="h-4 w-4" />
                       </Button>
                     </a>
@@ -551,9 +551,9 @@ export default function TrainingPage() {
       {filteredEbooks.length === 0 && (
         <Card>
           <CardContent className="text-center py-12">
-            <BookOpen className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <BookOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
             <h3 className="text-lg font-semibold mb-2">Aucun ebook trouvé</h3>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Essayez de modifier vos critères de recherche ou de filtrage.
             </p>
           </CardContent>

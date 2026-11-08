@@ -83,10 +83,10 @@ export default function NIS2Documentation() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-4xl font-bold text-foreground mb-2">
               Documentation NIS2
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-muted-foreground">
               Network and Information Systems Directive 2 - Renforcement de la cybersécurité en Europe
             </p>
           </div>
@@ -117,7 +117,7 @@ export default function NIS2Documentation() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-8">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-5">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="scope">Périmètre</TabsTrigger>
           <TabsTrigger value="requirements">Exigences</TabsTrigger>
@@ -137,7 +137,7 @@ export default function NIS2Documentation() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     La directive NIS2 (Network and Information Systems Directive 2) est entrée en vigueur en janvier 2023 
                     et doit être transposée dans le droit national des États membres avant octobre 2024. Elle remplace 
                     et renforce significativement la directive NIS originale.
@@ -158,7 +158,7 @@ export default function NIS2Documentation() {
                       <h4 className="font-semibold text-red-900 mb-2">Sanctions</h4>
                       <p className="text-red-800">Jusqu'à 10M€ ou 2% du CA annuel mondial</p>
                     </div>
-                    <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="bg-accent p-4 rounded-lg">
                       <h4 className="font-semibold text-blue-900 mb-2">Délai notification</h4>
                       <p className="text-blue-800">24h pour alerte préliminaire</p>
                     </div>
@@ -193,13 +193,13 @@ export default function NIS2Documentation() {
                   <CardTitle className="text-lg">Ressources externes</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Link href="https://www.enisa.europa.eu/topics/directive-nis" className="block text-blue-600 hover:underline">
+                  <Link href="https://www.enisa.europa.eu/topics/directive-nis" className="block text-primary hover:underline">
                     → Site officiel ENISA
                   </Link>
-                  <Link href="https://www.anssi.gouv.fr" className="block text-blue-600 hover:underline">
+                  <Link href="https://www.anssi.gouv.fr" className="block text-primary hover:underline">
                     → ANSSI France
                   </Link>
-                  <Link href="#" className="block text-blue-600 hover:underline">
+                  <Link href="#" className="block text-primary hover:underline">
                     → Lignes directrices techniques
                   </Link>
                 </CardContent>
@@ -230,7 +230,7 @@ export default function NIS2Documentation() {
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {sector.items.map((item, idx) => (
-                        <div key={idx} className={`flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm`}>
+                        <div key={idx} className={`flex items-center gap-2 p-3 bg-card rounded-lg shadow-sm`}>
                           <Building2 className={`h-4 w-4 flex-shrink-0 ${
                             sector.color === 'red' ? 'text-red-600' : 'text-orange-600'
                           }`} />
@@ -241,7 +241,7 @@ export default function NIS2Documentation() {
                   </div>
                 ))}
                 
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-accent p-4 rounded-lg">
                   <h4 className="font-semibold text-blue-900 mb-2">Critères de taille :</h4>
                   <ul className="space-y-1 text-blue-800 text-sm">
                     <li>• <strong>Moyennes entreprises :</strong> 50-249 employés (secteurs importants)</li>
@@ -269,7 +269,7 @@ export default function NIS2Documentation() {
                   <AccordionTrigger>1. Gestion des risques cybersécurité</AccordionTrigger>
                   <AccordionContent className="space-y-4">
                     <p>Mettre en place une approche structurée de gestion des risques cyber.</p>
-                    <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="bg-muted/50 p-4 rounded-lg">
                       <h4 className="font-semibold mb-2">Éléments requis :</h4>
                       <ul className="space-y-1">
                         <li>• Évaluation régulière des risques</li>
@@ -332,7 +332,7 @@ export default function NIS2Documentation() {
                   <AccordionTrigger>5. Mesures techniques de sécurité</AccordionTrigger>
                   <AccordionContent className="space-y-4">
                     <p>Contrôles techniques pour protéger les systèmes d'information.</p>
-                    <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="bg-accent p-4 rounded-lg">
                       <h4 className="font-semibold mb-2">Contrôles essentiels :</h4>
                       <ul className="space-y-1">
                         <li>• Gestion des identités et accès</li>
@@ -384,19 +384,19 @@ export default function NIS2Documentation() {
                     <h3 className="text-lg font-semibold">Surveillance et Rapportage</h3>
                     <ul className="space-y-2">
                       <li className="flex items-start gap-2">
-                        <Eye className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <Eye className="h-5 w-5 text-primary mt-0.5" />
                         <span>Surveillance continue des systèmes</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <AlertCircle className="h-5 w-5 text-primary mt-0.5" />
                         <span>Détection des incidents</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <Clock className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <Clock className="h-5 w-5 text-primary mt-0.5" />
                         <span>Notification dans les délais</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <Server className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <Server className="h-5 w-5 text-primary mt-0.5" />
                         <span>Registre des incidents</span>
                       </li>
                     </ul>
@@ -458,7 +458,7 @@ export default function NIS2Documentation() {
                     className={`flex items-center gap-3 p-4 rounded-lg border transition-colors ${
                       checkedItems.includes(item.id) 
                         ? 'bg-green-50 border-green-200' 
-                        : 'bg-gray-50 border-gray-200'
+                        : 'bg-muted/50 border-border'
                     }`}
                   >
                     <input
@@ -469,7 +469,7 @@ export default function NIS2Documentation() {
                       className="h-5 w-5 text-green-600"
                     />
                     <label htmlFor={item.id} className="flex-1 cursor-pointer">
-                      <span className={checkedItems.includes(item.id) ? 'line-through text-gray-500' : ''}>
+                      <span className={checkedItems.includes(item.id) ? 'line-through text-muted-foreground' : ''}>
                         {item.text}
                       </span>
                       {item.critical && (

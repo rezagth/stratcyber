@@ -415,7 +415,7 @@ const TimelineItem = ({
                           }
                           
                           return regulatoryContext && (
-                            <div className="mt-2 p-2 bg-blue-50 border-l-4 border-blue-400 rounded">
+                            <div className="mt-2 p-2 bg-accent border-l-4 border-blue-400 rounded">
                               <p className="text-sm text-blue-800">{regulatoryContext}</p>
                             </div>
                           );
@@ -537,7 +537,7 @@ const TimelineItem = ({
                             <div className="grid grid-cols-1 gap-3">
                               {resources.map((resource, index) => (
                                 <div key={index} className={`p-3 rounded-lg border transition-colors hover:bg-muted/50 ${
-                                  resource.isInternal ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'
+                                  resource.isInternal ? 'bg-accent border-primary/30' : 'bg-muted/50 border-border'
                                 }`}>
                                   <div className="flex items-start justify-between gap-2">
                                     <div className="flex-1">
@@ -551,13 +551,13 @@ const TimelineItem = ({
                                     </div>
                                     {resource.link && (
                                       resource.isInternal ? (
-                                        <Link href={resource.link} className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                                        <Link href={resource.link} className="flex items-center gap-1 text-primary hover:text-blue-800">
                                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                                             <BookOpen className="w-4 h-4" />
                                           </Button>
                                         </Link>
                                       ) : (
-                                        <a href={resource.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                                        <a href={resource.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:text-blue-800">
                                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                                             <ExternalLink className="w-4 h-4" />
                                           </Button>

@@ -138,13 +138,13 @@ const SupplyChainSecurityPage = () => {
               Retour
             </Link>
           </Button>
-          <Badge className="bg-blue-100 text-blue-800">Guide Expert</Badge>
+          <Badge className="bg-accent text-blue-800">Guide Expert</Badge>
         </div>
         
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <h1 className="text-4xl font-bold text-foreground mb-4">
           Sécurisation de la Supply Chain
         </h1>
-        <p className="text-lg text-gray-600 mb-6">
+        <p className="text-lg text-muted-foreground mb-6">
           Guide complet StratCyber pour sécuriser votre chaîne d'approvisionnement numérique. 
           Méthodologie, évaluation des risques et bonnes pratiques contractuelles.
         </p>
@@ -153,11 +153,11 @@ const SupplyChainSecurityPage = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-2">
-                <Building className="h-5 w-5 text-blue-600" />
+                <Building className="h-5 w-5 text-primary" />
                 <span className="font-semibold">Fournisseurs</span>
               </div>
-              <p className="text-2xl font-bold text-blue-600">360°</p>
-              <p className="text-sm text-gray-600">Évaluation complète</p>
+              <p className="text-2xl font-bold text-primary">360°</p>
+              <p className="text-sm text-muted-foreground">Évaluation complète</p>
             </CardContent>
           </Card>
           
@@ -168,7 +168,7 @@ const SupplyChainSecurityPage = () => {
                 <span className="font-semibold">Conformité</span>
               </div>
               <p className="text-2xl font-bold text-green-600">NIS2</p>
-              <p className="text-sm text-gray-600">+ ISO 27001</p>
+              <p className="text-sm text-muted-foreground">+ ISO 27001</p>
             </CardContent>
           </Card>
           
@@ -179,7 +179,7 @@ const SupplyChainSecurityPage = () => {
                 <span className="font-semibold">Templates</span>
               </div>
               <p className="text-2xl font-bold text-purple-600">12+</p>
-              <p className="text-sm text-gray-600">Prêts à utiliser</p>
+              <p className="text-sm text-muted-foreground">Prêts à utiliser</p>
             </CardContent>
           </Card>
         </div>
@@ -237,7 +237,7 @@ const SupplyChainSecurityPage = () => {
                 <ul className="space-y-2">
                   {category.criteria.map((criterion, idx) => (
                     <li key={idx} className="flex items-center gap-2 text-sm">
-                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                      <div className="w-2 h-2 bg-primary rounded-full"></div>
                       {criterion}
                     </li>
                   ))}
@@ -359,14 +359,14 @@ const SupplyChainSecurityPage = () => {
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-400 to-blue-600"></div>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
                     {phase.step}
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg">{phase.title}</h3>
-                    <p className="text-gray-600">{phase.description}</p>
+                    <p className="text-muted-foreground">{phase.description}</p>
                   </div>
-                  <Badge variant="outline" className="text-blue-700">
+                  <Badge variant="outline" className="text-primary">
                     {phase.duration}
                   </Badge>
                 </div>
@@ -378,11 +378,11 @@ const SupplyChainSecurityPage = () => {
 
       {/* CTA */}
       <section>
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-primary/30">
           <CardContent className="pt-6">
             <div className="text-center">
               <h3 className="text-2xl font-bold mb-4">Besoin d'accompagnement Supply Chain ?</h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 Notre équipe d'experts vous accompagne dans la sécurisation de votre chaîne d'approvisionnement. 
                 De l'audit initial au déploiement, nous vous guidons à chaque étape.
               </p>

@@ -310,10 +310,10 @@ export default function RoadmapDashboard() {
       <div className="container mx-auto p-6">
         <Card>
           <CardContent className="text-center py-12">
-            <Map className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <Map className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
             <h3 className="text-lg font-semibold mb-2">Aucune donnée disponible</h3>
-            <p className="text-gray-600 mb-4">Veuillez d'abord compléter un audit pour générer votre roadmap.</p>
-            <Link href="/audit/dynamic">
+            <p className="text-muted-foreground mb-4">Lance un audit en choisissant un client : son plan d'action détaillé se consulte ensuite dans le dossier du client (Plan d'action).</p>
+            <Link href="/strategie">
               <Button>
                 Commencer un audit
               </Button>
@@ -332,10 +332,10 @@ export default function RoadmapDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-3">
-            <Map className="h-8 w-8 text-blue-600" />
+            <Map className="h-8 w-8 text-primary" />
             Roadmap Cybersécurité
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-muted-foreground mt-1">
             Plan d'action complet basé sur votre audit du {new Date(lastAuditDate).toLocaleDateString('fr-FR')}
           </p>
         </div>
@@ -343,7 +343,7 @@ export default function RoadmapDashboard() {
           <Badge variant="outline" className="text-sm">
             Score: {score}%
           </Badge>
-          <Link href="/audit/dynamic">
+          <Link href="/strategie">
             <Button variant="outline" size="sm">
               Nouvel audit
             </Button>
@@ -357,7 +357,7 @@ export default function RoadmapDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Actions totales</p>
+                <p className="text-sm font-medium text-muted-foreground">Actions totales</p>
                 <p className="text-2xl font-bold">{statistics.totalActions}</p>
               </div>
               <Target className="h-8 w-8 text-blue-500" />
@@ -369,7 +369,7 @@ export default function RoadmapDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Terminées</p>
+                <p className="text-sm font-medium text-muted-foreground">Terminées</p>
                 <p className="text-2xl font-bold text-green-600">{statistics.completedActions}</p>
               </div>
               <CheckCircle className="h-8 w-8 text-green-500" />
@@ -381,7 +381,7 @@ export default function RoadmapDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Critiques</p>
+                <p className="text-sm font-medium text-muted-foreground">Critiques</p>
                 <p className="text-2xl font-bold text-red-600">{statistics.criticalActions}</p>
               </div>
               <AlertCircle className="h-8 w-8 text-red-500" />
@@ -393,7 +393,7 @@ export default function RoadmapDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">En retard</p>
+                <p className="text-sm font-medium text-muted-foreground">En retard</p>
                 <p className="text-2xl font-bold text-orange-600">{statistics.overdueActions}</p>
               </div>
               <Clock className="h-8 w-8 text-orange-500" />
@@ -405,7 +405,7 @@ export default function RoadmapDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Progression</p>
+                <p className="text-sm font-medium text-muted-foreground">Progression</p>
                 <p className="text-2xl font-bold">{Math.round(statistics.avgProgress)}%</p>
               </div>
               <TrendingUp className="h-8 w-8 text-purple-500" />
@@ -416,7 +416,7 @@ export default function RoadmapDashboard() {
 
       {/* Main Content */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-4">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="interactive">Roadmap Interactive</TabsTrigger>
           <TabsTrigger value="analytics">Analytics Avancés</TabsTrigger>
@@ -436,7 +436,7 @@ export default function RoadmapDashboard() {
                     <div key={action.id} className="flex items-center justify-between p-3 border rounded">
                       <div>
                         <p className="font-medium text-sm">{action.title}</p>
-                        <p className="text-xs text-gray-500">{action.category}</p>
+                        <p className="text-xs text-muted-foreground">{action.category}</p>
                       </div>
                       <Badge variant="destructive">Critique</Badge>
                     </div>
@@ -490,7 +490,7 @@ export default function RoadmapDashboard() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold">Gestion des Tâches</h3>
-              <p className="text-sm text-gray-600">Glissez-déposez vos actions pour changer leur statut</p>
+              <p className="text-sm text-muted-foreground">Glissez-déposez vos actions pour changer leur statut</p>
             </div>
             <div className="flex gap-2">
               <select 
@@ -515,15 +515,15 @@ export default function RoadmapDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* À FAIRE */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <h4 className="font-medium text-gray-700">À Faire</h4>
+              <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <h4 className="font-medium text-muted-foreground">À Faire</h4>
                 <Badge variant="secondary">
                   {getPaginatedActions('Non démarré').totalItems}
                 </Badge>
               </div>
               
               <div 
-                className="space-y-3 min-h-[500px] p-2 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50/30"
+                className="space-y-3 min-h-[500px] p-2 border-2 border-dashed border-border rounded-lg bg-gray-50/30"
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, 'Non démarré')}
               >
@@ -545,10 +545,10 @@ export default function RoadmapDashboard() {
                             <div className="space-y-3">
                               {/* Header avec drag handle */}
                               <div className="flex items-start gap-2">
-                                <Grip className="h-4 w-4 text-gray-400 mt-0.5 cursor-move" />
+                                <Grip className="h-4 w-4 text-muted-foreground mt-0.5 cursor-move" />
                                 <div className="flex-1">
                                   <h5 className="font-semibold text-sm mb-1">{action.title}</h5>
-                                  <p className="text-xs text-gray-600 line-clamp-2">{action.description}</p>
+                                  <p className="text-xs text-muted-foreground line-clamp-2">{action.description}</p>
                                 </div>
                                 <Badge variant={getPriorityColor(action.priority)} className="ml-2">
                                   {action.priority}
@@ -556,7 +556,7 @@ export default function RoadmapDashboard() {
                               </div>
                               
                               {/* Métadonnées */}
-                              <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
+                              <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                                 <div className="flex items-center gap-1">
                                   <Calendar className="h-3 w-3" />
                                   {new Date(action.dueDate).toLocaleDateString('fr-FR')}
@@ -608,7 +608,7 @@ export default function RoadmapDashboard() {
                           >
                             <ChevronLeft className="h-3 w-3" />
                           </Button>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-muted-foreground">
                             {current} / {totalPages}
                           </span>
                           <Button
@@ -629,15 +629,15 @@ export default function RoadmapDashboard() {
 
             {/* EN COURS */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                <h4 className="font-medium text-blue-700">En Cours</h4>
-                <Badge variant="outline" className="border-blue-200 text-blue-700">
+              <div className="flex items-center justify-between p-3 bg-accent rounded-lg">
+                <h4 className="font-medium text-primary">En Cours</h4>
+                <Badge variant="outline" className="border-primary/30 text-primary">
                   {getPaginatedActions('En cours').totalItems}
                 </Badge>
               </div>
               
               <div 
-                className="space-y-3 min-h-[500px] p-2 border-2 border-dashed border-blue-200 rounded-lg bg-blue-50/30"
+                className="space-y-3 min-h-[500px] p-2 border-2 border-dashed border-primary/30 rounded-lg bg-blue-50/30"
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, 'En cours')}
               >
@@ -662,7 +662,7 @@ export default function RoadmapDashboard() {
                                 <Grip className="h-4 w-4 text-blue-400 mt-0.5 cursor-move" />
                                 <div className="flex-1">
                                   <h5 className="font-semibold text-sm mb-1">{action.title}</h5>
-                                  <p className="text-xs text-gray-600 line-clamp-2">{action.description}</p>
+                                  <p className="text-xs text-muted-foreground line-clamp-2">{action.description}</p>
                                 </div>
                                 <Badge variant={getPriorityColor(action.priority)} className="ml-2">
                                   {action.priority}
@@ -679,7 +679,7 @@ export default function RoadmapDashboard() {
                               </div>
 
                               {/* Métadonnées */}
-                              <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
+                              <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                                 <div className="flex items-center gap-1">
                                   <Users className="h-3 w-3" />
                                   {action.owner}
@@ -876,31 +876,31 @@ export default function RoadmapDashboard() {
                       <div className="space-y-4">
                         <div>
                           <h4 className="font-medium mb-2">Description complète</h4>
-                          <p className="text-sm text-gray-600">{action.description}</p>
+                          <p className="text-sm text-muted-foreground">{action.description}</p>
                         </div>
                         <div>
                           <h4 className="font-medium mb-2">Impact Business</h4>
-                          <p className="text-sm text-gray-600">{action.businessImpact}</p>
+                          <p className="text-sm text-muted-foreground">{action.businessImpact}</p>
                         </div>
                       </div>
                       <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <h5 className="font-medium text-sm">Échéance</h5>
-                            <p className="text-sm text-gray-600">{new Date(action.dueDate).toLocaleDateString('fr-FR')}</p>
+                            <p className="text-sm text-muted-foreground">{new Date(action.dueDate).toLocaleDateString('fr-FR')}</p>
                           </div>
                           <div>
                             <h5 className="font-medium text-sm">Responsable</h5>
-                            <p className="text-sm text-gray-600">{action.owner}</p>
+                            <p className="text-sm text-muted-foreground">{action.owner}</p>
                           </div>
                           <div>
                             <h5 className="font-medium text-sm">Temps estimé</h5>
-                            <p className="text-sm text-gray-600">{action.estimatedHours}h</p>
+                            <p className="text-sm text-muted-foreground">{action.estimatedHours}h</p>
                           </div>
                           {action.budget && (
                             <div>
                               <h5 className="font-medium text-sm">Budget</h5>
-                              <p className="text-sm text-gray-600">{action.budget.toLocaleString()}€</p>
+                              <p className="text-sm text-muted-foreground">{action.budget.toLocaleString()}€</p>
                             </div>
                           )}
                         </div>

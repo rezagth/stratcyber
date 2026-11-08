@@ -18,12 +18,15 @@ import { IncidentsTab } from '@/components/dossier/incidents-tab';
 import { VulnerabilitiesTab } from '@/components/dossier/vulnerabilities-tab';
 import { PoliciesTab } from '@/components/dossier/policies-tab';
 import { SecurityAnswersTab } from '@/components/dossier/security-answers-tab';
+import { SurfaceTab } from '@/components/dossier/surface-tab';
 import { GovernanceTab } from '@/components/dossier/governance-tab';
 import { SuppliersTab } from '@/components/dossier/suppliers-tab';
 import { BudgetTab } from '@/components/dossier/budget-tab';
 import { TrainingTab } from '@/components/dossier/training-tab';
 import { MonthlyReportButton } from '@/components/monthly-report-button';
 import { ClientAccountsTab } from '@/components/dossier/client-accounts-tab';
+import { ClientSynthesis } from '@/components/dossier/client-synthesis';
+import { ClientSetupGuide } from '@/components/dossier/client-setup-guide';
 
 type Organization = {
   id: string; name: string; sector: string | null; size: string | null;
@@ -54,6 +57,7 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
   const [newDecision, setNewDecision] = useState({ title: '', description: '', decidedAt: '' });
   const [notes, setNotes] = useState<InternalNote[]>([]);
   const [newNote, setNewNote] = useState('');
+  const [tab, setTab] = useState('synthese');
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -136,8 +140,17 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
 
       {feedback && <p role="status" className="mb-4 text-sm">{feedback}</p>}
 
-      <Tabs defaultValue="profil">
-        <TabsList>
+      <ClientSetupGuide
+        organizationId={id}
+        profileComplete={Boolean(org.sector && org.size && org.headcount && org.missionScope)}
+        applicabilityAssessed={Boolean(org.applicabilityAssessedAt)}
+        hasContact={contacts.length > 0}
+        goToTab={setTab}
+      />
+
+      <Tabs value={tab} onValueChange={setTab}>
+        <TabsList className="h-auto w-full flex-wrap justify-start gap-1 p-1.5 [&>*]:h-8 [&>*]:flex-none [&>*]:px-3">
+          <TabsTrigger value="synthese">Synthèse</TabsTrigger>
           <TabsTrigger value="profil">Profil</TabsTrigger>
           <TabsTrigger value="contacts">Contacts ({contacts.length})</TabsTrigger>
           <TabsTrigger value="comptes">Comptes</TabsTrigger>
@@ -147,6 +160,7 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
           <TabsTrigger value="vulnerabilites">Vulnérabilités</TabsTrigger>
           <TabsTrigger value="politiques">Politiques</TabsTrigger>
           <TabsTrigger value="questionnaires">Questionnaires</TabsTrigger>
+          <TabsTrigger value="domaine">Domaine</TabsTrigger>
           <TabsTrigger value="gouvernance">Gouvernance</TabsTrigger>
           <TabsTrigger value="fournisseurs">Fournisseurs</TabsTrigger>
           <TabsTrigger value="budget">Budget</TabsTrigger>
@@ -154,6 +168,8 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
           <TabsTrigger value="decisions">Décisions ({decisions.length})</TabsTrigger>
           <TabsTrigger value="notes">Notes internes ({notes.length})</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="synthese"><ClientSynthesis organizationId={id} /></TabsContent>
 
         <TabsContent value="profil" className="space-y-6">
           <Card>
@@ -292,6 +308,10 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
 
         <TabsContent value="politiques">
           <PoliciesTab organizationId={id} />
+        </TabsContent>
+
+        <TabsContent value="domaine">
+          <SurfaceTab organizationId={id} />
         </TabsContent>
 
         <TabsContent value="questionnaires">

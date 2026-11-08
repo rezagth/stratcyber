@@ -12,7 +12,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 
-const TYPES = ['Confidentialité', 'PSSI', 'Sauvegarde', 'Accès', 'Incident', 'PCA'];
+const TYPES = ['Confidentialité', 'PSSI', 'Sauvegarde', 'Accès', 'Incident', 'PCA', 'Charte informatique', 'Registre RGPD', 'Sous-traitance'];
 
 type Template = { id: string; type: string; name: string; content: string; variables: string[] };
 

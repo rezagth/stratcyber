@@ -239,9 +239,9 @@ const DashboardPage = () => {
       case 'issue':
         return <AlertTriangle className="h-4 w-4 text-red-600" />;
       case 'update':
-        return <FileText className="h-4 w-4 text-blue-600" />;
+        return <FileText className="h-4 w-4 text-primary" />;
       default:
-        return <Activity className="h-4 w-4 text-gray-600" />;
+        return <Activity className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -252,7 +252,7 @@ const DashboardPage = () => {
       medium: 'bg-yellow-100 text-yellow-800',
       low: 'bg-green-100 text-green-800'
     };
-    return colors[priority as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[priority as keyof typeof colors] || 'bg-muted text-foreground';
   };
 
   const formatTimeAgo = (dateString: string) => {
@@ -281,12 +281,12 @@ const DashboardPage = () => {
         
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-lg bg-blue-100">
-              <BarChart3 className="h-8 w-8 text-blue-600" />
+            <div className="p-3 rounded-lg bg-accent">
+              <BarChart3 className="h-8 w-8 text-primary" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Dashboard de Conformité</h1>
-              <p className="text-lg text-gray-600">Suivi en temps réel de votre posture de conformité</p>
+              <h1 className="text-3xl font-bold text-foreground">Dashboard de Conformité</h1>
+              <p className="text-lg text-muted-foreground">Suivi en temps réel de votre posture de conformité</p>
             </div>
           </div>
           
@@ -311,7 +311,7 @@ const DashboardPage = () => {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Score Global</p>
+                <p className="text-sm font-medium text-muted-foreground">Score Global</p>
                 <div className="flex items-center gap-2">
                   <p className={`text-2xl font-bold ${getScoreColor(kpis.global.conformityScore)}`}>
                     {kpis.global.conformityScore}%
@@ -333,12 +333,12 @@ const DashboardPage = () => {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Actions Actives</p>
-                <p className="text-2xl font-bold text-blue-600">{kpis.global.activeActions}</p>
-                <p className="text-xs text-gray-500">{kpis.global.completedActions} complétées</p>
+                <p className="text-sm font-medium text-muted-foreground">Actions Actives</p>
+                <p className="text-2xl font-bold text-primary">{kpis.global.activeActions}</p>
+                <p className="text-xs text-muted-foreground">{kpis.global.completedActions} complétées</p>
               </div>
-              <div className="p-3 rounded-full bg-blue-50">
-                <Activity className="h-6 w-6 text-blue-600" />
+              <div className="p-3 rounded-full bg-accent">
+                <Activity className="h-6 w-6 text-primary" />
               </div>
             </div>
           </CardContent>
@@ -348,7 +348,7 @@ const DashboardPage = () => {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Points Critiques</p>
+                <p className="text-sm font-medium text-muted-foreground">Points Critiques</p>
                 <p className="text-2xl font-bold text-red-600">{kpis.global.criticalIssues}</p>
                 <p className="text-xs text-red-500">Nécessitent attention</p>
               </div>
@@ -363,7 +363,7 @@ const DashboardPage = () => {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Échéances</p>
+                <p className="text-sm font-medium text-muted-foreground">Échéances</p>
                 <p className="text-2xl font-bold text-orange-600">{kpis.global.upcomingDeadlines}</p>
                 <p className="text-xs text-orange-500">30 prochains jours</p>
               </div>
@@ -403,7 +403,7 @@ const DashboardPage = () => {
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600">Score de conformité</p>
+                      <p className="text-sm text-muted-foreground">Score de conformité</p>
                       <div className="flex items-center gap-2">
                         <span className={`text-2xl font-bold ${getScoreColor(reg.score)}`}>
                           {reg.score}%
@@ -415,20 +415,20 @@ const DashboardPage = () => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-gray-600">Progression</p>
+                      <p className="text-sm text-muted-foreground">Progression</p>
                       <Progress value={reg.score} className="w-20 h-2" />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-gray-600">Dernier audit</p>
+                      <p className="text-sm text-muted-foreground">Dernier audit</p>
                       <p className="text-sm font-medium">
                         {new Date(reg.lastAudit).toLocaleDateString('fr-FR')}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Prochaine échéance</p>
+                      <p className="text-sm text-muted-foreground">Prochaine échéance</p>
                       <p className="text-sm font-medium">
                         {new Date(reg.nextDeadline).toLocaleDateString('fr-FR')}
                       </p>
@@ -439,20 +439,20 @@ const DashboardPage = () => {
                     <p className="text-sm font-medium mb-2">Actions en cours</p>
                     <div className="grid grid-cols-4 gap-2 text-xs">
                       <div className="text-center">
-                        <div className="font-bold text-gray-900">{reg.actions.completed}</div>
+                        <div className="font-bold text-foreground">{reg.actions.completed}</div>
                         <div className="text-green-600">Complétées</div>
                       </div>
                       <div className="text-center">
-                        <div className="font-bold text-gray-900">{reg.actions.inProgress}</div>
-                        <div className="text-blue-600">En cours</div>
+                        <div className="font-bold text-foreground">{reg.actions.inProgress}</div>
+                        <div className="text-primary">En cours</div>
                       </div>
                       <div className="text-center">
-                        <div className="font-bold text-gray-900">{reg.actions.pending}</div>
+                        <div className="font-bold text-foreground">{reg.actions.pending}</div>
                         <div className="text-orange-600">En attente</div>
                       </div>
                       <div className="text-center">
-                        <div className="font-bold text-gray-900">{reg.actions.total}</div>
-                        <div className="text-gray-600">Total</div>
+                        <div className="font-bold text-foreground">{reg.actions.total}</div>
+                        <div className="text-muted-foreground">Total</div>
                       </div>
                     </div>
                   </div>
@@ -461,7 +461,7 @@ const DashboardPage = () => {
                     <p className="text-sm font-medium mb-2">Points critiques</p>
                     <ul className="space-y-1">
                       {reg.criticalPoints.map((point, idx) => (
-                        <li key={idx} className="text-xs text-gray-600 flex items-center gap-2">
+                        <li key={idx} className="text-xs text-muted-foreground flex items-center gap-2">
                           <AlertTriangle className="h-3 w-3 text-orange-500 flex-shrink-0" />
                           {point}
                         </li>
@@ -486,21 +486,21 @@ const DashboardPage = () => {
             <CardContent>
               <div className="space-y-4">
                 {recentActivities.map((activity) => (
-                  <div key={activity.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50">
+                  <div key={activity.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50">
                     <div className="flex-shrink-0 mt-0.5">
                       {getActivityIcon(activity.type)}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-gray-900">{activity.title}</p>
-                          <p className="text-sm text-gray-600">{activity.regulation}</p>
+                          <p className="font-medium text-foreground">{activity.title}</p>
+                          <p className="text-sm text-muted-foreground">{activity.regulation}</p>
                         </div>
                         <div className="text-right">
                           <Badge className={getPriorityBadge(activity.priority)}>
                             {activity.priority}
                           </Badge>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-muted-foreground mt-1">
                             {formatTimeAgo(activity.date)}
                           </p>
                         </div>
@@ -533,7 +533,7 @@ const DashboardPage = () => {
                       }`}></div>
                       <div>
                         <p className="font-medium">{deadline.title}</p>
-                        <p className="text-sm text-gray-600">{deadline.regulation}</p>
+                        <p className="text-sm text-muted-foreground">{deadline.regulation}</p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -563,9 +563,9 @@ const DashboardPage = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="text-sm text-gray-600">Évolution sur 6 mois</div>
-                  <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center">
-                    <div className="text-gray-500">
+                  <div className="text-sm text-muted-foreground">Évolution sur 6 mois</div>
+                  <div className="h-48 bg-muted/50 rounded-lg flex items-center justify-center">
+                    <div className="text-muted-foreground">
                       Graphique des tendances
                       <br />
                       <small>(Intégration Chart.js à venir)</small>
@@ -581,9 +581,9 @@ const DashboardPage = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="text-sm text-gray-600">Par réglementation</div>
-                  <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center">
-                    <div className="text-gray-500">
+                  <div className="text-sm text-muted-foreground">Par réglementation</div>
+                  <div className="h-48 bg-muted/50 rounded-lg flex items-center justify-center">
+                    <div className="text-muted-foreground">
                       Graphique en secteurs
                       <br />
                       <small>(Intégration Chart.js à venir)</small>

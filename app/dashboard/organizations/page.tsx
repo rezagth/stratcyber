@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { NewClientForm } from '@/components/dossier/new-client-form';
 
 type Organization = {
   id: string; name: string; sector: string | null; size: string | null;
@@ -32,9 +33,11 @@ export default function OrganizationsPage() {
         </Link>
       </div>
 
+      <div className="mb-4"><NewClientForm /></div>
+
       {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
       {!error && organizations === null && <p className="text-sm text-muted-foreground">Chargement…</p>}
-      {organizations?.length === 0 && <p className="text-sm text-muted-foreground">Aucun client pour le moment.</p>}
+      {organizations?.length === 0 && <p className="text-sm text-muted-foreground">Aucun client pour le moment : crée le premier avec « Nouveau client ».</p>}
 
       <ul className="space-y-3">
         {organizations?.map((org) => (

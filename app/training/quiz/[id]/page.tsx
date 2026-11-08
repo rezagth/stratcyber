@@ -129,11 +129,11 @@ export default function QuizPage({ params }: Props) {
       <div className="container mx-auto p-6 max-w-4xl">
         <div className="text-center py-12">
           <XCircleIcon className="h-12 w-12 text-red-400 mx-auto mb-4" />
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">Quiz non disponible</h1>
-          <p className="text-gray-600 mb-8">{error || "Ce quiz n'est pas disponible."}</p>
+          <h1 className="text-2xl font-semibold text-foreground mb-2">Quiz non disponible</h1>
+          <p className="text-muted-foreground mb-8">{error || "Ce quiz n'est pas disponible."}</p>
           <Link
             href="/training"
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
           >
             <ArrowLeftIcon className="h-5 w-5 mr-2" />
             Retour à la formation
@@ -147,12 +147,12 @@ export default function QuizPage({ params }: Props) {
     const passed = score >= quiz.passingScore;
     
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-white shadow-sm border-b">
+      <div className="min-h-screen bg-muted/50">
+        <div className="bg-card shadow-sm border-b">
           <div className="container mx-auto px-6 py-4">
             <Link
               href={`/training/ebook/${params.id}`}
-              className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4 transition-colors"
+              className="inline-flex items-center text-primary hover:text-blue-800 mb-4 transition-colors"
             >
               <ArrowLeftIcon className="h-5 w-5 mr-2" />
               Retour à l'ebook
@@ -161,7 +161,7 @@ export default function QuizPage({ params }: Props) {
         </div>
 
         <div className="container mx-auto px-6 py-8 max-w-4xl">
-          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+          <div className="bg-card rounded-lg shadow-sm p-8 text-center">
             {passed ? (
               <CheckCircleIcon className="h-16 w-16 text-green-500 mx-auto mb-4" />
             ) : (
@@ -172,11 +172,11 @@ export default function QuizPage({ params }: Props) {
               {passed ? 'Félicitations !' : 'Résultat insuffisant'}
             </h1>
             
-            <p className="text-lg text-gray-600 mb-6">
+            <p className="text-lg text-muted-foreground mb-6">
               Votre score : <span className="font-bold text-2xl">{score}%</span>
             </p>
             
-            <p className="text-gray-600 mb-8">
+            <p className="text-muted-foreground mb-8">
               Score requis pour valider : {quiz.passingScore}%
             </p>
 
@@ -206,7 +206,7 @@ export default function QuizPage({ params }: Props) {
               
               <button
                 onClick={resetQuiz}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
               >
                 Recommencer le quiz
               </button>
@@ -241,17 +241,17 @@ export default function QuizPage({ params }: Props) {
                           </span>
                         </div>
                         
-                        <p className="text-gray-600 text-sm mb-2">
+                        <p className="text-muted-foreground text-sm mb-2">
                           <strong>Votre réponse :</strong> {userAnswer || 'Aucune réponse'}
                         </p>
                         
                         {!isCorrect && (
-                          <p className="text-gray-600 text-sm mb-2">
+                          <p className="text-muted-foreground text-sm mb-2">
                             <strong>Bonne réponse :</strong> {question.correctAnswer}
                           </p>
                         )}
                         
-                        <p className="text-gray-700 text-sm">
+                        <p className="text-muted-foreground text-sm">
                           <strong>Explication :</strong> {question.explanation}
                         </p>
                       </div>
@@ -271,12 +271,12 @@ export default function QuizPage({ params }: Props) {
   const allQuestionsAnswered = quiz.questions.every(q => selectedAnswers[q.id]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-muted/50">
+      <div className="bg-card shadow-sm border-b">
         <div className="container mx-auto px-6 py-4">
           <Link
             href={`/training/ebook/${params.id}`}
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4 transition-colors"
+            className="inline-flex items-center text-primary hover:text-blue-800 mb-4 transition-colors"
           >
             <ArrowLeftIcon className="h-5 w-5 mr-2" />
             Retour à l'ebook
@@ -286,30 +286,30 @@ export default function QuizPage({ params }: Props) {
 
       <div className="container mx-auto px-6 py-8 max-w-4xl">
         {/* En-tête du quiz */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div className="bg-card rounded-lg shadow-sm p-6 mb-6">
           <h1 className="text-2xl font-bold mb-2">{quiz.title}</h1>
-          <p className="text-gray-600 mb-4">Ebook : {ebook.title}</p>
+          <p className="text-muted-foreground mb-4">Ebook : {ebook.title}</p>
           {quiz.description && (
-            <p className="text-gray-700 mb-4">{quiz.description}</p>
+            <p className="text-muted-foreground mb-4">{quiz.description}</p>
           )}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-muted-foreground">
               Question {currentQuestion + 1} sur {quiz.questions.length}
             </span>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-muted-foreground">
               Score requis : {quiz.passingScore}%
             </span>
           </div>
           <div className="mt-2 bg-gray-200 rounded-full h-2">
             <div
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              className="bg-primary h-2 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
         </div>
 
         {/* Question actuelle */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div className="bg-card rounded-lg shadow-sm p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">{currentQ.question}</h2>
           
           <div className="space-y-3">
@@ -318,8 +318,8 @@ export default function QuizPage({ params }: Props) {
                 key={index}
                 className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
                   selectedAnswers[currentQ.id] === option
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-blue-500 bg-accent'
+                    : 'border-border hover:border-border'
                 }`}
               >
                 <input
@@ -330,21 +330,21 @@ export default function QuizPage({ params }: Props) {
                   onChange={(e) => handleAnswerSelect(currentQ.id, e.target.value)}
                   className="sr-only"
                 />
-                <span className="text-gray-900">{option}</span>
+                <span className="text-foreground">{option}</span>
               </label>
             ))}
           </div>
         </div>
 
         {/* Navigation */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-card rounded-lg shadow-sm p-6">
           <div className="flex justify-between items-center">
             <button
               onClick={() => setCurrentQuestion(Math.max(0, currentQuestion - 1))}
               disabled={currentQuestion === 0}
               className={`px-4 py-2 rounded-lg transition-colors ${
                 currentQuestion === 0
-                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  ? 'bg-gray-200 text-muted-foreground cursor-not-allowed'
                   : 'bg-gray-600 text-white hover:bg-gray-700'
               }`}
             >
@@ -358,10 +358,10 @@ export default function QuizPage({ params }: Props) {
                   onClick={() => setCurrentQuestion(index)}
                   className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${
                     index === currentQuestion
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-primary text-white'
                       : selectedAnswers[quiz.questions[index].id]
                       ? 'bg-green-100 text-green-800'
-                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                      : 'bg-gray-200 text-muted-foreground hover:bg-gray-300'
                   }`}
                 >
                   {index + 1}
@@ -376,7 +376,7 @@ export default function QuizPage({ params }: Props) {
                 className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                   allQuestionsAnswered
                     ? 'bg-green-600 text-white hover:bg-green-700'
-                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-200 text-muted-foreground cursor-not-allowed'
                 }`}
               >
                 Terminer le quiz
@@ -384,7 +384,7 @@ export default function QuizPage({ params }: Props) {
             ) : (
               <button
                 onClick={() => setCurrentQuestion(Math.min(quiz.questions.length - 1, currentQuestion + 1))}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
               >
                 Suivant
               </button>
@@ -392,7 +392,7 @@ export default function QuizPage({ params }: Props) {
           </div>
 
           {!allQuestionsAnswered && (
-            <p className="text-center text-sm text-gray-500 mt-4">
+            <p className="text-center text-sm text-muted-foreground mt-4">
               Répondez à toutes les questions pour pouvoir terminer le quiz
             </p>
           )}

@@ -177,13 +177,13 @@ export default function EBIOSDocumentation() {
 
   const getColorClasses = (color: string) => {
     const colors = {
-      blue: 'border-blue-200 bg-blue-50 text-blue-900',
+      blue: 'border-primary/30 bg-accent text-blue-900',
       orange: 'border-orange-200 bg-orange-50 text-orange-900',
       purple: 'border-purple-200 bg-purple-50 text-purple-900',
       red: 'border-red-200 bg-red-50 text-red-900',
       green: 'border-green-200 bg-green-50 text-green-900'
     };
-    return colors[color as keyof typeof colors] || 'border-gray-200 bg-gray-50 text-gray-900';
+    return colors[color as keyof typeof colors] || 'border-border bg-muted/50 text-foreground';
   };
 
   return (
@@ -192,10 +192,10 @@ export default function EBIOSDocumentation() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-4xl font-bold text-foreground mb-2">
               Documentation EBIOS RM
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-muted-foreground">
               Expression des Besoins et Identification des Objectifs de Sécurité - Risk Manager
             </p>
           </div>
@@ -226,7 +226,7 @@ export default function EBIOSDocumentation() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-8">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-5">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="methodology">Méthodologie</TabsTrigger>
           <TabsTrigger value="workshops">5 Ateliers</TabsTrigger>
@@ -246,7 +246,7 @@ export default function EBIOSDocumentation() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     EBIOS Risk Manager est la méthode française de référence pour l'appréciation et le traitement 
                     des risques numériques. Développée par l'ANSSI depuis 2010, sa version actuelle (2018) 
                     s'adapte aux enjeux contemporains de cybersécurité et d'analyse des risques cyber.
@@ -263,7 +263,7 @@ export default function EBIOSDocumentation() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 mt-6">
-                    <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="bg-accent p-4 rounded-lg">
                       <h4 className="font-semibold text-blue-900 mb-2">Version actuelle</h4>
                       <p className="text-blue-800">EBIOS RM 2018</p>
                     </div>
@@ -302,13 +302,13 @@ export default function EBIOSDocumentation() {
                   <CardTitle className="text-lg">Ressources officielles</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Link href="https://www.ssi.gouv.fr/guide/ebios-risk-manager/" className="block text-blue-600 hover:underline">
+                  <Link href="https://www.ssi.gouv.fr/guide/ebios-risk-manager/" className="block text-primary hover:underline">
                     → ANSSI - Guide officiel
                   </Link>
-                  <Link href="https://www.ssi.gouv.fr/uploads/2019/11/anssi-guide-ebios_risk_manager-fr-v1.0.pdf" className="block text-blue-600 hover:underline">
+                  <Link href="https://www.ssi.gouv.fr/uploads/2019/11/anssi-guide-ebios_risk_manager-fr-v1.0.pdf" className="block text-primary hover:underline">
                     → Guide méthodologique PDF
                   </Link>
-                  <Link href="#" className="block text-blue-600 hover:underline">
+                  <Link href="#" className="block text-primary hover:underline">
                     → Formation EBIOS RM
                   </Link>
                 </CardContent>
@@ -354,11 +354,11 @@ export default function EBIOSDocumentation() {
                   <h3 className="text-lg font-semibold">Parties prenantes</h3>
                   <div className="grid grid-cols-1 gap-4">
                     {stakeholderTypes.map((type, index) => (
-                      <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                      <div key={index} className="bg-muted/50 p-4 rounded-lg">
                         <h4 className="font-medium mb-2 text-sm">{type.category}</h4>
                         <ul className="space-y-1">
                           {type.items.map((item, idx) => (
-                            <li key={idx} className="text-xs text-gray-600 flex items-center gap-1">
+                            <li key={idx} className="text-xs text-muted-foreground flex items-center gap-1">
                               <CheckCircle className="h-3 w-3 text-green-600" />
                               {item}
                             </li>
@@ -411,7 +411,7 @@ export default function EBIOSDocumentation() {
                           <ul className="space-y-1">
                             {workshop.objectives.map((objective, idx) => (
                               <li key={idx} className="flex items-start gap-2 text-sm">
-                                <Target className="h-3 w-3 mt-1 flex-shrink-0 text-gray-500" />
+                                <Target className="h-3 w-3 mt-1 flex-shrink-0 text-muted-foreground" />
                                 {objective}
                               </li>
                             ))}
@@ -448,7 +448,7 @@ export default function EBIOSDocumentation() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold flex items-center gap-2">
-                      <Clock className="h-5 w-5 text-blue-600" />
+                      <Clock className="h-5 w-5 text-primary" />
                       Phase de Préparation
                     </h3>
                     <ul className="space-y-2 text-sm">
@@ -574,7 +574,7 @@ export default function EBIOSDocumentation() {
                     className={`flex items-center gap-3 p-4 rounded-lg border transition-colors ${
                       checkedItems.includes(item.id) 
                         ? 'bg-green-50 border-green-200' 
-                        : 'bg-gray-50 border-gray-200'
+                        : 'bg-muted/50 border-border'
                     }`}
                   >
                     <input
@@ -585,7 +585,7 @@ export default function EBIOSDocumentation() {
                       className="h-5 w-5 text-green-600"
                     />
                     <label htmlFor={item.id} className="flex-1 cursor-pointer">
-                      <span className={checkedItems.includes(item.id) ? 'line-through text-gray-500' : ''}>
+                      <span className={checkedItems.includes(item.id) ? 'line-through text-muted-foreground' : ''}>
                         {item.text}
                       </span>
                       {item.critical && (

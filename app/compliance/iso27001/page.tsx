@@ -118,10 +118,10 @@ export default function ISO27001Documentation() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-4xl font-bold text-foreground mb-2">
               Documentation ISO 27001
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-muted-foreground">
               Norme internationale pour les systèmes de management de la sécurité de l'information
             </p>
           </div>
@@ -152,7 +152,7 @@ export default function ISO27001Documentation() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-8">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-5">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="controls">Contrôles</TabsTrigger>
           <TabsTrigger value="certification">Certification</TabsTrigger>
@@ -172,13 +172,13 @@ export default function ISO27001Documentation() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     ISO/IEC 27001 est la norme internationale de référence pour les systèmes de management 
                     de la sécurité de l'information (SMSI). Publiée en 2013 et révisée régulièrement, 
                     elle fournit un cadre systématique pour gérer les informations sensibles de l'entreprise.
                   </p>
                   
-                  <div className="bg-blue-50 p-4 rounded-lg">
+                  <div className="bg-accent p-4 rounded-lg">
                     <h3 className="font-semibold text-blue-900 mb-2">Bénéfices clés :</h3>
                     <ul className="space-y-1 text-blue-800">
                       <li>• Protection systématique des informations sensibles</li>
@@ -229,13 +229,13 @@ export default function ISO27001Documentation() {
                   <CardTitle className="text-lg">Ressources officielles</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Link href="https://www.iso.org/isoiec-27001-information-security.html" className="block text-blue-600 hover:underline">
+                  <Link href="https://www.iso.org/isoiec-27001-information-security.html" className="block text-primary hover:underline">
                     → ISO - Site officiel
                   </Link>
-                  <Link href="https://www.afnor.org" className="block text-blue-600 hover:underline">
+                  <Link href="https://www.afnor.org" className="block text-primary hover:underline">
                     → AFNOR - Organisme français
                   </Link>
-                  <Link href="#" className="block text-blue-600 hover:underline">
+                  <Link href="#" className="block text-primary hover:underline">
                     → Organismes de certification
                   </Link>
                 </CardContent>
@@ -336,7 +336,7 @@ export default function ISO27001Documentation() {
                       <li>• Outils et technologies : 20-50k€</li>
                     </ul>
                   </div>
-                  <div className="bg-blue-50 p-4 rounded-lg">
+                  <div className="bg-accent p-4 rounded-lg">
                     <h4 className="font-semibold text-blue-900 mb-2">Coûts de maintien</h4>
                     <ul className="space-y-1 text-blue-800 text-sm">
                       <li>• Audits de surveillance : 5-10k€/an</li>
@@ -371,7 +371,7 @@ export default function ISO27001Documentation() {
                   <AccordionTrigger>1. Analyse du contexte et définition du périmètre</AccordionTrigger>
                   <AccordionContent className="space-y-4">
                     <p>Comprendre l'organisation et définir le scope du SMSI.</p>
-                    <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="bg-muted/50 p-4 rounded-lg">
                       <h4 className="font-semibold mb-2">Activités clés :</h4>
                       <ul className="space-y-1">
                         <li>• Analyse des enjeux internes et externes</li>
@@ -387,7 +387,7 @@ export default function ISO27001Documentation() {
                   <AccordionTrigger>2. Leadership et engagement de la direction</AccordionTrigger>
                   <AccordionContent className="space-y-4">
                     <p>Démonstration de l'engagement de la direction et allocation des ressources.</p>
-                    <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="bg-accent p-4 rounded-lg">
                       <h4 className="font-semibold mb-2">Exigences :</h4>
                       <ul className="space-y-1">
                         <li>• Politique de sécurité de l'information</li>
@@ -436,7 +436,7 @@ export default function ISO27001Documentation() {
                     className={`flex items-center gap-3 p-4 rounded-lg border transition-colors ${
                       checkedItems.includes(item.id) 
                         ? 'bg-green-50 border-green-200' 
-                        : 'bg-gray-50 border-gray-200'
+                        : 'bg-muted/50 border-border'
                     }`}
                   >
                     <input
@@ -447,7 +447,7 @@ export default function ISO27001Documentation() {
                       className="h-5 w-5 text-green-600"
                     />
                     <label htmlFor={item.id} className="flex-1 cursor-pointer">
-                      <span className={checkedItems.includes(item.id) ? 'line-through text-gray-500' : ''}>
+                      <span className={checkedItems.includes(item.id) ? 'line-through text-muted-foreground' : ''}>
                         {item.text}
                       </span>
                       {item.critical && (
@@ -458,7 +458,7 @@ export default function ISO27001Documentation() {
                 ))}
               </div>
               
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-6 p-4 bg-accent rounded-lg">
                 <p className="text-sm text-blue-800">
                   <strong>Progression :</strong> {checkedItems.length} / {checklistItems.length} éléments complétés
                   ({Math.round((checkedItems.length / checklistItems.length) * 100)}%)

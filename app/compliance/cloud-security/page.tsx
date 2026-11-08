@@ -57,10 +57,10 @@ export default function CloudSecurityDocumentation() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-4xl font-bold text-foreground mb-2">
               Sécurité Cloud ANSSI
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-muted-foreground">
               Guide complet pour sécuriser vos infrastructures cloud selon les recommandations ANSSI
             </p>
           </div>
@@ -91,7 +91,7 @@ export default function CloudSecurityDocumentation() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-8">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-5">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="architecture">Architecture</TabsTrigger>
           <TabsTrigger value="security">Sécurité</TabsTrigger>
@@ -111,7 +111,7 @@ export default function CloudSecurityDocumentation() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     La sécurité cloud nécessite une approche spécifique basée sur le modèle de responsabilité partagée 
                     entre le fournisseur cloud et l'organisation.
                   </p>
@@ -126,7 +126,7 @@ export default function CloudSecurityDocumentation() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 mt-6">
-                    <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="bg-accent p-4 rounded-lg">
                       <h4 className="font-semibold text-blue-900 mb-2">Avantages</h4>
                       <ul className="text-blue-800 text-sm space-y-1">
                         <li>• Élasticité et scalabilité</li>
@@ -211,7 +211,7 @@ export default function CloudSecurityDocumentation() {
                   <AccordionTrigger>Segmentation Réseau</AccordionTrigger>
                   <AccordionContent className="space-y-4">
                     <p>Isoler les différents composants de votre infrastructure cloud.</p>
-                    <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="bg-muted/50 p-4 rounded-lg">
                       <h4 className="font-semibold mb-2">Bonnes pratiques :</h4>
                       <ul className="space-y-1">
                         <li>• VPC/VNet dédié par environnement</li>
@@ -227,7 +227,7 @@ export default function CloudSecurityDocumentation() {
                   <AccordionTrigger>Contrôle d'Accès (IAM)</AccordionTrigger>
                   <AccordionContent className="space-y-4">
                     <p>Principe du moindre privilège et gestion fine des permissions.</p>
-                    <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="bg-accent p-4 rounded-lg">
                       <h4 className="font-semibold mb-2">Éléments clés :</h4>
                       <ul className="space-y-1">
                         <li>• Authentification multi-facteurs (MFA)</li>
@@ -324,7 +324,7 @@ export default function CloudSecurityDocumentation() {
                 <CardContent>
                   <ul className="space-y-1">
                     {security.details.map((detail, idx) => (
-                      <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
+                      <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
                         <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
                         {detail}
                       </li>
@@ -354,7 +354,7 @@ export default function CloudSecurityDocumentation() {
                       <div className="space-y-2">
                         {provider.services.map((service, idx) => (
                           <div key={idx} className="flex items-center gap-2">
-                            <Server className="h-4 w-4 text-gray-500" />
+                            <Server className="h-4 w-4 text-muted-foreground" />
                             <span className="text-sm">{service}</span>
                           </div>
                         ))}
@@ -412,7 +412,7 @@ export default function CloudSecurityDocumentation() {
                     className={`flex items-center gap-3 p-4 rounded-lg border transition-colors ${
                       checkedItems.includes(item.id) 
                         ? 'bg-green-50 border-green-200' 
-                        : 'bg-gray-50 border-gray-200'
+                        : 'bg-muted/50 border-border'
                     }`}
                   >
                     <input
@@ -423,7 +423,7 @@ export default function CloudSecurityDocumentation() {
                       className="h-5 w-5 text-green-600"
                     />
                     <label htmlFor={item.id} className="flex-1 cursor-pointer">
-                      <span className={checkedItems.includes(item.id) ? 'line-through text-gray-500' : ''}>
+                      <span className={checkedItems.includes(item.id) ? 'line-through text-muted-foreground' : ''}>
                         {item.text}
                       </span>
                       {item.critical && (
@@ -434,7 +434,7 @@ export default function CloudSecurityDocumentation() {
                 ))}
               </div>
               
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-6 p-4 bg-accent rounded-lg">
                 <p className="text-sm text-blue-800">
                   <strong>Progression :</strong> {checkedItems.length} / {checklistItems.length} éléments complétés
                   ({Math.round((checkedItems.length / checklistItems.length) * 100)}%)

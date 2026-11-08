@@ -142,10 +142,10 @@ export default function DORADocumentation() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-4xl font-bold text-foreground mb-2">
               Documentation DORA
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-muted-foreground">
               Digital Operational Resilience Act - Résilience opérationnelle numérique du secteur financier
             </p>
           </div>
@@ -176,7 +176,7 @@ export default function DORADocumentation() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-8">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-5">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="scope">Périmètre</TabsTrigger>
           <TabsTrigger value="pillars">5 Piliers</TabsTrigger>
@@ -196,7 +196,7 @@ export default function DORADocumentation() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     Le Digital Operational Resilience Act (DORA) est un règlement européen entré en vigueur 
                     le 16 janvier 2023, applicable à partir du 17 janvier 2025. Il vise à harmoniser et renforcer 
                     la résilience opérationnelle numérique du secteur financier européen.
@@ -213,7 +213,7 @@ export default function DORADocumentation() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 mt-6">
-                    <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="bg-accent p-4 rounded-lg">
                       <h4 className="font-semibold text-blue-900 mb-2">Applicabilité</h4>
                       <p className="text-blue-800">17 janvier 2025</p>
                     </div>
@@ -252,13 +252,13 @@ export default function DORADocumentation() {
                   <CardTitle className="text-lg">Ressources officielles</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Link href="https://www.eba.europa.eu/dora" className="block text-blue-600 hover:underline">
+                  <Link href="https://www.eba.europa.eu/dora" className="block text-primary hover:underline">
                     → EBA - Autorité bancaire européenne
                   </Link>
-                  <Link href="https://www.esma.europa.eu/dora" className="block text-blue-600 hover:underline">
+                  <Link href="https://www.esma.europa.eu/dora" className="block text-primary hover:underline">
                     → ESMA - Autorité des marchés financiers
                   </Link>
-                  <Link href="https://www.eiopa.europa.eu/dora" className="block text-blue-600 hover:underline">
+                  <Link href="https://www.eiopa.europa.eu/dora" className="block text-primary hover:underline">
                     → EIOPA - Autorité des assurances
                   </Link>
                 </CardContent>
@@ -280,7 +280,7 @@ export default function DORADocumentation() {
               <div className="space-y-6">
                 {financialEntities.map((category, index) => (
                   <div key={index} className={`p-6 rounded-lg border-2 ${
-                    category.color === 'blue' ? 'border-blue-200 bg-blue-50' : 'border-purple-200 bg-purple-50'
+                    category.color === 'blue' ? 'border-primary/30 bg-accent' : 'border-purple-200 bg-purple-50'
                   }`}>
                     <h3 className={`text-xl font-bold mb-4 ${
                       category.color === 'blue' ? 'text-blue-900' : 'text-purple-900'
@@ -289,9 +289,9 @@ export default function DORADocumentation() {
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {category.items.map((item, idx) => (
-                        <div key={idx} className={`flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm`}>
+                        <div key={idx} className={`flex items-center gap-2 p-3 bg-card rounded-lg shadow-sm`}>
                           <Building2 className={`h-4 w-4 flex-shrink-0 ${
-                            category.color === 'blue' ? 'text-blue-600' : 'text-purple-600'
+                            category.color === 'blue' ? 'text-primary' : 'text-purple-600'
                           }`} />
                           <span className="text-sm">{item}</span>
                         </div>
@@ -338,7 +338,7 @@ export default function DORADocumentation() {
                         {pillar.requirements.map((requirement, idx) => (
                           <div key={idx} className="flex items-start gap-2">
                             <CheckCircle className="h-4 w-4 text-green-600 mt-1 flex-shrink-0" />
-                            <span className="text-sm text-gray-700">{requirement}</span>
+                            <span className="text-sm text-muted-foreground">{requirement}</span>
                           </div>
                         ))}
                       </div>
@@ -363,19 +363,19 @@ export default function DORADocumentation() {
                     <h3 className="text-lg font-semibold">Gouvernance TIC</h3>
                     <ul className="space-y-2">
                       <li className="flex items-start gap-2">
-                        <Users className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <Users className="h-5 w-5 text-primary mt-0.5" />
                         <span>Responsabilité de l'organe dirigeant</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <FileText className="h-5 w-5 text-primary mt-0.5" />
                         <span>Stratégie TIC documentée et approuvée</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <Shield className="h-5 w-5 text-primary mt-0.5" />
                         <span>Fonctions de gestion des risques TIC</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <TrendingUp className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <TrendingUp className="h-5 w-5 text-primary mt-0.5" />
                         <span>Indicateurs de performance (KRI/KPI)</span>
                       </li>
                     </ul>
@@ -462,7 +462,7 @@ export default function DORADocumentation() {
                     className={`flex items-center gap-3 p-4 rounded-lg border transition-colors ${
                       checkedItems.includes(item.id) 
                         ? 'bg-green-50 border-green-200' 
-                        : 'bg-gray-50 border-gray-200'
+                        : 'bg-muted/50 border-border'
                     }`}
                   >
                     <input
@@ -473,7 +473,7 @@ export default function DORADocumentation() {
                       className="h-5 w-5 text-green-600"
                     />
                     <label htmlFor={item.id} className="flex-1 cursor-pointer">
-                      <span className={checkedItems.includes(item.id) ? 'line-through text-gray-500' : ''}>
+                      <span className={checkedItems.includes(item.id) ? 'line-through text-muted-foreground' : ''}>
                         {item.text}
                       </span>
                       {item.critical && (

@@ -171,10 +171,10 @@ export default function ANSSIDocumentation() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-4xl font-bold text-foreground mb-2">
               Documentation ANSSI
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-muted-foreground">
               Agence Nationale de la Sécurité des Systèmes d'Information - Autorité française de cybersécurité
             </p>
           </div>
@@ -205,7 +205,7 @@ export default function ANSSIDocumentation() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-8">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-5">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="services">Services</TabsTrigger>
           <TabsTrigger value="regulatory">Cadre réglementaire</TabsTrigger>
@@ -225,12 +225,12 @@ export default function ANSSIDocumentation() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     L'ANSSI est l'autorité nationale française en matière de cybersécurité et de sécurité numérique. 
                     Créée en 2009, elle est rattachée au Secrétaire général de la défense et de la sécurité nationale (SGDSN).
                   </p>
                   
-                  <div className="bg-blue-50 p-4 rounded-lg">
+                  <div className="bg-accent p-4 rounded-lg">
                     <h3 className="font-semibold text-blue-900 mb-2">Missions principales :</h3>
                     <ul className="space-y-1 text-blue-800">
                       <li>• Comprendre et anticiper les menaces cyber</li>
@@ -281,13 +281,13 @@ export default function ANSSIDocumentation() {
                   <CardTitle className="text-lg">Ressources officielles</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Link href="https://www.ssi.gouv.fr" className="block text-blue-600 hover:underline">
+                  <Link href="https://www.ssi.gouv.fr" className="block text-primary hover:underline">
                     → Site officiel ANSSI
                   </Link>
-                  <Link href="https://www.cert.ssi.gouv.fr" className="block text-blue-600 hover:underline">
+                  <Link href="https://www.cert.ssi.gouv.fr" className="block text-primary hover:underline">
                     → CERT-FR
                   </Link>
-                  <Link href="https://secnumacademie.gouv.fr" className="block text-blue-600 hover:underline">
+                  <Link href="https://secnumacademie.gouv.fr" className="block text-primary hover:underline">
                     → SecNumAcadémie
                   </Link>
                 </CardContent>
@@ -444,12 +444,12 @@ export default function ANSSIDocumentation() {
                       </ul>
                     </div>
                     
-                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <div className="bg-accent p-4 rounded-lg border border-primary/30">
                       <h4 className="font-semibold text-blue-900 mb-2">RGS - Référentiel Général de Sécurité</h4>
                       <p className="text-sm text-blue-800 mb-3">
                         Cadre réglementaire pour le secteur public
                       </p>
-                      <ul className="text-xs text-blue-700 space-y-1">
+                      <ul className="text-xs text-primary space-y-1">
                         <li>• Homologation de sécurité</li>
                         <li>• Politique de sécurité</li>
                         <li>• Audit de conformité</li>
@@ -491,7 +491,7 @@ export default function ANSSIDocumentation() {
                     className={`flex items-center gap-3 p-4 rounded-lg border transition-colors ${
                       checkedItems.includes(item.id) 
                         ? 'bg-green-50 border-green-200' 
-                        : 'bg-gray-50 border-gray-200'
+                        : 'bg-muted/50 border-border'
                     }`}
                   >
                     <input
@@ -502,7 +502,7 @@ export default function ANSSIDocumentation() {
                       className="h-5 w-5 text-green-600"
                     />
                     <label htmlFor={item.id} className="flex-1 cursor-pointer">
-                      <span className={checkedItems.includes(item.id) ? 'line-through text-gray-500' : ''}>
+                      <span className={checkedItems.includes(item.id) ? 'line-through text-muted-foreground' : ''}>
                         {item.text}
                       </span>
                       {item.critical && (
@@ -513,7 +513,7 @@ export default function ANSSIDocumentation() {
                 ))}
               </div>
               
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-6 p-4 bg-accent rounded-lg">
                 <p className="text-sm text-blue-800">
                   <strong>Progression :</strong> {checkedItems.length} / {checklistItems.length} éléments complétés
                   ({Math.round((checkedItems.length / checklistItems.length) * 100)}%)

@@ -93,21 +93,21 @@ export function MetricCard({
         };
       case 'info':
         return {
-          border: 'border-blue-200',
+          border: 'border-primary/30',
           bg: variant === 'gradient' 
             ? 'bg-gradient-to-br from-blue-50 to-blue-100' 
-            : 'bg-blue-50',
+            : 'bg-accent',
           text: 'text-blue-800',
-          accent: 'text-blue-600'
+          accent: 'text-primary'
         };
       default:
         return {
-          border: 'border-gray-200',
+          border: 'border-border',
           bg: variant === 'gradient' 
             ? 'bg-gradient-to-br from-gray-50 to-gray-100' 
-            : 'bg-white',
-          text: 'text-gray-800',
-          accent: 'text-gray-600'
+            : 'bg-card',
+          text: 'text-foreground',
+          accent: 'text-muted-foreground'
         };
     }
   };
@@ -118,7 +118,7 @@ export function MetricCard({
     const trendColor = trend.isGood !== undefined 
       ? (trend.isGood ? 'text-green-600' : 'text-red-600')
       : (trend.direction === 'up' ? 'text-green-600' : 
-         trend.direction === 'down' ? 'text-red-600' : 'text-gray-600');
+         trend.direction === 'down' ? 'text-red-600' : 'text-muted-foreground');
 
     switch (trend.direction) {
       case 'up':

@@ -299,14 +299,14 @@ const BibliothecairePage = () => {
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      'ISO': 'bg-blue-100 text-blue-800',
+      'ISO': 'bg-accent text-blue-800',
       'UE': 'bg-yellow-100 text-yellow-800',
       'ANSSI': 'bg-red-100 text-red-800',
       'NIST': 'bg-green-100 text-green-800',
       'ENISA': 'bg-purple-100 text-purple-800',
       'CISA': 'bg-indigo-100 text-indigo-800'
     };
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[category as keyof typeof colors] || 'bg-muted text-foreground';
   };
 
   const getAccessColor = (access: string) => {
@@ -337,8 +337,8 @@ const BibliothecairePage = () => {
             <Library className="h-8 w-8 text-purple-600" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Bibliothèque Documentaire</h1>
-            <p className="text-lg text-gray-600">Collection complète de normes, guides et références en cybersécurité</p>
+            <h1 className="text-3xl font-bold text-foreground">Bibliothèque Documentaire</h1>
+            <p className="text-lg text-muted-foreground">Collection complète de normes, guides et références en cybersécurité</p>
           </div>
         </div>
 
@@ -347,8 +347,8 @@ const BibliothecairePage = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{documents.length}</div>
-                <div className="text-sm text-gray-600">Documents référencés</div>
+                <div className="text-2xl font-bold text-primary">{documents.length}</div>
+                <div className="text-sm text-muted-foreground">Documents référencés</div>
               </div>
             </CardContent>
           </Card>
@@ -356,7 +356,7 @@ const BibliothecairePage = () => {
             <CardContent className="pt-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600">{documents.filter(d => d.access === 'Gratuit').length}</div>
-                <div className="text-sm text-gray-600">Documents gratuits</div>
+                <div className="text-sm text-muted-foreground">Documents gratuits</div>
               </div>
             </CardContent>
           </Card>
@@ -364,7 +364,7 @@ const BibliothecairePage = () => {
             <CardContent className="pt-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-orange-600">{categories.length - 1}</div>
-                <div className="text-sm text-gray-600">Sources officielles</div>
+                <div className="text-sm text-muted-foreground">Sources officielles</div>
               </div>
             </CardContent>
           </Card>
@@ -372,7 +372,7 @@ const BibliothecairePage = () => {
             <CardContent className="pt-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600">{filteredDocuments.length}</div>
-                <div className="text-sm text-gray-600">Résultats affichés</div>
+                <div className="text-sm text-muted-foreground">Résultats affichés</div>
               </div>
             </CardContent>
           </Card>
@@ -381,7 +381,7 @@ const BibliothecairePage = () => {
         {/* Recherche et filtres */}
         <div className="space-y-4 mb-8">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Rechercher par titre, description ou tags..."
               value={searchTerm}
@@ -393,7 +393,7 @@ const BibliothecairePage = () => {
           <div className="flex flex-wrap gap-4">
             {/* Filtres par catégorie */}
             <div className="flex flex-wrap gap-2">
-              <span className="text-sm font-medium text-gray-700">Catégorie:</span>
+              <span className="text-sm font-medium text-muted-foreground">Catégorie:</span>
               {categories.map((category) => (
                 <Button
                   key={category.id}
@@ -411,7 +411,7 @@ const BibliothecairePage = () => {
             
             {/* Filtres par type */}
             <div className="flex flex-wrap gap-2">
-              <span className="text-sm font-medium text-gray-700">Type:</span>
+              <span className="text-sm font-medium text-muted-foreground">Type:</span>
               {types.map((type) => (
                 <Button
                   key={type.id}
@@ -432,7 +432,7 @@ const BibliothecairePage = () => {
         {filteredDocuments.length === 0 ? (
           <Card>
             <CardContent className="pt-6">
-              <div className="text-center text-gray-500">
+              <div className="text-center text-muted-foreground">
                 <Search className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                 <h3 className="text-lg font-medium mb-2">Aucun document trouvé</h3>
                 <p>Essayez de modifier vos critères de recherche ou vos filtres.</p>
@@ -457,7 +457,7 @@ const BibliothecairePage = () => {
                       </Badge>
                     </div>
                     <CardTitle className="text-xl mb-1">{doc.title}</CardTitle>
-                    <p className="text-gray-600 font-medium">{doc.subtitle}</p>
+                    <p className="text-muted-foreground font-medium">{doc.subtitle}</p>
                   </div>
                   <div className="flex items-center gap-1">
                     {renderStars(doc.rating)}
@@ -466,29 +466,29 @@ const BibliothecairePage = () => {
               </CardHeader>
               
               <CardContent className="space-y-4">
-                <p className="text-gray-700">{doc.description}</p>
+                <p className="text-muted-foreground">{doc.description}</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-gray-500" />
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
                     <span>{new Date(doc.publishDate).toLocaleDateString('fr-FR')}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-gray-500" />
+                    <FileText className="h-4 w-4 text-muted-foreground" />
                     <span>{doc.pages} pages</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Globe className="h-4 w-4 text-gray-500" />
+                    <Globe className="h-4 w-4 text-muted-foreground" />
                     <span>{doc.language}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Tag className="h-4 w-4 text-gray-500" />
+                    <Tag className="h-4 w-4 text-muted-foreground" />
                     <span>{doc.price}</span>
                   </div>
                 </div>
 
                 {doc.summary && (
-                  <div className="p-3 bg-blue-50 rounded-lg">
+                  <div className="p-3 bg-accent rounded-lg">
                     <h4 className="font-semibold text-blue-900 mb-1">Résumé :</h4>
                     <p className="text-blue-800 text-sm">{doc.summary}</p>
                   </div>
@@ -504,7 +504,7 @@ const BibliothecairePage = () => {
                 </div>
 
                 <div className="flex items-center justify-between pt-4 border-t">
-                  <div className="flex items-center gap-4 text-xs text-gray-500">
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Download className="h-4 w-4" />
                       <span>{doc.downloads.toLocaleString()} téléchargements</span>
@@ -540,7 +540,7 @@ const BibliothecairePage = () => {
 
       {/* Footer avec statistiques de recherche */}
       {filteredDocuments.length > 0 && (
-        <div className="mt-8 text-center text-sm text-gray-500">
+        <div className="mt-8 text-center text-sm text-muted-foreground">
           Affichage de {filteredDocuments.length} document{filteredDocuments.length > 1 ? 's' : ''} 
           {selectedCategory !== 'all' && ` dans la catégorie "${categories.find(c => c.id === selectedCategory)?.name}"`}
           {selectedType !== 'all' && ` de type "${types.find(t => t.id === selectedType)?.name}"`}

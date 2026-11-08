@@ -360,7 +360,7 @@ export default function AuditDetailPage() {
               </div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-600">{responseStats.notScored}</div>
+              <div className="text-2xl font-bold text-muted-foreground">{responseStats.notScored}</div>
               <p className="text-sm text-muted-foreground">Non scorées</p>
               <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                 <div 
@@ -375,7 +375,7 @@ export default function AuditDetailPage() {
 
       {/* Contenu principal avec onglets */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-4">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="responses">Réponses détaillées</TabsTrigger>
           <TabsTrigger value="action-plan">Plan d'action</TabsTrigger>

@@ -221,25 +221,25 @@ const AlertesPage = () => {
       'medium': 'bg-yellow-100 text-yellow-800',
       'low': 'bg-green-100 text-green-800'
     };
-    return colors[priority as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[priority as keyof typeof colors] || 'bg-muted text-foreground';
   };
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      'RGPD': 'bg-blue-100 text-blue-800',
+      'RGPD': 'bg-accent text-blue-800',
       'NIS2': 'bg-orange-100 text-orange-800',
       'DORA': 'bg-green-100 text-green-800',
       'ISO 27001': 'bg-indigo-100 text-indigo-800',
       'ANSSI': 'bg-red-100 text-red-800'
     };
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[category as keyof typeof colors] || 'bg-muted text-foreground';
   };
 
   const getAlertIcon = (priority: string, type: string) => {
     if (priority === 'critical') return <AlertTriangle className="h-5 w-5 text-red-600" />;
     if (type === 'Jurisprudence') return <Briefcase className="h-5 w-5 text-purple-600" />;
-    if (type === 'Guide officiel') return <FileText className="h-5 w-5 text-blue-600" />;
-    return <Info className="h-5 w-5 text-gray-600" />;
+    if (type === 'Guide officiel') return <FileText className="h-5 w-5 text-primary" />;
+    return <Info className="h-5 w-5 text-muted-foreground" />;
   };
 
   const formatTimeAgo = (dateString: string) => {
@@ -290,8 +290,8 @@ const AlertesPage = () => {
               )}
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Alertes Réglementaires</h1>
-              <p className="text-lg text-gray-600">Veille automatisée des évolutions législatives et réglementaires</p>
+              <h1 className="text-3xl font-bold text-foreground">Alertes Réglementaires</h1>
+              <p className="text-lg text-muted-foreground">Veille automatisée des évolutions législatives et réglementaires</p>
             </div>
           </div>
           
@@ -310,7 +310,7 @@ const AlertesPage = () => {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Non lues</p>
+                <p className="text-sm font-medium text-muted-foreground">Non lues</p>
                 <p className="text-2xl font-bold text-orange-600">{unreadCount}</p>
               </div>
               <Bell className="h-6 w-6 text-orange-600" />
@@ -322,7 +322,7 @@ const AlertesPage = () => {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Critiques</p>
+                <p className="text-sm font-medium text-muted-foreground">Critiques</p>
                 <p className="text-2xl font-bold text-red-600">{criticalCount}</p>
               </div>
               <AlertTriangle className="h-6 w-6 text-red-600" />
@@ -334,8 +334,8 @@ const AlertesPage = () => {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Cette semaine</p>
-                <p className="text-2xl font-bold text-blue-600">
+                <p className="text-sm font-medium text-muted-foreground">Cette semaine</p>
+                <p className="text-2xl font-bold text-primary">
                   {alerts.filter(a => {
                     const alertDate = new Date(a.date);
                     const weekAgo = new Date();
@@ -344,7 +344,7 @@ const AlertesPage = () => {
                   }).length}
                 </p>
               </div>
-              <Calendar className="h-6 w-6 text-blue-600" />
+              <Calendar className="h-6 w-6 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -353,7 +353,7 @@ const AlertesPage = () => {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Favoris</p>
+                <p className="text-sm font-medium text-muted-foreground">Favoris</p>
                 <p className="text-2xl font-bold text-purple-600">
                   {alerts.filter(a => a.starred).length}
                 </p>
@@ -377,7 +377,7 @@ const AlertesPage = () => {
           {/* Filtres */}
           <div className="space-y-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Rechercher dans les alertes..."
                 value={searchTerm}
@@ -388,7 +388,7 @@ const AlertesPage = () => {
             
             <div className="flex flex-wrap gap-4">
               <div className="flex flex-wrap gap-2">
-                <span className="text-sm font-medium text-gray-700">Catégorie:</span>
+                <span className="text-sm font-medium text-muted-foreground">Catégorie:</span>
                 {categories.map((category) => (
                   <Button
                     key={category.id}
@@ -405,7 +405,7 @@ const AlertesPage = () => {
               </div>
               
               <div className="flex flex-wrap gap-2">
-                <span className="text-sm font-medium text-gray-700">Priorité:</span>
+                <span className="text-sm font-medium text-muted-foreground">Priorité:</span>
                 {priorities.map((priority) => (
                   <Button
                     key={priority.id}
@@ -424,7 +424,7 @@ const AlertesPage = () => {
                   onCheckedChange={setShowRead}
                   id="show-read"
                 />
-                <label htmlFor="show-read" className="text-sm text-gray-700">
+                <label htmlFor="show-read" className="text-sm text-muted-foreground">
                   Afficher les lues
                 </label>
               </div>
@@ -454,7 +454,7 @@ const AlertesPage = () => {
                         <CardTitle className={`text-lg ${!alert.read ? 'font-bold' : 'font-medium'}`}>
                           {alert.title}
                         </CardTitle>
-                        <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
                           <span>{alert.source}</span>
                           <span>•</span>
                           <span>{formatTimeAgo(alert.date)}</span>
@@ -476,7 +476,7 @@ const AlertesPage = () => {
                         size="sm"
                         onClick={() => toggleStar(alert.id)}
                       >
-                        <Star className={`h-4 w-4 ${alert.starred ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'}`} />
+                        <Star className={`h-4 w-4 ${alert.starred ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
                       </Button>
                       {!alert.read && (
                         <Button
@@ -492,16 +492,16 @@ const AlertesPage = () => {
                 </CardHeader>
                 
                 <CardContent className="space-y-4">
-                  <p className="text-gray-700">{alert.description}</p>
+                  <p className="text-muted-foreground">{alert.description}</p>
                   
                   {alert.content && (
-                    <div className="p-3 bg-gray-50 rounded-lg">
-                      <p className="text-sm text-gray-800">{alert.content}</p>
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <p className="text-sm text-foreground">{alert.content}</p>
                     </div>
                   )}
 
                   {alert.impact && (
-                    <div className="p-3 bg-blue-50 rounded-lg">
+                    <div className="p-3 bg-accent rounded-lg">
                       <h4 className="font-semibold text-blue-900 mb-1">Impact :</h4>
                       <p className="text-sm text-blue-800">{alert.impact}</p>
                     </div>
@@ -512,7 +512,7 @@ const AlertesPage = () => {
                       <h4 className="font-semibold mb-2">Actions recommandées :</h4>
                       <ul className="space-y-1">
                         {alert.actions.map((action, idx) => (
-                          <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
+                          <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
                             <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0" />
                             {action}
                           </li>
@@ -560,7 +560,7 @@ const AlertesPage = () => {
                     <h3 className="font-semibold">Intelligence Artificielle et RGPD</h3>
                     <Badge className="bg-green-100 text-green-800">+15% cette semaine</Badge>
                   </div>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     Multiplication des guides et recommandations sur l'usage de l'IA conforme au RGPD
                   </p>
                 </div>
@@ -570,7 +570,7 @@ const AlertesPage = () => {
                     <h3 className="font-semibold">Sanctions RGPD Transfrontalières</h3>
                     <Badge className="bg-red-100 text-red-800">+8% ce mois</Badge>
                   </div>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     Augmentation des sanctions pour non-respect des règles de transfert international
                   </p>
                 </div>
@@ -578,9 +578,9 @@ const AlertesPage = () => {
                 <div className="p-4 border rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-semibold">Cybersécurité Secteur Financier</h3>
-                    <Badge className="bg-blue-100 text-blue-800">+12% ce trimestre</Badge>
+                    <Badge className="bg-accent text-blue-800">+12% ce trimestre</Badge>
                   </div>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     Renforcement des exigences DORA et nouvelles orientations des superviseurs
                   </p>
                 </div>
@@ -604,7 +604,7 @@ const AlertesPage = () => {
                   <div key={key} className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <h3 className="font-semibold capitalize">{key.replace(/([A-Z])/g, ' $1')}</h3>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         Recevoir les alertes pour cette catégorie
                       </p>
                     </div>
@@ -662,7 +662,7 @@ const AlertesPage = () => {
 
       {/* Footer avec statistiques de recherche */}
       {filteredAlerts.length > 0 && (
-        <div className="mt-8 text-center text-sm text-gray-500">
+        <div className="mt-8 text-center text-sm text-muted-foreground">
           Affichage de {filteredAlerts.length} alerte{filteredAlerts.length > 1 ? 's' : ''} 
           {selectedCategory !== 'all' && ` dans la catégorie "${categories.find(c => c.id === selectedCategory)?.name}"`}
           {selectedPriority !== 'all' && ` avec priorité "${priorities.find(p => p.id === selectedPriority)?.name}"`}

@@ -275,16 +275,16 @@ const GlossairePage = () => {
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      'RGPD': 'bg-blue-100 text-blue-800',
+      'RGPD': 'bg-accent text-blue-800',
       'NIS2': 'bg-orange-100 text-orange-800',
       'DORA': 'bg-green-100 text-green-800',
       'ISO 27001': 'bg-indigo-100 text-indigo-800',
       'ANSSI': 'bg-red-100 text-red-800',
       'EBIOS RM': 'bg-purple-100 text-purple-800',
-      'Cybersécurité': 'bg-gray-100 text-gray-800',
+      'Cybersécurité': 'bg-muted text-foreground',
       'Juridique': 'bg-yellow-100 text-yellow-800'
     };
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[category as keyof typeof colors] || 'bg-muted text-foreground';
   };
 
   return (
@@ -301,12 +301,12 @@ const GlossairePage = () => {
         </div>
         
         <div className="flex items-center gap-4 mb-6">
-          <div className="p-3 rounded-lg bg-blue-100">
-            <BookOpen className="h-8 w-8 text-blue-600" />
+          <div className="p-3 rounded-lg bg-accent">
+            <BookOpen className="h-8 w-8 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Glossaire Réglementaire & Cybersécurité</h1>
-            <p className="text-lg text-gray-600">Définitions complètes des termes techniques et juridiques</p>
+            <h1 className="text-3xl font-bold text-foreground">Glossaire Réglementaire & Cybersécurité</h1>
+            <p className="text-lg text-muted-foreground">Définitions complètes des termes techniques et juridiques</p>
           </div>
         </div>
 
@@ -315,8 +315,8 @@ const GlossairePage = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{glossaryTerms.length}</div>
-                <div className="text-sm text-gray-600">Termes définis</div>
+                <div className="text-2xl font-bold text-primary">{glossaryTerms.length}</div>
+                <div className="text-sm text-muted-foreground">Termes définis</div>
               </div>
             </CardContent>
           </Card>
@@ -324,7 +324,7 @@ const GlossairePage = () => {
             <CardContent className="pt-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600">{categories.length - 1}</div>
-                <div className="text-sm text-gray-600">Catégories</div>
+                <div className="text-sm text-muted-foreground">Catégories</div>
               </div>
             </CardContent>
           </Card>
@@ -332,7 +332,7 @@ const GlossairePage = () => {
             <CardContent className="pt-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-orange-600">6</div>
-                <div className="text-sm text-gray-600">Réglementations</div>
+                <div className="text-sm text-muted-foreground">Réglementations</div>
               </div>
             </CardContent>
           </Card>
@@ -340,7 +340,7 @@ const GlossairePage = () => {
             <CardContent className="pt-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600">{filteredTerms.length}</div>
-                <div className="text-sm text-gray-600">Résultats affichés</div>
+                <div className="text-sm text-muted-foreground">Résultats affichés</div>
               </div>
             </CardContent>
           </Card>
@@ -349,7 +349,7 @@ const GlossairePage = () => {
         {/* Recherche et filtres */}
         <div className="space-y-4 mb-8">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Rechercher un terme ou une définition..."
               value={searchTerm}
@@ -388,7 +388,7 @@ const GlossairePage = () => {
         {filteredTerms.length === 0 ? (
           <Card>
             <CardContent className="pt-6">
-              <div className="text-center text-gray-500">
+              <div className="text-center text-muted-foreground">
                 <Search className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                 <h3 className="text-lg font-medium mb-2">Aucun résultat trouvé</h3>
                 <p>Essayez de modifier vos critères de recherche ou de sélectionner une autre catégorie.</p>
@@ -412,7 +412,7 @@ const GlossairePage = () => {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-gray-700 leading-relaxed">{term.definition}</p>
+                <p className="text-muted-foreground leading-relaxed">{term.definition}</p>
                 
                 {term.relatedTerms && term.relatedTerms.length > 0 && (
                   <div>
@@ -435,7 +435,7 @@ const GlossairePage = () => {
 
       {/* Footer avec statistiques de recherche */}
       {filteredTerms.length > 0 && (
-        <div className="mt-8 text-center text-sm text-gray-500">
+        <div className="mt-8 text-center text-sm text-muted-foreground">
           Affichage de {filteredTerms.length} terme{filteredTerms.length > 1 ? 's' : ''} 
           {selectedCategory !== 'all' && ` dans la catégorie "${categories.find(c => c.id === selectedCategory)?.name}"`}
           {searchTerm && ` correspondant à "${searchTerm}"`}

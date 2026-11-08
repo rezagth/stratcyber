@@ -26,7 +26,7 @@ type ActionItem = {
   proofDate: string | null;
   reminders: Reminder[];
 };
-type Audit = { id: string; organizationId: string | null; createdAt: string; score: number | null };
+type Audit = { id: string; organizationId: string | null; createdAt: string; score: number | null; sharedWithClient?: boolean };
 type Organization = { id: string; name: string };
 
 const PRIORITIES = ['Critique', 'Haute', 'Moyenne', 'Faible'];
@@ -72,6 +72,18 @@ export default function OrganizationActionPlanPage({ params }: { params: Promise
     loadPlan();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [organizationId]);
+
+  async function toggleShare(audit: Audit) {
+    const shared = !audit.sharedWithClient;
+    const res = await fetch(`/api/audits/${audit.id}/share`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ organizationId, shared }),
+    });
+    if (!res.ok) { setFeedback('Partage impossible.'); return; }
+    setAudits((prev) => prev.map((a) => (a.id === audit.id ? { ...a, sharedWithClient: shared } : a)));
+    setFeedback(shared ? 'Diagnostic partagé : le client le voit dans son espace.' : 'Diagnostic retiré de l\u2019espace client.');
+  }
 
   async function generate(auditId: string) {
     setGenerating(auditId);
@@ -135,7 +147,7 @@ export default function OrganizationActionPlanPage({ params }: { params: Promise
       <section className="mb-8">
         <h2 className="mb-2 text-lg font-medium">Générer depuis un audit</h2>
         {audits.length === 0 && (
-          <p className="text-sm text-muted-foreground">Aucun audit rattaché à ce client pour l&apos;instant.</p>
+          <p className="text-sm text-muted-foreground">Aucun audit rattaché à ce client pour l&apos;instant. <a className="underline" href="/strategie">Lancer un audit</a> et choisir ce client.</p>
         )}
         <ul className="space-y-2">
           {audits.map((audit) => (
@@ -143,13 +155,21 @@ export default function OrganizationActionPlanPage({ params }: { params: Promise
               <span>
                 Audit du {new Date(audit.createdAt).toLocaleDateString('fr-FR')} — score {audit.score ?? '—'}
               </span>
-              <Button
-                size="sm"
-                disabled={generating === audit.id}
-                onClick={() => generate(audit.id)}
-              >
-                {generating === audit.id ? 'Génération…' : "Générer le plan d'action"}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" asChild>
+                  <a href={`/api/audits/${audit.id}/report-pdf`}>Rapport PDF</a>
+                </Button>
+                <Button size="sm" variant={audit.sharedWithClient ? 'secondary' : 'outline'} onClick={() => toggleShare(audit)}>
+                  {audit.sharedWithClient ? 'Partagé avec le client ✓' : 'Partager avec le client'}
+                </Button>
+                <Button
+                  size="sm"
+                  disabled={generating === audit.id}
+                  onClick={() => generate(audit.id)}
+                >
+                  {generating === audit.id ? 'Génération…' : "Générer le plan d'action"}
+                </Button>
+              </div>
             </li>
           ))}
         </ul>

@@ -352,12 +352,12 @@ export default function EbookPage({ params }: Props) {
     return (
       <div className="container mx-auto p-6 max-w-4xl">
         <div className="text-center py-12">
-          <BookOpenIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">Ebook introuvable</h1>
-          <p className="text-gray-600 mb-8">{error || "Cet ebook n'existe pas ou a été supprimé."}</p>
+          <BookOpenIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h1 className="text-2xl font-semibold text-foreground mb-2">Ebook introuvable</h1>
+          <p className="text-muted-foreground mb-8">{error || "Cet ebook n'existe pas ou a été supprimé."}</p>
           <Link
             href="/training"
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
           >
             <ArrowLeftIcon className="h-5 w-5 mr-2" />
             Retour à la formation
@@ -373,7 +373,7 @@ export default function EbookPage({ params }: Props) {
     'Débutant': 'bg-green-100 text-green-800',
     'Intermédiaire': 'bg-yellow-100 text-yellow-800',
     'Avancé': 'bg-red-100 text-red-800'
-  }[ebook.difficulty] || 'bg-gray-100 text-gray-800';
+  }[ebook.difficulty] || 'bg-muted text-foreground';
 
   const currentSlideData = slides[currentSlide];
   
@@ -969,7 +969,7 @@ export default function EbookPage({ params }: Props) {
                 onClick={() => setCurrentSlide(index)}
                 className={`w-2 h-2 rounded-full transition-all ${
                   currentSlide === index
-                    ? 'w-8 bg-white'
+                    ? 'w-8 bg-card'
                     : 'bg-white/40 hover:bg-white/60'
                 }`}
               />

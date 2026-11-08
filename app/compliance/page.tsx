@@ -170,14 +170,14 @@ const complianceModules = [
 
   const getColorClasses = (color: string) => {
     const colors = {
-      blue: 'border-blue-200 bg-blue-50',
+      blue: 'border-primary/30 bg-accent',
       orange: 'border-orange-200 bg-orange-50',
       green: 'border-green-200 bg-green-50',
       purple: 'border-purple-200 bg-purple-50',
       indigo: 'border-indigo-200 bg-indigo-50',
       red: 'border-red-200 bg-red-50'
     };
-    return colors[color as keyof typeof colors] || 'border-gray-200 bg-gray-50';
+    return colors[color as keyof typeof colors] || 'border-border bg-muted/50';
   };
 
   const getPriorityBadge = (priority: string) => {
@@ -199,10 +199,10 @@ const complianceModules = [
       <div className="mb-12">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-foreground mb-4">
               Plateforme de Conformité Réglementaire
             </h1>
-            <p className="text-lg text-gray-600 max-w-3xl">
+            <p className="text-lg text-muted-foreground max-w-3xl">
               Centre de ressources unifié pour la gestion de la conformité aux réglementations 
               européennes et françaises en matière de cybersécurité, protection des données et résilience numérique.
             </p>
@@ -217,26 +217,26 @@ const complianceModules = [
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card className="text-center">
             <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-blue-600">6</div>
-              <div className="text-sm text-gray-600">Réglementations</div>
+              <div className="text-2xl font-bold text-primary">6</div>
+              <div className="text-sm text-muted-foreground">Réglementations</div>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="pt-6">
               <div className="text-2xl font-bold text-green-600">8+</div>
-              <div className="text-sm text-gray-600">Modules intégrés</div>
+              <div className="text-sm text-muted-foreground">Modules intégrés</div>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="pt-6">
               <div className="text-2xl font-bold text-orange-600">12+</div>
-              <div className="text-sm text-gray-600">Templates téléchargeables</div>
+              <div className="text-sm text-muted-foreground">Templates téléchargeables</div>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="pt-6">
               <div className="text-2xl font-bold text-purple-600">100+</div>
-              <div className="text-sm text-gray-600">Ressources expertes</div>
+              <div className="text-sm text-muted-foreground">Ressources expertes</div>
             </CardContent>
           </Card>
         </div>
@@ -268,7 +268,7 @@ const complianceModules = [
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg bg-white shadow-sm`}>
+                    <div className={`p-2 rounded-lg bg-card shadow-sm`}>
                       {module.icon}
                     </div>
                     <div>
@@ -281,17 +281,17 @@ const complianceModules = [
               </CardHeader>
               
               <CardContent className="space-y-4">
-                <p className="text-gray-700 leading-relaxed">{module.description}</p>
+                <p className="text-muted-foreground leading-relaxed">{module.description}</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
-                      <Clock className="h-4 w-4 text-gray-500" />
-                      <span className="text-gray-600">{module.status}</span>
+                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">{module.status}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <Globe className="h-4 w-4 text-gray-500" />
-                      <span className="text-gray-600">{module.scope}</span>
+                      <Globe className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">{module.scope}</span>
                     </div>
                   </div>
                 </div>
@@ -300,7 +300,7 @@ const complianceModules = [
                   <h4 className="font-semibold text-sm">Points clés :</h4>
                   <ul className="space-y-1">
                     {module.features.map((feature, idx) => (
-                      <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
+                      <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
                         <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0" />
                         {feature}
                       </li>
@@ -344,7 +344,7 @@ const complianceModules = [
               <CardContent className="space-y-4">
                 <ul className="space-y-2">
                   {tool.features.map((feature, idx) => (
-                    <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
+                    <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
                       {feature}
                     </li>
@@ -379,13 +379,13 @@ const complianceModules = [
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-                <Link href="/compliance/glossaire" className="block text-blue-600 hover:underline text-sm">
+                <Link href="/compliance/glossaire" className="block text-primary hover:underline text-sm">
                   → Glossaire réglementaire complet
                 </Link>
-                <Link href="/compliance/faq" className="block text-blue-600 hover:underline text-sm">
+                <Link href="/compliance/faq" className="block text-primary hover:underline text-sm">
                   → FAQ avancée avec réponses d&apos;experts
                 </Link>
-                <Link href="/compliance/bibliotheque" className="block text-blue-600 hover:underline text-sm">
+                <Link href="/compliance/bibliotheque" className="block text-primary hover:underline text-sm">
                   → Bibliothèque documentaire complète
                 </Link>
             </CardContent>
@@ -399,13 +399,13 @@ const complianceModules = [
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Link href="#" className="block text-blue-600 hover:underline text-sm">
+              <Link href="#" className="block text-primary hover:underline text-sm">
                 → Dernières évolutions législatives
               </Link>
-              <Link href="#" className="block text-blue-600 hover:underline text-sm">
+              <Link href="#" className="block text-primary hover:underline text-sm">
                 → Jurisprudence récente
               </Link>
-              <Link href="#" className="block text-blue-600 hover:underline text-sm">
+              <Link href="#" className="block text-primary hover:underline text-sm">
                 → Échéances importantes
               </Link>
             </CardContent>
@@ -419,13 +419,13 @@ const complianceModules = [
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Link href="#" className="block text-blue-600 hover:underline text-sm">
+              <Link href="#" className="block text-primary hover:underline text-sm">
                 → Auto-évaluations
               </Link>
-              <Link href="#" className="block text-blue-600 hover:underline text-sm">
+              <Link href="#" className="block text-primary hover:underline text-sm">
                 → Checklist de conformité
               </Link>
-              <Link href="#" className="block text-blue-600 hover:underline text-sm">
+              <Link href="#" className="block text-primary hover:underline text-sm">
                 → Outils de diagnostic
               </Link>
             </CardContent>

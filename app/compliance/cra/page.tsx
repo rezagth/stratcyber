@@ -114,10 +114,10 @@ const CRACompliancePage = () => {
           <Badge className="bg-purple-100 text-purple-800">En Préparation</Badge>
         </div>
         
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <h1 className="text-4xl font-bold text-foreground mb-4">
           CRA - Cyber Resilience Act
         </h1>
-        <p className="text-lg text-gray-600 mb-6">
+        <p className="text-lg text-muted-foreground mb-6">
           Règlement européen sur la résilience cybernétique des produits numériques. 
           Applicable à partir d'octobre 2027 pour tous les produits numériques commercialisés dans l'UE.
         </p>
@@ -130,18 +130,18 @@ const CRACompliancePage = () => {
                 <span className="font-semibold">Entrée en vigueur</span>
               </div>
               <p className="text-2xl font-bold text-orange-600">Oct. 2027</p>
-              <p className="text-sm text-gray-600">Produits mis sur le marché</p>
+              <p className="text-sm text-muted-foreground">Produits mis sur le marché</p>
             </CardContent>
           </Card>
           
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-2">
-                <Target className="h-5 w-5 text-blue-600" />
+                <Target className="h-5 w-5 text-primary" />
                 <span className="font-semibold">Portée</span>
               </div>
-              <p className="text-2xl font-bold text-blue-600">Produits UE</p>
-              <p className="text-sm text-gray-600">Connectés et numériques</p>
+              <p className="text-2xl font-bold text-primary">Produits UE</p>
+              <p className="text-sm text-muted-foreground">Connectés et numériques</p>
             </CardContent>
           </Card>
           
@@ -152,7 +152,7 @@ const CRACompliancePage = () => {
                 <span className="font-semibold">Sanctions</span>
               </div>
               <p className="text-2xl font-bold text-red-600">15M€</p>
-              <p className="text-sm text-gray-600">Ou 2.5% du CA mondial</p>
+              <p className="text-sm text-muted-foreground">Ou 2.5% du CA mondial</p>
             </CardContent>
           </Card>
         </div>
@@ -181,7 +181,7 @@ const CRACompliancePage = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="h-4 w-4" />
                   <span>Échéance: {req.deadline}</span>
                 </div>
@@ -212,13 +212,13 @@ const CRACompliancePage = () => {
                     <h4 className="font-semibold mb-2">Exemples de produits :</h4>
                     <ul className="list-disc list-inside space-y-1 text-sm">
                       {category.examples.map((example, idx) => (
-                        <li key={idx} className="text-gray-600">{example}</li>
+                        <li key={idx} className="text-muted-foreground">{example}</li>
                       ))}
                     </ul>
                   </div>
                   <div>
                     <h4 className="font-semibold mb-2">Exigences :</h4>
-                    <p className="text-sm text-gray-600">{category.requirements}</p>
+                    <p className="text-sm text-muted-foreground">{category.requirements}</p>
                   </div>
                 </div>
               </CardContent>
@@ -323,7 +323,7 @@ const CRACompliancePage = () => {
           <CardContent className="pt-6">
             <div className="text-center">
               <h3 className="text-2xl font-bold mb-4">Besoin d'aide pour le CRA ?</h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 Notre équipe d'experts vous accompagne dans votre mise en conformité CRA. 
                 De l'évaluation initiale à la certification, nous vous guidons à chaque étape.
               </p>

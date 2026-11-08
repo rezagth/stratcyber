@@ -48,10 +48,10 @@ export default function RGPDDocumentation() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-4xl font-bold text-foreground mb-2">
               Documentation RGPD
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-muted-foreground">
               Règlement Général sur la Protection des Données - Guide complet de mise en conformité
             </p>
           </div>
@@ -85,7 +85,7 @@ export default function RGPDDocumentation() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-8">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-6">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="principles">Principes</TabsTrigger>
           <TabsTrigger value="rights">Droits</TabsTrigger>
@@ -106,12 +106,12 @@ export default function RGPDDocumentation() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     Le Règlement Général sur la Protection des Données (RGPD) est entré en vigueur le 25 mai 2018. 
                     Il constitue la principale législation européenne en matière de protection des données personnelles.
                   </p>
                   
-                  <div className="bg-blue-50 p-4 rounded-lg">
+                  <div className="bg-accent p-4 rounded-lg">
                     <h3 className="font-semibold text-blue-900 mb-2">Objectifs principaux :</h3>
                     <ul className="space-y-1 text-blue-800">
                       <li>• Renforcer les droits des personnes</li>
@@ -168,13 +168,13 @@ export default function RGPDDocumentation() {
                   <CardTitle className="text-lg">Ressources externes</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Link href="https://www.cnil.fr" className="block text-blue-600 hover:underline">
+                  <Link href="https://www.cnil.fr" className="block text-primary hover:underline">
                     → Site officiel CNIL
                   </Link>
-                  <Link href="https://edpb.europa.eu" className="block text-blue-600 hover:underline">
+                  <Link href="https://edpb.europa.eu" className="block text-primary hover:underline">
                     → European Data Protection Board
                   </Link>
-                  <Link href="#" className="block text-blue-600 hover:underline">
+                  <Link href="#" className="block text-primary hover:underline">
                     → Jurisprudence récente
                   </Link>
                 </CardContent>
@@ -198,7 +198,7 @@ export default function RGPDDocumentation() {
                   <AccordionTrigger>1. Licéité, loyauté et transparence</AccordionTrigger>
                   <AccordionContent className="space-y-4">
                     <p>Les données doivent être traitées de manière licite, loyale et transparente.</p>
-                    <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="bg-muted/50 p-4 rounded-lg">
                       <h4 className="font-semibold mb-2">Bases légales possibles :</h4>
                       <ul className="space-y-1">
                         <li>• Consentement de la personne concernée</li>
@@ -227,7 +227,7 @@ export default function RGPDDocumentation() {
                   <AccordionTrigger>3. Minimisation des données</AccordionTrigger>
                   <AccordionContent className="space-y-4">
                     <p>Les données doivent être adéquates, pertinentes et limitées à ce qui est nécessaire.</p>
-                    <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="bg-accent p-4 rounded-lg">
                       <h4 className="font-semibold mb-2">Bonnes pratiques :</h4>
                       <ul className="space-y-1">
                         <li>• Ne collectez que les données strictement nécessaires</li>
@@ -331,7 +331,7 @@ export default function RGPDDocumentation() {
                 <CardContent>
                   <ul className="space-y-1">
                     {right.details.map((detail, idx) => (
-                      <li key={idx} className="text-sm text-gray-600">• {detail}</li>
+                      <li key={idx} className="text-sm text-muted-foreground">• {detail}</li>
                     ))}
                   </ul>
                 </CardContent>
@@ -375,19 +375,19 @@ export default function RGPDDocumentation() {
                     <h3 className="text-lg font-semibold">Mesures organisationnelles</h3>
                     <ul className="space-y-2">
                       <li className="flex items-start gap-2">
-                        <Users className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <Users className="h-5 w-5 text-primary mt-0.5" />
                         <span>Formation du personnel</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <Shield className="h-5 w-5 text-primary mt-0.5" />
                         <span>Mesures de sécurité appropriées</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <AlertCircle className="h-5 w-5 text-primary mt-0.5" />
                         <span>Procédure de notification des violations</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <FileText className="h-5 w-5 text-primary mt-0.5" />
                         <span>Gestion des demandes d'exercice des droits</span>
                       </li>
                     </ul>
@@ -447,7 +447,7 @@ export default function RGPDDocumentation() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card className="border border-blue-200 bg-blue-50">
+                  <Card className="border border-primary/30 bg-accent">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-lg flex items-center gap-2">
                         <FileText className="h-5 w-5" />
@@ -455,7 +455,7 @@ export default function RGPDDocumentation() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <p className="text-sm text-gray-600">Documentation exhaustive de mise en conformité RGPD avec exemples concrets et cas d'usage.</p>
+                      <p className="text-sm text-muted-foreground">Documentation exhaustive de mise en conformité RGPD avec exemples concrets et cas d'usage.</p>
                       <ul className="text-sm space-y-1">
                         <li>• Principes fondamentaux détaillés</li>
                         <li>• Procédures pratiques</li>
@@ -480,7 +480,7 @@ export default function RGPDDocumentation() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <p className="text-sm text-gray-600">Collection de templates prêts à l'emploi pour accélérer votre mise en conformité.</p>
+                      <p className="text-sm text-muted-foreground">Collection de templates prêts à l'emploi pour accélérer votre mise en conformité.</p>
                       <ul className="text-sm space-y-1">
                         <li>• Registre des traitements</li>
                         <li>• Formulaire d'exercice des droits</li>
@@ -501,18 +501,18 @@ export default function RGPDDocumentation() {
                   <h4 className="font-semibold text-yellow-900 mb-2">📋 Documentation disponible dans les fichiers markdown :</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                     <div>
-                      <Link href="/compliance/docs/rgpd-guide-complet.md" className="text-blue-600 hover:underline block">
+                      <Link href="/compliance/docs/rgpd-guide-complet.md" className="text-primary hover:underline block">
                         → rgpd-guide-complet.md
                       </Link>
-                      <Link href="/compliance/docs/templates-outils-pratiques.md" className="text-blue-600 hover:underline block">
+                      <Link href="/compliance/docs/templates-outils-pratiques.md" className="text-primary hover:underline block">
                         → templates-outils-pratiques.md
                       </Link>
                     </div>
                     <div>
-                      <Link href="/compliance/docs/sensibilisation-cybersecurite.md" className="text-blue-600 hover:underline block">
+                      <Link href="/compliance/docs/sensibilisation-cybersecurite.md" className="text-primary hover:underline block">
                         → sensibilisation-cybersecurite.md
                       </Link>
-                      <Link href="/compliance/docs/cloud-security-guide.md" className="text-blue-600 hover:underline block">
+                      <Link href="/compliance/docs/cloud-security-guide.md" className="text-primary hover:underline block">
                         → cloud-security-guide.md
                       </Link>
                     </div>
@@ -571,7 +571,7 @@ export default function RGPDDocumentation() {
                     className={`flex items-center gap-3 p-4 rounded-lg border transition-colors ${
                       checkedItems.includes(item.id) 
                         ? 'bg-green-50 border-green-200' 
-                        : 'bg-gray-50 border-gray-200'
+                        : 'bg-muted/50 border-border'
                     }`}
                   >
                     <input
@@ -582,7 +582,7 @@ export default function RGPDDocumentation() {
                       className="h-5 w-5 text-green-600"
                     />
                     <label htmlFor={item.id} className="flex-1 cursor-pointer">
-                      <span className={checkedItems.includes(item.id) ? 'line-through text-gray-500' : ''}>
+                      <span className={checkedItems.includes(item.id) ? 'line-through text-muted-foreground' : ''}>
                         {item.text}
                       </span>
                       {item.critical && (
@@ -593,7 +593,7 @@ export default function RGPDDocumentation() {
                 ))}
               </div>
               
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-6 p-4 bg-accent rounded-lg">
                 <p className="text-sm text-blue-800">
                   <strong>Progression :</strong> {checkedItems.length} / {checklistItems.length} éléments complétés
                   ({Math.round((checkedItems.length / checklistItems.length) * 100)}%)

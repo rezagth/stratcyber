@@ -33,11 +33,11 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="flex-1 w-full py-12 md:py-24 lg:py-32 xl:py-48">
+      <section className="flex-1 w-full py-16 md:py-24 lg:py-32 bg-[radial-gradient(60%_50%_at_50%_0%,color-mix(in_oklch,var(--primary)_14%,transparent),transparent)]">
         <div className="container px-4 md:px-6 mx-auto">
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="space-y-2">
-              <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
+              <div className="inline-block rounded-full border border-primary/20 bg-accent px-3.5 py-1 text-sm font-medium text-accent-foreground">
                 Plateforme de Cybersécurité Professionnelle
               </div>
               <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
@@ -49,7 +49,7 @@ export default function Home() {
                 Protégez votre organisation avec nos outils professionnels.
               </p>
             </div>
-            <div className="space-x-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
               <Button asChild size="lg">
                 <Link href="/auth/login">
                   Commencer
@@ -80,7 +80,7 @@ export default function Home() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <Card>
               <CardHeader>
-                <Shield className="h-8 w-8 text-primary mb-2" />
+                <Shield className="h-10 w-10 rounded-xl bg-accent p-2 text-primary mb-2" />
                 <CardTitle>Audit de Sécurité</CardTitle>
                 <CardDescription>
                   Évaluez votre posture de sécurité avec notre audit dynamique et intelligent
@@ -89,15 +89,15 @@ export default function Home() {
               <CardContent>
                 <ul className="text-sm text-muted-foreground space-y-2">
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Questionnaires adaptatifs
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Recommandations personnalisées
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Rapports détaillés
                   </li>
                 </ul>
@@ -106,7 +106,7 @@ export default function Home() {
             
             <Card>
               <CardHeader>
-                <FileCheck className="h-8 w-8 text-primary mb-2" />
+                <FileCheck className="h-10 w-10 rounded-xl bg-accent p-2 text-primary mb-2" />
                 <CardTitle>Conformité Réglementaire</CardTitle>
                 <CardDescription>
                   Respectez les normes RGPD, NIS2, DORA et autres réglementations
@@ -115,15 +115,15 @@ export default function Home() {
               <CardContent>
                 <ul className="text-sm text-muted-foreground space-y-2">
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Suivi multi-réglementations
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Alertes d'échéances
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Documentation automatique
                   </li>
                 </ul>
@@ -132,7 +132,7 @@ export default function Home() {
 
             <Card>
               <CardHeader>
-                <BarChart3 className="h-8 w-8 text-primary mb-2" />
+                <BarChart3 className="h-10 w-10 rounded-xl bg-accent p-2 text-primary mb-2" />
                 <CardTitle>Tableau de Bord</CardTitle>
                 <CardDescription>
                   Visualisez vos KPI sécurité et suivez vos progrès en temps réel
@@ -141,15 +141,15 @@ export default function Home() {
               <CardContent>
                 <ul className="text-sm text-muted-foreground space-y-2">
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Métriques en temps réel
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Graphiques interactifs
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Alertes personnalisées
                   </li>
                 </ul>
@@ -158,7 +158,7 @@ export default function Home() {
 
             <Card>
               <CardHeader>
-                <BookOpen className="h-8 w-8 text-primary mb-2" />
+                <BookOpen className="h-10 w-10 rounded-xl bg-accent p-2 text-primary mb-2" />
                 <CardTitle>Formation</CardTitle>
                 <CardDescription>
                   Formez vos équipes avec des contenus interactifs et certifiants
@@ -167,15 +167,15 @@ export default function Home() {
               <CardContent>
                 <ul className="text-sm text-muted-foreground space-y-2">
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     E-books spécialisés
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Quiz interactifs
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Parcours personnalisés
                   </li>
                 </ul>
@@ -184,7 +184,7 @@ export default function Home() {
 
             <Card>
               <CardHeader>
-                <Target className="h-8 w-8 text-primary mb-2" />
+                <Target className="h-10 w-10 rounded-xl bg-accent p-2 text-primary mb-2" />
                 <CardTitle>Stratégie Sécurité</CardTitle>
                 <CardDescription>
                   Développez votre roadmap sécurité avec notre assistant IA
@@ -193,15 +193,15 @@ export default function Home() {
               <CardContent>
                 <ul className="text-sm text-muted-foreground space-y-2">
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Plans d'action prioritaires
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Recommandations IA
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Suivi des objectifs
                   </li>
                 </ul>
@@ -210,7 +210,7 @@ export default function Home() {
 
             <Card>
               <CardHeader>
-                <Award className="h-8 w-8 text-primary mb-2" />
+                <Award className="h-10 w-10 rounded-xl bg-accent p-2 text-primary mb-2" />
                 <CardTitle>Excellence</CardTitle>
                 <CardDescription>
                   Une plateforme conçue par des experts pour les professionnels
@@ -219,15 +219,15 @@ export default function Home() {
               <CardContent>
                 <ul className="text-sm text-muted-foreground space-y-2">
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Interface intuitive
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Support expert
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                    <CheckCircle className="mr-2 h-4 w-4 text-success" />
                     Mises à jour régulières
                   </li>
                 </ul>

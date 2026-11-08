@@ -45,7 +45,7 @@ export function KPIBox({
       case 'danger':
         return 'bg-gradient-to-br from-red-50 to-red-100 border-red-200 text-red-800';
       default:
-        return 'bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 text-blue-800';
+        return 'bg-gradient-to-br from-blue-50 to-blue-100 border-primary/30 text-blue-800';
     }
   };
 
@@ -57,19 +57,19 @@ export function KPIBox({
       case 'down':
         return <TrendingDown className="h-4 w-4 text-red-600" />;
       default:
-        return <Minus className="h-4 w-4 text-gray-600" />;
+        return <Minus className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
   const getTrendColor = () => {
-    if (!trend) return 'text-gray-600';
+    if (!trend) return 'text-muted-foreground';
     switch (trend.direction) {
       case 'up':
         return 'text-green-600';
       case 'down':
         return 'text-red-600';
       default:
-        return 'text-gray-600';
+        return 'text-muted-foreground';
     }
   };
 

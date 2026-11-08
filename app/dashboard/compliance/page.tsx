@@ -76,7 +76,7 @@ export default function ComplianceDashboard() {
   if (loading) {
     return (
       <div className="text-center">
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Chargement des données...</h2>
+        <h2 className="text-lg font-bold text-foreground mb-4">Chargement des données...</h2>
       </div>
     );
   }
@@ -84,7 +84,7 @@ export default function ComplianceDashboard() {
   if (error) {
     return (
       <div className="text-center">
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Erreur lors de la récupération des données</h2>
+        <h2 className="text-lg font-bold text-foreground mb-4">Erreur lors de la récupération des données</h2>
         <p className="text-lg text-red-600">{error}</p>
       </div>
     );
@@ -93,8 +93,8 @@ export default function ComplianceDashboard() {
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 space-y-8">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Dashboard de Conformité</h1>
-        <p className="text-lg text-gray-600">
+        <h1 className="text-4xl font-bold text-foreground mb-4">Dashboard de Conformité</h1>
+        <p className="text-lg text-muted-foreground">
           Vue d&apos;ensemble de votre conformité réglementaire
         </p>
       </div>
@@ -106,9 +106,9 @@ export default function ComplianceDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Conformité Globale</p>
-                <p className="text-3xl font-bold text-blue-600">{metrics.overallCompliance}%</p>
+                <p className="text-3xl font-bold text-primary">{metrics.overallCompliance}%</p>
               </div>
-              <Shield className="h-8 w-8 text-blue-600" />
+              <Shield className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -198,7 +198,7 @@ export default function ComplianceDashboard() {
       
       {/* Onglets détaillés */}
       <Tabs defaultValue="actions" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-4">
           <TabsTrigger value="actions">Plan d&apos;Actions</TabsTrigger>
           <TabsTrigger value="risks">Analyse des Risques</TabsTrigger>
           <TabsTrigger value="timeline">Feuille de Route</TabsTrigger>
@@ -344,7 +344,7 @@ export default function ComplianceDashboard() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                       {phase.actions.map((action, actionIndex) => (
-                        <div key={actionIndex} className="text-sm p-2 bg-gray-50 rounded">
+                        <div key={actionIndex} className="text-sm p-2 bg-muted/50 rounded">
                           {action}
                         </div>
                       ))}

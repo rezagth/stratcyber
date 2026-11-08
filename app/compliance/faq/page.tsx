@@ -466,15 +466,15 @@ const FAQPage = () => {
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      'RGPD': 'bg-blue-100 text-blue-800',
+      'RGPD': 'bg-accent text-blue-800',
       'NIS2': 'bg-orange-100 text-orange-800',
       'DORA': 'bg-green-100 text-green-800',
       'ISO 27001': 'bg-indigo-100 text-indigo-800',
       'ANSSI': 'bg-red-100 text-red-800',
-      'Cybersécurité': 'bg-gray-100 text-gray-800',
+      'Cybersécurité': 'bg-muted text-foreground',
       'Juridique': 'bg-yellow-100 text-yellow-800'
     };
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[category as keyof typeof colors] || 'bg-muted text-foreground';
   };
 
   return (
@@ -495,8 +495,8 @@ const FAQPage = () => {
             <Lightbulb className="h-8 w-8 text-orange-600" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">FAQ Avancée</h1>
-            <p className="text-lg text-gray-600">Questions fréquentes avec réponses détaillées d'experts</p>
+            <h1 className="text-3xl font-bold text-foreground">FAQ Avancée</h1>
+            <p className="text-lg text-muted-foreground">Questions fréquentes avec réponses détaillées d'experts</p>
           </div>
         </div>
 
@@ -505,8 +505,8 @@ const FAQPage = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{faqItems.length}</div>
-                <div className="text-sm text-gray-600">Questions répondues</div>
+                <div className="text-2xl font-bold text-primary">{faqItems.length}</div>
+                <div className="text-sm text-muted-foreground">Questions répondues</div>
               </div>
             </CardContent>
           </Card>
@@ -514,7 +514,7 @@ const FAQPage = () => {
             <CardContent className="pt-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600">{categories.length - 1}</div>
-                <div className="text-sm text-gray-600">Catégories</div>
+                <div className="text-sm text-muted-foreground">Catégories</div>
               </div>
             </CardContent>
           </Card>
@@ -522,7 +522,7 @@ const FAQPage = () => {
             <CardContent className="pt-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-orange-600">{faqItems.reduce((acc, item) => acc + item.tags.length, 0)}</div>
-                <div className="text-sm text-gray-600">Tags associés</div>
+                <div className="text-sm text-muted-foreground">Tags associés</div>
               </div>
             </CardContent>
           </Card>
@@ -530,7 +530,7 @@ const FAQPage = () => {
             <CardContent className="pt-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600">{filteredItems.length}</div>
-                <div className="text-sm text-gray-600">Résultats affichés</div>
+                <div className="text-sm text-muted-foreground">Résultats affichés</div>
               </div>
             </CardContent>
           </Card>
@@ -539,7 +539,7 @@ const FAQPage = () => {
         {/* Recherche et filtres */}
         <div className="space-y-4 mb-8">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Rechercher une question, réponse ou tag..."
               value={searchTerm}
@@ -576,7 +576,7 @@ const FAQPage = () => {
         {filteredItems.length === 0 ? (
           <Card>
             <CardContent className="pt-6">
-              <div className="text-center text-gray-500">
+              <div className="text-center text-muted-foreground">
                 <Search className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                 <h3 className="text-lg font-medium mb-2">Aucune question trouvée</h3>
                 <p>Essayez de modifier vos critères de recherche ou de sélectionner une autre catégorie.</p>
@@ -591,7 +591,7 @@ const FAQPage = () => {
                   className="w-full"
                   onClick={() => toggleItem(item.id)}
                 >
-                  <CardHeader className="hover:bg-gray-50">
+                  <CardHeader className="hover:bg-muted/50">
                     <div className="flex items-start justify-between">
                       <div className="flex-1 text-left">
                         <div className="flex items-center gap-2 mb-2">
@@ -603,9 +603,9 @@ const FAQPage = () => {
                       </div>
                       <div className="flex-shrink-0">
                         {openItems.includes(item.id) ? (
-                          <ChevronDown className="h-5 w-5 text-gray-400" />
+                          <ChevronDown className="h-5 w-5 text-muted-foreground" />
                         ) : (
-                          <ChevronRight className="h-5 w-5 text-gray-400" />
+                          <ChevronRight className="h-5 w-5 text-muted-foreground" />
                         )}
                       </div>
                     </div>
@@ -614,7 +614,7 @@ const FAQPage = () => {
                 <CollapsibleContent>
                   <CardContent className="pt-0">
                     <div className="prose prose-sm max-w-none">
-                      <div className="whitespace-pre-line text-gray-700 leading-relaxed">
+                      <div className="whitespace-pre-line text-muted-foreground leading-relaxed">
                         {item.answer}
                       </div>
                     </div>
@@ -625,7 +625,7 @@ const FAQPage = () => {
                           <Badge 
                             key={idx} 
                             variant="outline" 
-                            className="cursor-pointer hover:bg-gray-100"
+                            className="cursor-pointer hover:bg-muted"
                             onClick={() => setSearchTerm(tag)}
                           >
                             {tag}
@@ -648,9 +648,9 @@ const FAQPage = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="text-center space-y-2">
-                <BookOpen className="h-8 w-8 mx-auto text-blue-600" />
+                <BookOpen className="h-8 w-8 mx-auto text-primary" />
                 <h3 className="font-semibold">Consultez le glossaire</h3>
-                <p className="text-sm text-gray-600">Définitions complètes des termes techniques</p>
+                <p className="text-sm text-muted-foreground">Définitions complètes des termes techniques</p>
                 <Button variant="outline" size="sm" asChild>
                   <Link href="/compliance/glossaire">Accéder au glossaire</Link>
                 </Button>
@@ -663,7 +663,7 @@ const FAQPage = () => {
               <div className="text-center space-y-2">
                 <FileText className="h-8 w-8 mx-auto text-green-600" />
                 <h3 className="font-semibold">Documentation détaillée</h3>
-                <p className="text-sm text-gray-600">Guides complets par réglementation</p>
+                <p className="text-sm text-muted-foreground">Guides complets par réglementation</p>
                 <Button variant="outline" size="sm" asChild>
                   <Link href="/compliance">Voir la documentation</Link>
                 </Button>
@@ -676,7 +676,7 @@ const FAQPage = () => {
               <div className="text-center space-y-2">
                 <HelpCircle className="h-8 w-8 mx-auto text-orange-600" />
                 <h3 className="font-semibold">Contactez-nous</h3>
-                <p className="text-sm text-gray-600">Support expert personnalisé</p>
+                <p className="text-sm text-muted-foreground">Support expert personnalisé</p>
                 <Button variant="outline" size="sm">
                   Obtenir de l'aide
                 </Button>
@@ -688,7 +688,7 @@ const FAQPage = () => {
 
       {/* Footer avec statistiques de recherche */}
       {filteredItems.length > 0 && (
-        <div className="mt-8 text-center text-sm text-gray-500">
+        <div className="mt-8 text-center text-sm text-muted-foreground">
           Affichage de {filteredItems.length} question{filteredItems.length > 1 ? 's' : ''} 
           {selectedCategory !== 'all' && ` dans la catégorie "${categories.find(c => c.id === selectedCategory)?.name}"`}
           {searchTerm && ` correspondant à "${searchTerm}"`}

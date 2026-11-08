@@ -23,7 +23,6 @@ import {
   Settings,
   Shield,
   ShieldCheck,
-  Target,
   User2,
   X,
 } from 'lucide-react'
@@ -39,7 +38,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
-import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 
 interface IntegratedSidebarProps {
@@ -138,40 +136,72 @@ type NavItem = {
   items?: { title: string; url: string; exact?: boolean }[]
 }
 
-// Cockpit InfraCyb : entrées réservées à l'admin, ajoutées aux menus de base
-const adminItems: NavItem[] = [
+type NavSection = { label?: string; items: NavItem[] }
+
+// Vue admin (RSSI) : uniquement ce qui sert au travail quotidien
+const adminSections: NavSection[] = [
   {
-    title: 'Clients',
-    url: '/dashboard/organizations',
-    icon: Users,
+    items: [
+      { title: 'Vue d\'ensemble', url: '/dashboard', icon: LayoutDashboard, exact: true },
+    ],
   },
   {
-    title: 'Modèles de politiques',
-    url: '/dashboard/policy-templates',
-    icon: FileText,
+    label: 'Clients',
+    items: [
+      { title: 'Mes clients', url: '/dashboard/organizations', icon: Users },
+      {
+        title: 'Audits',
+        icon: Shield,
+        items: [
+          { title: 'Nouvel audit', url: '/strategie' },
+          { title: 'Historique', url: '/dashboard/audits' },
+        ],
+      },
+    ],
   },
   {
-    title: 'Sécurité du compte',
-    url: '/account/security',
-    icon: KeyRound,
+    label: 'Outils',
+    items: [
+      { title: 'Modèles de politiques', url: '/dashboard/policy-templates', icon: FileText },
+      { title: 'Référentiels', url: '/compliance', icon: ShieldCheck },
+    ],
+  },
+  {
+    label: 'Compte',
+    items: [{ title: 'Sécurité du compte', url: '/account/security', icon: KeyRound }],
   },
 ]
 
-// Espace client (lecture seule) : un menu dédié, aligné sur les cartes de /client
-const clientItems: NavItem[] = [
-  { title: 'Accueil', url: '/client', icon: Home, exact: true },
-  { title: 'Plan d\'action', url: '/client/action-plan', icon: ListChecks },
-  { title: 'Mes preuves', url: '/client/evidence', icon: FolderCheck },
-  { title: 'Contrôles', url: '/client/controls', icon: ShieldCheck },
-  { title: 'Risques et incidents', url: '/client/risks', icon: AlertTriangle },
-  { title: 'Politiques', url: '/client/policies', icon: FileText },
-  { title: 'Questionnaires', url: '/client/security-answers', icon: ClipboardList },
-  { title: 'Gouvernance', url: '/client/governance', icon: Landmark },
-  { title: 'Fournisseurs', url: '/client/suppliers', icon: Building2 },
-  { title: 'Budget', url: '/client/budget', icon: Wallet },
-  { title: 'Formation', url: '/client/training', icon: BookOpen },
-  { title: 'Profil', url: '/client/profile', icon: User2 },
-  { title: 'Sécurité du compte', url: '/account/security', icon: KeyRound },
+// Vue client : lecture seule, vocabulaire simple, aucun outil d'administration
+const clientSections: NavSection[] = [
+  { items: [{ title: 'Accueil', url: '/client', icon: Home, exact: true }] },
+  {
+    label: 'Ma sécurité',
+    items: [
+      { title: 'Plan d\'action', url: '/client/action-plan', icon: ListChecks },
+      { title: 'Contrôles', url: '/client/controls', icon: ShieldCheck },
+      { title: 'Risques et incidents', url: '/client/risks', icon: AlertTriangle },
+      { title: 'Mes preuves', url: '/client/evidence', icon: FolderCheck },
+    ],
+  },
+  {
+    label: 'Documents',
+    items: [
+      { title: 'Politiques', url: '/client/policies', icon: FileText },
+      { title: 'Questionnaires', url: '/client/security-answers', icon: ClipboardList },
+      { title: 'Gouvernance', url: '/client/governance', icon: Landmark },
+    ],
+  },
+  {
+    label: 'Mon entreprise',
+    items: [
+      { title: 'Fournisseurs', url: '/client/suppliers', icon: Building2 },
+      { title: 'Budget', url: '/client/budget', icon: Wallet },
+      { title: 'Formation', url: '/client/training', icon: BookOpen },
+      { title: 'Profil', url: '/client/profile', icon: User2 },
+      { title: 'Sécurité du compte', url: '/account/security', icon: KeyRound },
+    ],
+  },
 ]
 
 // Actif sur l'adresse exacte ou sur ses sous-pages (/dashboard/organizations/<id>)
@@ -191,8 +221,9 @@ export function IntegratedSidebar({
 
   // Menu selon le rôle : client = espace dédié, admin = menus de base + cockpit
   const role = session?.user?.role
-  const menuItems: NavItem[] =
-    role === 'client' ? clientItems : role === 'admin' ? [...navigationItems, ...adminItems] : navigationItems
+  const sections: NavSection[] =
+    role === 'client' ? clientSections : role === 'admin' ? adminSections : [{ items: navigationItems }]
+  const isClientView = role === 'client'
 
   const sidebarWidth = isCompact ? 'w-16' : 'w-60'
   const showLabels = !isCompact
@@ -223,20 +254,20 @@ export function IntegratedSidebar({
                 variant="ghost"
                 size="icon"
                 onClick={onClose}
-                className="h-8 w-8 md:hidden"
+                className="h-8 w-8 md:hidden text-sidebar-foreground hover:bg-sidebar-accent"
               >
                 <X className="h-4 w-4" />
               </Button>
             )}
             
             <Link href="/" className="flex items-center gap-2 font-semibold">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sidebar-primary to-[oklch(0.5_0.2_285)] text-white shadow-md">
                 <Shield className="h-4 w-4" />
               </div>
               {showLabels && (
                 <div className="flex flex-col">
-                  <span className="text-sm font-bold">StratCyber</span>
-                  <span className="text-xs text-muted-foreground">Platforme de Cybersécurité</span>
+                  <span className="text-sm font-bold text-sidebar-accent-foreground tracking-tight">{isClientView ? 'InfraCyb' : 'StratCyber'}</span>
+                  <span className="text-[11px] text-sidebar-foreground/60">{isClientView ? 'Espace client InfraCyb' : 'Cockpit RSSI'}</span>
                 </div>
               )}
             </Link>
@@ -244,7 +275,15 @@ export function IntegratedSidebar({
 
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto p-2 space-y-1">
-            {menuItems.map((item) => {
+            {sections.map((section, si) => (
+              <div key={si} className={cn('space-y-1', si > 0 && 'pt-3')}>
+                {section.label && showLabels && (
+                  <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/45">
+                    {section.label}
+                  </p>
+                )}
+                {section.label && !showLabels && si > 0 && <div className="mx-2 border-t border-sidebar-border" />}
+            {section.items.map((item) => {
               const isActive = item.url ? isUrlActive(pathname, item.url, item.exact) : 
                 item.items?.some(subItem => isUrlActive(pathname, subItem.url, subItem.exact))
 
@@ -254,9 +293,10 @@ export function IntegratedSidebar({
                   <Collapsible key={item.title} defaultOpen={isActive && showLabels}>
                     <CollapsibleTrigger asChild>
                       <Button
-                        variant={isActive ? 'secondary' : 'ghost'}
+                        variant="ghost"
                         className={cn(
                           'w-full justify-start gap-2 h-9 sidebar-compact-item',
+                          isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-[inset_2px_0_0_var(--sidebar-primary)]' : 'text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                           !showLabels && 'px-2 justify-center'
                         )}
                         title={!showLabels ? item.title : undefined}
@@ -275,14 +315,19 @@ export function IntegratedSidebar({
                     </CollapsibleTrigger>
                     
                     {showLabels && (
-                      <CollapsibleContent className="space-y-1 ml-4 mt-1">
+                      <CollapsibleContent className="space-y-1 ml-5 mt-1 border-l border-sidebar-border pl-2">
                         {item.items?.map((subItem) => (
                           <Button
                             key={subItem.url}
                             asChild
-                            variant={isUrlActive(pathname, subItem.url, subItem.exact) ? 'secondary' : 'ghost'}
+                            variant="ghost"
                             size="sm"
-                            className="w-full justify-start h-8"
+                            className={cn(
+                              'w-full justify-start h-8',
+                              isUrlActive(pathname, subItem.url, subItem.exact)
+                                ? 'text-sidebar-accent-foreground font-semibold bg-sidebar-accent/70'
+                                : 'text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                            )}
                           >
                             <Link href={subItem.url}>
                               <span className="text-xs">{subItem.title}</span>
@@ -299,9 +344,10 @@ export function IntegratedSidebar({
                   <div key={item.title} className="sidebar-compact-item relative">
                     <Button
                       asChild
-                      variant={isActive ? 'secondary' : 'ghost'}
+                      variant="ghost"
                       className={cn(
                         'w-full justify-start gap-2 h-9',
+                        isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-[inset_2px_0_0_var(--sidebar-primary)]' : 'text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                         !showLabels && 'px-2 justify-center'
                       )}
                       title={!showLabels ? item.title : undefined}
@@ -318,6 +364,8 @@ export function IntegratedSidebar({
                 )
               }
             })}
+              </div>
+            ))}
           </nav>
 
           {/* Footer avec utilisateur */}
@@ -328,11 +376,11 @@ export function IntegratedSidebar({
                   <Button
                     variant="ghost"
                     className={cn(
-                      'w-full gap-2 h-10',
+                      'w-full gap-2 h-11 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                       showLabels ? 'justify-start' : 'justify-center px-2'
                     )}
                   >
-                    <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">
+                    <div className="h-7 w-7 rounded-full bg-sidebar-primary/25 text-sidebar-accent-foreground flex items-center justify-center">
                       <User2 className="h-3 w-3" />
                     </div>
                     {showLabels && (
@@ -340,7 +388,7 @@ export function IntegratedSidebar({
                         <span className="text-xs font-medium truncate max-w-[120px]">
                           {session.user?.email}
                         </span>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-[11px] text-sidebar-foreground/60">
                           Connecté
                         </span>
                       </div>

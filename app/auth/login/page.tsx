@@ -5,7 +5,7 @@ import { getSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Loader2, CheckCircle, AlertCircle, ShieldCheck } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -91,70 +91,67 @@ export default function LoginPage() {
     }
   };
 
+  const inputCls =
+    'block w-full h-11 rounded-lg border border-input bg-background px-3.5 text-sm text-foreground placeholder:text-muted-foreground shadow-xs transition focus-visible:outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30';
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Connexion
-          </h2>
+    <div className="min-h-screen grid lg:grid-cols-2 bg-background">
+      <aside className="relative hidden lg:flex flex-col justify-between overflow-hidden bg-sidebar p-12 text-sidebar-foreground">
+        <div className="pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full bg-sidebar-primary/30 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-40 -left-24 h-96 w-96 rounded-full bg-[oklch(0.5_0.2_290)]/25 blur-3xl" />
+        <div className="relative flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-sidebar-primary to-[oklch(0.5_0.2_285)] shadow-lg">
+            <ShieldCheck className="h-5 w-5 text-white" />
+          </div>
+          <span className="text-lg font-semibold tracking-tight text-white">StratCyber</span>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-              <span className="block sm:inline">{error}</span>
+        <div className="relative space-y-4 max-w-md">
+          <h1 className="text-4xl font-semibold leading-tight tracking-tight text-white">
+            Pilotez la cybersécurité de vos clients, sans friction.
+          </h1>
+          <p className="text-base text-sidebar-foreground/75">
+            Audits, plans d&apos;action, dossiers de conformité et gestion de crise réunis dans un seul cockpit.
+          </p>
+        </div>
+        <p className="relative text-xs text-sidebar-foreground/50">© InfraCyb</p>
+      </aside>
+
+      <main className="flex items-center justify-center px-4 py-10 sm:px-8">
+        <div className="w-full max-w-sm space-y-8">
+          <div className="space-y-2">
+            <div className="flex lg:hidden h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md mb-4">
+              <ShieldCheck className="h-5 w-5" />
             </div>
-          )}
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">Email</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Adresse email"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">Mot de passe</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Mot de passe"
-              />
-            </div>
+            <h2 className="text-2xl font-semibold tracking-tight">Connexion</h2>
+            <p className="text-sm text-muted-foreground">Accédez à votre espace sécurisé.</p>
           </div>
 
-          {needsTotp && (
-            <div className="space-y-1">
-              <label htmlFor="totp" className="block text-sm font-medium text-gray-700">
-                Code de l&apos;application d&apos;authentification (ou code de secours)
-              </label>
-              <input
-                id="totp"
-                name="totp"
-                type="text"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                autoFocus
-                required
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                placeholder="123456"
-              />
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            {error && (
+              <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-sm text-destructive" role="alert">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+            <div className="space-y-1.5">
+              <label htmlFor="email" className="text-sm font-medium">Adresse email</label>
+              <input id="email" name="email" type="email" autoComplete="email" required className={inputCls} placeholder="vous@entreprise.fr" />
             </div>
-          )}
+            <div className="space-y-1.5">
+              <label htmlFor="password" className="text-sm font-medium">Mot de passe</label>
+              <input id="password" name="password" type="password" autoComplete="current-password" required className={inputCls} placeholder="••••••••" />
+            </div>
 
-          <div>
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+            {needsTotp && (
+              <div className="space-y-1.5">
+                <label htmlFor="totp" className="text-sm font-medium">
+                  Code de l&apos;application d&apos;authentification (ou code de secours)
+                </label>
+                <input id="totp" name="totp" type="text" inputMode="numeric" autoComplete="one-time-code" autoFocus required className={inputCls} placeholder="123456" />
+              </div>
+            )}
+
+            <Button type="submit" disabled={isLoading} size="lg" className="w-full h-11">
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -164,9 +161,9 @@ export default function LoginPage() {
                 'Se connecter'
               )}
             </Button>
-          </div>
-        </form>
-      </div>
+          </form>
+        </div>
+      </main>
     </div>
   );
 }
