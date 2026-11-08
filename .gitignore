@@ -66,3 +66,12 @@ prisma/dev.db*
 prisma/*.db
 prisma/*.db-journal
 .claude/
+
+# Livrables locaux (listes de prospects, campagnes, exports) et sauvegardes git : jamais dans le repo
+Claude outputs/
+*.bundle
+
+# Résidus du dossier partagé et fichiers locaux jamais versionnés
+.fuse_hidden*
+scripts/create-client-demo.js
+docs/analyse-concurrence.md
