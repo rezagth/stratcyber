@@ -1,5 +1,5 @@
 import { computeAuditResult, generateActionPlan } from './scoring';
-import { prioritizeActions } from './prioritization';
+import { planActions } from './prioritization';
 
 type AuditForGeneration = {
   id: string;
@@ -12,6 +12,7 @@ export type GeneratedActionPlanItem = {
   organizationId: string;
   auditId: string;
   title: string;
+  description: string;
   category: string;
   priority: 'Critique' | 'Haute' | 'Moyenne' | 'Faible';
   responsible: string;
@@ -51,7 +52,7 @@ export function buildActionPlanFromAudit(audit: AuditForGeneration): GeneratedAc
 
   // Priorité et échéance viennent des règles de prioritisation (voir prioritization.ts), pas de la
   // valeur unique de l'ancien générateur d'aperçu.
-  const prioritized = prioritizeActions(
+  const prioritized = planActions(
     unique.map((raw) => ({ title: raw.action, category: raw.category, responsible: raw.owner })),
     audit.createdAt
   );
@@ -61,6 +62,7 @@ export function buildActionPlanFromAudit(audit: AuditForGeneration): GeneratedAc
       organizationId: audit.organizationId,
       auditId: audit.id,
       title: item.title,
+      description: item.description,
       category: item.category,
       priority: item.priority,
       responsible: item.responsible,

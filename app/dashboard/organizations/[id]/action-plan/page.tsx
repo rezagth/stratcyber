@@ -191,6 +191,7 @@ export default function OrganizationActionPlanPage({ params }: { params: Promise
                       {item.category && <Badge variant="outline">{item.category}</Badge>}
                       {isOverdue(item) && <Badge variant="destructive">En retard</Badge>}
                     </div>
+                    {item.description && <p className="mt-1 text-sm text-muted-foreground">{item.description}</p>}
                   </CardHeader>
                   <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <div>
