@@ -26,8 +26,8 @@ function table(headers: string[], rows: string[][]): string {
 const MAX_RESPONSES = 50;
 
 /** Construit le rapport d'audit en HTML, prêt à être rendu en PDF. Toutes les valeurs sont échappées. */
-export function buildAuditReportHtml(data: AuditReportData): string {
-  const { audit, recommendations, plan, categoryScores, compliance, responses, detail } = data;
+export function buildAuditReportHtml(data: AuditReportData, summary: string[] = []): string {
+  const { audit, recommendations, plan, actionItems, categoryScores, compliance, responses, detail } = data;
   const score = audit.score ?? 0;
 
   return `
@@ -73,6 +73,7 @@ export function buildAuditReportHtml(data: AuditReportData): string {
       <div class="stat"><span class="stat-value">${esc(audit.score === null ? '—' : `${Math.round(score)} %`)}</span><span class="stat-label">Score global</span></div>
       <div class="stat"><span class="stat-value">${esc(audit.maturity ?? 'Non évalué')}</span><span class="stat-label">Maturité</span></div>
     </div>
+    ${summary.map((p) => `<p style="margin-top:8px">${esc(p)}</p>`).join('')}
   `, true)}
 
   ${detail === 'full' && categoryScores.length > 0 ? section('Analyse par domaine', categoryScores.map((c) => `
@@ -81,10 +82,13 @@ export function buildAuditReportHtml(data: AuditReportData): string {
 
   ${recommendations.length > 0 ? section('Recommandations', `<ol>${recommendations.map((r) => `<li>${esc(r)}</li>`).join('')}</ol>`) : ''}
 
-  ${section("Plan d'action", plan.length === 0
-    ? '<p class="muted">Aucune action enregistrée.</p>'
-    : table(['Action', 'Priorité', 'Responsable', 'Durée estimée'],
-        plan.map((p) => [esc(p.title), esc(p.priority ?? '—'), esc(p.owner ?? '—'), esc(p.estimatedDuration ?? '—')])))}
+  ${section("Plan d'action", actionItems.length > 0
+    ? table(['Action', 'Priorité', 'Responsable', 'Échéance'],
+        actionItems.map((a) => [esc(a.title), esc(a.priority ?? '—'), esc(a.responsible ?? '—'), esc(a.dueDate ? fmtDate(a.dueDate) : '—')]))
+    : plan.length === 0
+      ? '<p class="muted">Aucune action enregistrée.</p>'
+      : table(['Action', 'Priorité', 'Responsable', 'Durée estimée'],
+          plan.map((p) => [esc(p.title), esc(p.priority ?? '—'), esc(p.owner ?? '—'), esc(p.estimatedDuration ?? '—')])))}
 
   ${detail === 'full' && compliance.length > 0 ? section('Conformité réglementaire', table(
     ['Réglementation', 'Score', 'Statut'],

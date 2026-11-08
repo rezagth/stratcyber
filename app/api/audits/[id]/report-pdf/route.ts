@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { jsonError, withApiAuth } from '@/lib/auth/api-auth';
 import { buildAuditReportData } from '@/lib/audit-report/data';
 import { renderAuditReportPdf } from '@/lib/audit-report/render';
+import { buildSummary } from '@/lib/audit-report/synthesis';
 import { logActivity } from '@/lib/activity-log';
 
 /**
@@ -16,7 +17,15 @@ export const GET = withApiAuth<{ id: string }>(
     const data = await buildAuditReportData(user, id);
     if (!data) return jsonError('Audit non trouvé', 404);
 
-    const pdf = await renderAuditReportPdf(data);
+    // Synthèse exécutive : IA si configurée, sinon texte construit à partir des chiffres de l'audit.
+    // Le client garde le rapport limité d'origine, sans plan détaillé : il reçoit aussi la synthèse.
+    const summary = await buildSummary({
+      score: data.audit.score,
+      maturity: data.audit.maturity,
+      categoryScores: data.categoryScores,
+      actions: data.actionItems.map((a) => ({ title: a.title, priority: a.priority, dueDate: a.dueDate })),
+    });
+    const pdf = await renderAuditReportPdf(data, summary.paragraphs);
     await logActivity(user, {
       action: 'audit.report-pdf',
       targetType: 'audit',

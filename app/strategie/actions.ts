@@ -8,12 +8,12 @@ import { rgpdQuestions, nis2Questions, doraQuestions, lmpQuestions, incidentQues
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-async function getUserId() {
+async function getSession() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     throw new Error("Non autorisé");
   }
-  return session.user.id;
+  return session.user;
 }
 
 interface AuditData {
@@ -23,9 +23,20 @@ interface AuditData {
   actionPlan: ActionItem[];
 }
 
-export async function saveAudit(auditData: AuditData) {
+export async function saveAudit(auditData: AuditData, organizationId?: string | null) {
   try {
-    const userId = await getUserId();
+    const sessionUser = await getSession();
+    const userId = sessionUser.id;
+
+    // Rattacher l'audit à un client : réservé à l'administrateur, et le client doit exister.
+    // Sans ce rattachement, l'audit n'apparaît ni dans le plan d'action ni dans le dossier du client.
+    let linkedOrganizationId: string | null = null;
+    if (organizationId) {
+      if (sessionUser.role !== 'admin') return { success: false, error: 'Non autorisé' };
+      const organization = await prisma.organization.findFirst({ where: { id: organizationId }, select: { id: true } });
+      if (!organization) return { success: false, error: 'Client introuvable' };
+      linkedOrganizationId = organization.id;
+    }
 
     // Le score, la maturité et les recommandations sont RECALCULÉS côté serveur à partir des réponses :
     // on ne fait pas confiance à un résultat calculé dans le navigateur.
@@ -38,6 +49,7 @@ export async function saveAudit(auditData: AuditData) {
     const audit = await prisma.audit.create({
       data: {
         userId,
+        organizationId: linkedOrganizationId,
         score: result.globalScore,
         maturity: result.maturity,
         recommendations: result.recommendations.join('\n'),

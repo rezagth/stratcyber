@@ -1,4 +1,5 @@
 import { computeAuditResult, generateActionPlan } from './scoring';
+import { prioritizeActions } from './prioritization';
 
 type AuditForGeneration = {
   id: string;
@@ -16,17 +17,6 @@ export type GeneratedActionPlanItem = {
   responsible: string;
   dueDate: Date;
   status: 'Non commencé';
-};
-
-const DEADLINE_IN_DAYS: Record<string, number> = {
-  '1 mois': 30,
-  '3 mois': 90,
-};
-
-const PRIORITY_MAP: Record<string, GeneratedActionPlanItem['priority']> = {
-  Haute: 'Haute',
-  Moyenne: 'Moyenne',
-  Basse: 'Faible',
 };
 
 /**
@@ -52,24 +42,30 @@ export function buildActionPlanFromAudit(audit: AuditForGeneration): GeneratedAc
   const seen = new Set<string>();
   const items: GeneratedActionPlanItem[] = [];
 
-  for (const raw of rawPlan) {
+  const unique = rawPlan.filter((raw) => {
     const dedupeKey = `${raw.category}::${raw.action}`;
-    if (seen.has(dedupeKey)) continue;
+    if (seen.has(dedupeKey)) return false;
     seen.add(dedupeKey);
+    return true;
+  });
 
-    const days = DEADLINE_IN_DAYS[raw.deadline] ?? 90;
-    const dueDate = new Date(audit.createdAt.getTime() + days * 24 * 60 * 60 * 1000);
+  // Priorité et échéance viennent des règles de prioritisation (voir prioritization.ts), pas de la
+  // valeur unique de l'ancien générateur d'aperçu.
+  const prioritized = prioritizeActions(
+    unique.map((raw) => ({ title: raw.action, category: raw.category, responsible: raw.owner })),
+    audit.createdAt
+  );
 
+  for (const item of prioritized) {
     items.push({
       organizationId: audit.organizationId,
       auditId: audit.id,
-      title: raw.action,
-      category: raw.category,
-      priority: PRIORITY_MAP[raw.priority] ?? 'Moyenne',
-      responsible: raw.owner,
-      dueDate,
-      // Toujours "Non commencé" à la génération : l'action vient d'être créée, même si
-      // generateActionPlan() (ancien système d'aperçu) la marque "En cours" par défaut.
+      title: item.title,
+      category: item.category,
+      priority: item.priority,
+      responsible: item.responsible,
+      dueDate: item.dueDate,
+      // Toujours "Non commencé" à la génération : l'action vient d'être créée.
       status: 'Non commencé',
     });
   }

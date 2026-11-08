@@ -3,7 +3,8 @@ import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
 // Routes /api accessibles sans session : NextAuth (login, session, csrf…) et l'inscription.
-const PUBLIC_API_PREFIXES = ['/api/auth/'];
+// /api/cron/ n'a pas de session : la route vérifie elle-même CRON_SECRET et reste fermée sans lui.
+const PUBLIC_API_PREFIXES = ['/api/auth/', '/api/cron/'];
 
 /**
  * Premier filet : exige une session valide sur les pages protégées et sur toute /api non publique.

@@ -38,7 +38,7 @@ describe('choix du fournisseur', () => {
   it('simulation par défaut, et un mode inconnu ou live échoue au lieu de simuler en silence', () => {
     expect(getEmailProvider().simulated).toBe(true);
     process.env.EMAIL_MODE = 'live';
-    expect(() => getEmailProvider()).toThrow(/aucun fournisseur/);
+    expect(() => getEmailProvider()).toThrow(/fournisseur d'envoi incomplet/);
   });
 });
 

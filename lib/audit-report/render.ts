@@ -3,11 +3,11 @@ import { buildAuditReportHtml } from '@/lib/audit-report/html';
 import type { AuditReportData } from '@/lib/audit-report/data';
 
 /** Rend le rapport d'audit en PDF via un Chromium headless. */
-export async function renderAuditReportPdf(data: AuditReportData): Promise<Buffer> {
+export async function renderAuditReportPdf(data: AuditReportData, summary: string[] = []): Promise<Buffer> {
   const browser = await launchPdfBrowser();
   try {
     const page = await browser.newPage();
-    await page.setContent(buildAuditReportHtml(data), { waitUntil: 'networkidle0' });
+    await page.setContent(buildAuditReportHtml(data, summary), { waitUntil: 'networkidle0' });
     const pdf = await page.pdf({
       format: 'A4',
       printBackground: true,

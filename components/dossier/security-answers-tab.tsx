@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { AnswerAssistant } from '@/components/dossier/answer-assistant';
 
 type Answer = {
   id: string; question: string; answer: string | null; isNotApplicable: boolean;
@@ -64,6 +65,8 @@ export function SecurityAnswersTab({ organizationId }: { organizationId: string 
         <a href={`/api/organizations/${organizationId}/security-answers/export`} className="text-sm underline">Exporter en CSV</a>
       </div>
       {feedback && <p role="status" className="text-sm">{feedback}</p>}
+
+      <AnswerAssistant organizationId={organizationId} />
 
       <ul className="space-y-3">
         {answers?.map((a) => (

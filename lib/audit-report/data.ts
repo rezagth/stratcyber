@@ -10,6 +10,8 @@ export type AuditReportPlanItem = {
   estimatedDuration: string | null;
 };
 
+const PRIORITY_RANK = (p: string | null) => { const i = ['Critique', 'Haute', 'Moyenne', 'Faible'].indexOf(p ?? ''); return i === -1 ? 9 : i; };
+
 function parsePlan(raw: string | null): AuditReportPlanItem[] {
   if (!raw) return [];
   try {
@@ -55,6 +57,15 @@ export async function buildAuditReportData(user: AuthedUser, auditId: string) {
   });
   if (!audit) return null;
 
+  // Plan d'action réel du client (priorisé, daté) : disponible quand l'audit est rattaché à un client
+  // et que le demandeur n'est pas le client lui-même (il garde le rapport limité d'origine).
+  const actionItems = !isClient && audit.organizationId
+    ? await prisma.actionPlanItem.findMany({
+        where: { organizationId: audit.organizationId, auditId: audit.id },
+        select: { title: true, priority: true, responsible: true, dueDate: true },
+      })
+    : [];
+
   const responses = 'responses' in audit && Array.isArray(audit.responses) ? audit.responses : [];
   const compliance = 'complianceScores' in audit && Array.isArray(audit.complianceScores) ? audit.complianceScores : [];
 
@@ -81,6 +92,9 @@ export async function buildAuditReportData(user: AuthedUser, auditId: string) {
       .map((r) => r.trim())
       .filter(Boolean),
     plan: parsePlan(audit.actionPlan ?? null),
+    actionItems: [...actionItems].sort(
+      (a, b) => PRIORITY_RANK(a.priority) - PRIORITY_RANK(b.priority) || (a.dueDate?.getTime() ?? Infinity) - (b.dueDate?.getTime() ?? Infinity)
+    ),
     categoryScores,
     compliance: compliance.map((c) => ({ regulation: c.regulation, score: c.score, status: c.status })),
     responses: responses.map((r) => ({
