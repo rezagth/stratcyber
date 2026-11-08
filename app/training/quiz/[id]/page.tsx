@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { ArrowLeftIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
@@ -28,10 +28,11 @@ interface Ebook {
 }
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default function QuizPage({ params }: Props) {
+  const { id } = use(params);
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [ebook, setEbook] = useState<Ebook | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,7 +47,7 @@ export default function QuizPage({ params }: Props) {
     const fetchQuiz = async () => {
       try {
         // D'abord récupérer l'ebook pour obtenir les infos du quiz
-        const ebookResponse = await fetch(`/api/training/ebook/${params.id}`);
+        const ebookResponse = await fetch(`/api/training/ebook/${id}`);
         if (!ebookResponse.ok) {
           throw new Error('Ebook non trouvé');
         }
@@ -72,7 +73,7 @@ export default function QuizPage({ params }: Props) {
     };
 
     fetchQuiz();
-  }, [params.id]);
+  }, [id]);
 
   const handleAnswerSelect = (questionId: string, answer: string) => {
     setSelectedAnswers(prev => ({
@@ -151,7 +152,7 @@ export default function QuizPage({ params }: Props) {
         <div className="bg-card shadow-sm border-b">
           <div className="container mx-auto px-6 py-4">
             <Link
-              href={`/training/ebook/${params.id}`}
+              href={`/training/ebook/${id}`}
               className="inline-flex items-center text-primary hover:text-blue-800 mb-4 transition-colors"
             >
               <ArrowLeftIcon className="h-5 w-5 mr-2" />
@@ -212,7 +213,7 @@ export default function QuizPage({ params }: Props) {
               </button>
               
               <Link
-                href={`/training/ebook/${params.id}`}
+                href={`/training/ebook/${id}`}
                 className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
                 Retour à l'ebook
@@ -275,7 +276,7 @@ export default function QuizPage({ params }: Props) {
       <div className="bg-card shadow-sm border-b">
         <div className="container mx-auto px-6 py-4">
           <Link
-            href={`/training/ebook/${params.id}`}
+            href={`/training/ebook/${id}`}
             className="inline-flex items-center text-primary hover:text-blue-800 mb-4 transition-colors"
           >
             <ArrowLeftIcon className="h-5 w-5 mr-2" />

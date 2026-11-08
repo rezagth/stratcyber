@@ -11,8 +11,9 @@ async function getAudit(id: string) {
   });
 }
 
-export default async function AuditDetailPage({ params }: { params: { id: string } }) {
-  const audit = await getAudit(params.id);
+export default async function AuditDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const audit = await getAudit(id);
   if (!audit) return <div className="text-center py-8">Audit introuvable.</div>;
 
   // Regrouper les scores par catégorie
