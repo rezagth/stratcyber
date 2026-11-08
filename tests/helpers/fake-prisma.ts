@@ -282,6 +282,12 @@ function model(table: Table) {
       for (const r of rows) Object.assign(r, args.data, { updatedAt: new Date() });
       return { count: rows.length };
     },
+    async delete(args: Row) {
+      const row = find({ where: args.where })[0];
+      if (!row) throw new Error(`fake-prisma : delete sans ligne correspondante sur ${table}`);
+      db[table] = db[table].filter((r) => r !== row);
+      return { ...row };
+    },
     async deleteMany(args: Row = {}) {
       const doomed = new Set(find(args));
       db[table] = db[table].filter((r) => !doomed.has(r));

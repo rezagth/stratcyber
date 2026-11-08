@@ -49,3 +49,35 @@ export const PATCH = withApiAuth<{ id: string }>(
   },
   { roles: ['admin'] }
 );
+
+/**
+ * Supprime définitivement un client et toutes ses données (plan d'action, notes, risques, incidents,
+ * contrôles, politiques, audits...). Administrateur uniquement. Irréversible : l'appelant doit renvoyer
+ * le nom exact du client dans `confirmName`, pour éviter qu'une suppression parte par erreur.
+ */
+export const DELETE = withApiAuth<{ id: string }>(
+  async (request, { params, user }) => {
+    const { id } = await params;
+    const existing = await prisma.organization.findFirst({ where: { id }, select: { id: true, name: true } });
+    if (!existing) return jsonError('Client non trouvé', 404);
+
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body.confirmName !== 'string' || body.confirmName !== existing.name) {
+      return jsonError('Confirmation requise : renvoyez le nom exact du client dans « confirmName ».', 400);
+    }
+
+    // Les audits ne sont que détachés (SetNull) par la suppression du client : on les supprime avec lui.
+    await prisma.$transaction([
+      prisma.audit.deleteMany({ where: { organizationId: id } }),
+      prisma.organization.delete({ where: { id } }),
+    ]);
+    await logActivity(user, {
+      action: 'organization.delete',
+      targetType: 'organization',
+      targetId: id,
+      organizationId: null,
+    });
+    return NextResponse.json({ deleted: true });
+  },
+  { roles: ['admin'] }
+);
