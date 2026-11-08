@@ -58,9 +58,6 @@ export function Nav() {
                 <Link href="/auth/login">
                   <Button variant="outline">Connexion</Button>
                 </Link>
-                <Link href="/auth/register">
-                  <Button>S&apos;inscrire</Button>
-                </Link>
               </div>
             )}
           </div>

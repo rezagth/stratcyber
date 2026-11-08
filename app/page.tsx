@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, BarChart3, BookOpen, CheckCircle, Award, Shield, Target, TrendingUp, Users, FileCheck } from 'lucide-react';
+import { ArrowRight, BarChart3, BookOpen, CheckCircle, Award, Shield, Target, TrendingUp, FileCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSession } from 'next-auth/react';
@@ -54,11 +54,6 @@ export default function Home() {
                 <Link href="/auth/login">
                   Commencer
                   <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button variant="outline" size="lg" asChild>
-                <Link href="/auth/register">
-                  Créer un compte
                 </Link>
               </Button>
             </div>
@@ -240,33 +235,26 @@ export default function Home() {
       {/* Stats Section */}
       <section className="w-full py-12 md:py-24 lg:py-32">
         <div className="container px-4 md:px-6 mx-auto">
-          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-4">
-            <div className="flex flex-col items-center space-y-2">
-              <TrendingUp className="h-8 w-8 text-primary" />
-              <div className="text-4xl font-bold">98%</div>
-              <div className="text-sm text-muted-foreground text-center">
-                Amélioration de la posture sécurité
-              </div>
-            </div>
-            <div className="flex flex-col items-center space-y-2">
-              <Users className="h-8 w-8 text-primary" />
-              <div className="text-4xl font-bold">500+</div>
-              <div className="text-sm text-muted-foreground text-center">
-                Entreprises accompagnées
-              </div>
-            </div>
+          <div className="grid gap-6 sm:grid-cols-3">
             <div className="flex flex-col items-center space-y-2">
               <Shield className="h-8 w-8 text-primary" />
-              <div className="text-4xl font-bold">24/7</div>
+              <div className="text-4xl font-bold">9</div>
               <div className="text-sm text-muted-foreground text-center">
-                Monitoring sécurité
+                Modèles de politiques de sécurité
+              </div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <TrendingUp className="h-8 w-8 text-primary" />
+              <div className="text-2xl font-bold text-center">NIS2 · RGPD · DORA</div>
+              <div className="text-sm text-muted-foreground text-center">
+                Référentiels suivis
               </div>
             </div>
             <div className="flex flex-col items-center space-y-2">
               <Award className="h-8 w-8 text-primary" />
-              <div className="text-4xl font-bold">ISO</div>
+              <div className="text-2xl font-bold text-center">ISO 27001</div>
               <div className="text-sm text-muted-foreground text-center">
-                Certifications supportées
+                Aide à la préparation
               </div>
             </div>
           </div>
@@ -281,11 +269,11 @@ export default function Home() {
               Prêt à sécuriser votre organisation ?
             </h2>
             <p className="mx-auto max-w-[600px] text-primary-foreground/80 md:text-xl">
-              Rejoignez les centaines d'entreprises qui font confiance à StratCyber pour leur cybersécurité.
+              Suivez la sécurité et la conformité de votre organisation depuis un seul espace.
             </p>
             <Button asChild size="lg" variant="secondary">
-              <Link href="/auth/register">
-                Commencer gratuitement
+              <Link href="/auth/login">
+                Se connecter
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
