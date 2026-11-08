@@ -352,12 +352,6 @@ const TemplatesPage = () => {
     ));
   };
 
-  const handleDownload = (template: typeof templates[0]) => {
-    // Simulation du téléchargement
-    console.log(`Téléchargement du template: ${template.title}`);
-    // Ici vous pourriez implémenter la logique réelle de téléchargement
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
@@ -382,22 +376,12 @@ const TemplatesPage = () => {
         </div>
 
         {/* Statistiques */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
           <Card>
             <CardContent className="pt-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">{templates.length}</div>
                 <div className="text-sm text-muted-foreground">Templates disponibles</div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
-                  {templates.reduce((acc, t) => acc + t.downloadCount, 0).toLocaleString()}
-                </div>
-                <div className="text-sm text-muted-foreground">Téléchargements total</div>
               </div>
             </CardContent>
           </Card>
@@ -518,10 +502,6 @@ const TemplatesPage = () => {
                     <span>Mis à jour: {new Date(template.lastUpdate).toLocaleDateString('fr-FR')}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <Eye className="h-3 w-3 text-muted-foreground" />
-                    <span>{template.downloadCount} téléchargements</span>
-                  </div>
-                  <div className="flex items-center gap-1">
                     <FileText className="h-3 w-3 text-muted-foreground" />
                     <span>{template.format} - {template.size}</span>
                   </div>
@@ -544,16 +524,16 @@ const TemplatesPage = () => {
                 </div>
 
                 <div className="flex gap-2 pt-2">
-                  <Button 
-                    onClick={() => handleDownload(template)}
-                    className="flex-1"
-                    size="sm"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Télécharger
+                  <Button className="flex-1" size="sm" asChild>
+                    <Link href="/dashboard/policy-templates">
+                      <Download className="h-4 w-4 mr-2" />
+                      Obtenir ce modèle
+                    </Link>
                   </Button>
-                  <Button variant="outline" size="sm">
-                    <Eye className="h-4 w-4" />
+                  <Button variant="outline" size="sm" asChild aria-label="Voir les modèles disponibles">
+                    <Link href="/dashboard/policy-templates">
+                      <Eye className="h-4 w-4" />
+                    </Link>
                   </Button>
                 </div>
               </CardContent>
@@ -585,9 +565,9 @@ const TemplatesPage = () => {
                 <Target className="h-8 w-8 mx-auto text-green-600" />
                 <h3 className="font-semibold">Personnalisation</h3>
                 <p className="text-sm text-muted-foreground">Services d'adaptation à vos besoins</p>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" asChild><Link href="/legal#contact">
                   Demander un devis
-                </Button>
+                </Link></Button>
               </div>
             </CardContent>
           </Card>
@@ -598,9 +578,9 @@ const TemplatesPage = () => {
                 <AlertTriangle className="h-8 w-8 mx-auto text-orange-600" />
                 <h3 className="font-semibold">Support technique</h3>
                 <p className="text-sm text-muted-foreground">Assistance pour l'utilisation des templates</p>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" asChild><Link href="/legal#contact">
                   Contacter le support
-                </Button>
+                </Link></Button>
               </div>
             </CardContent>
           </Card>

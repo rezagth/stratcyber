@@ -285,18 +285,18 @@ const SupplyChainSecurityPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              <Button variant="outline" size="sm" className="w-full justify-start" asChild><Link href="/strategie">
                 <Download className="h-4 w-4 mr-2" />
                 Questionnaire fournisseur IT critique
-              </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              </Link></Button>
+              <Button variant="outline" size="sm" className="w-full justify-start" asChild><Link href="/strategie">
                 <Download className="h-4 w-4 mr-2" />
                 Évaluation sous-traitant métier
-              </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              </Link></Button>
+              <Button variant="outline" size="sm" className="w-full justify-start" asChild><Link href="/strategie">
                 <Download className="h-4 w-4 mr-2" />
                 Grille de scoring automatisée
-              </Button>
+              </Link></Button>
             </CardContent>
           </Card>
 
@@ -308,18 +308,18 @@ const SupplyChainSecurityPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              <Button variant="outline" size="sm" className="w-full justify-start" asChild><Link href="/dashboard/policy-templates">
                 <Download className="h-4 w-4 mr-2" />
                 Clauses cybersécurité type
-              </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              </Link></Button>
+              <Button variant="outline" size="sm" className="w-full justify-start" asChild><Link href="/dashboard/policy-templates">
                 <Download className="h-4 w-4 mr-2" />
                 Modèle d'accord de confidentialité
-              </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              </Link></Button>
+              <Button variant="outline" size="sm" className="w-full justify-start" asChild><Link href="/dashboard/policy-templates">
                 <Download className="h-4 w-4 mr-2" />
                 Procédure d'audit fournisseur
-              </Button>
+              </Link></Button>
             </CardContent>
           </Card>
         </div>

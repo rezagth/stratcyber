@@ -10,6 +10,7 @@ import { AlertCircle, Download } from 'lucide-react';
 import { generateActionPlan, computeAuditResult, calculateCrazyScore } from '@/lib/audit/scoring';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import { downloadCsv } from '@/lib/utils/csv-download';
 
 // Types pour TypeScript
 interface AuditResponse {
@@ -396,7 +397,7 @@ export default function DashboardPage() {
                       </Badge>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => downloadCsv(`plan-action-${new Date().toISOString().slice(0, 10)}.csv`, actionPlan.map((a) => ({ Action: a.action, Domaine: a.category, Priorité: a.priority, Échéance: a.deadline, Responsable: a.owner, Statut: a.status ?? '', 'Coût estimé (€)': a.cost ?? '' })))}>
                         <Download className="h-4 w-4 mr-1" /> Exporter
                       </Button>
                     </div>

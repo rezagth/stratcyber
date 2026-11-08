@@ -32,6 +32,8 @@ import { useSession } from 'next-auth/react';
 import InteractiveRoadmap from '@/components/roadmap/InteractiveRoadmap';
 import AdvancedAnalytics from '@/components/analytics/AdvancedAnalytics';
 import { ActionPlanItem, Milestone, RoadmapQuarter } from '@/types/actionPlan';
+import { toast } from 'sonner';
+import { downloadCsv } from '@/lib/utils/csv-download';
 
 interface RoadmapData {
   actions: ActionPlanItem[];
@@ -244,6 +246,26 @@ export default function RoadmapDashboard() {
       return statusMatch && priorityMatch;
     });
     return filtered;
+  };
+
+  // Exporte en CSV les actions affichées (filtre de priorité respecté), tous statuts confondus.
+  const exportRoadmap = () => {
+    const rows = (roadmapData?.actions || [])
+      .filter((a) => filterPriority === 'all' || a.priority === filterPriority)
+      .map((a) => ({
+        Action: a.title,
+        Catégorie: a.category,
+        Priorité: a.priority,
+        Statut: a.status,
+        'Avancement (%)': a.progress,
+        Responsable: a.owner,
+        Échéance: a.dueDate ? new Date(a.dueDate).toLocaleDateString('fr-FR') : '',
+      }));
+    if (rows.length === 0) {
+      toast.info('Aucune action à exporter avec ce filtre.');
+      return;
+    }
+    downloadCsv(`feuille-de-route-${new Date().toISOString().slice(0, 10)}.csv`, rows);
   };
 
   const getPaginatedActions = (status: string) => {
@@ -504,7 +526,7 @@ export default function RoadmapDashboard() {
                 <option value="Moyenne">Moyenne</option>
                 <option value="Faible">Faible</option>
               </select>
-              <Button size="sm" variant="outline">
+              <Button size="sm" variant="outline" onClick={exportRoadmap}>
                 <Download className="h-4 w-4 mr-2" />
                 Exporter
               </Button>

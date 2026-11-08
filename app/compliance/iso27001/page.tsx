@@ -209,18 +209,18 @@ export default function ISO27001Documentation() {
                   <CardTitle className="text-lg">Actions rapides</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start" asChild><a href="https://www.iso.org/standard/27001" target="_blank" rel="noopener noreferrer">
                     <Download className="h-4 w-4 mr-2" />
                     Norme ISO 27001:2022
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  </a></Button>
+                  <Button variant="outline" className="w-full justify-start" asChild><Link href="/strategie">
                     <CheckCircle className="h-4 w-4 mr-2" />
                     Gap analysis template
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  </Link></Button>
+                  <Button variant="outline" className="w-full justify-start" asChild><Link href="/dashboard/policy-templates">
                     <FileText className="h-4 w-4 mr-2" />
                     Kit de documentation SMSI
-                  </Button>
+                  </Link></Button>
                 </CardContent>
               </Card>
 

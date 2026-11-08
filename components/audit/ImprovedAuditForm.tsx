@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -81,10 +81,17 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
   // Choix du client pour lequel l'audit est réalisé (liste disponible pour l'administrateur seulement).
   const [clients, setClients] = useState<Array<{ id: string; name: string }>>([]);
   const [organizationId, setOrganizationId] = useState('');
+  const chooseClientRef = useRef<(id: string) => Promise<void>>(async () => {});
   useEffect(() => {
     fetch('/api/organizations')
       .then((r) => (r.ok ? r.json() : []))
-      .then((list: Array<{ id: string; name: string }>) => setClients(Array.isArray(list) ? list : []))
+      .then((list: Array<{ id: string; name: string }>) => {
+        const all = Array.isArray(list) ? list : [];
+        setClients(all);
+        // Arrivée depuis le dossier d'un client (?client=<id>) : on présélectionne ce client.
+        const wanted = new URLSearchParams(window.location.search).get('client');
+        if (wanted && all.some((c) => c.id === wanted)) void chooseClientRef.current(wanted);
+      })
       .catch(() => setClients([]));
   }, []);
 
@@ -111,6 +118,8 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
       // Le préremplissage est un confort : en cas d'échec, le formulaire reste utilisable à la main.
     }
   }
+
+  chooseClientRef.current = chooseClient;
 
   const {
     control,

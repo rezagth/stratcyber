@@ -58,6 +58,23 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
   const [notes, setNotes] = useState<InternalNote[]>([]);
   const [newNote, setNewNote] = useState('');
   const [tab, setTab] = useState('synthese');
+  // Change d'onglet puis amène l'écran sur la section voulue (les onglets ne sont montés qu'une fois actifs).
+  function goToTab(next: string, anchor?: string) {
+    setTab(next);
+    const target = anchor ?? 'dossier-tabs';
+    let tries = 0;
+    const scroll = () => {
+      const el = document.getElementById(target);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const field = el.matches('input,select,textarea,button') ? el : el.querySelector<HTMLElement>('input,textarea,button[role="combobox"]');
+        field?.focus({ preventScroll: true });
+      } else if (tries++ < 20) {
+        window.setTimeout(scroll, 50);
+      }
+    };
+    window.setTimeout(scroll, 50);
+  }
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -145,10 +162,10 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
         profileComplete={Boolean(org.sector && org.size && org.headcount && org.missionScope)}
         applicabilityAssessed={Boolean(org.applicabilityAssessedAt)}
         hasContact={contacts.length > 0}
-        goToTab={setTab}
+        goToTab={goToTab}
       />
 
-      <Tabs value={tab} onValueChange={setTab}>
+      <Tabs id="dossier-tabs" value={tab} onValueChange={setTab}>
         <TabsList className="h-auto w-full flex-wrap justify-start gap-1 p-1.5 [&>*]:h-8 [&>*]:flex-none [&>*]:px-3">
           <TabsTrigger value="synthese">Synthèse</TabsTrigger>
           <TabsTrigger value="profil">Profil</TabsTrigger>
@@ -172,7 +189,7 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
         <TabsContent value="synthese"><ClientSynthesis organizationId={id} /></TabsContent>
 
         <TabsContent value="profil" className="space-y-6">
-          <Card>
+          <Card id="section-profil">
             <CardHeader><CardTitle className="text-base">Profil de l&apos;entreprise</CardTitle></CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <div>
@@ -207,7 +224,7 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
             </CardContent>
           </Card>
 
-          <Card>
+          <Card id="section-applicabilite">
             <CardHeader>
               <CardTitle className="text-base">Test d&apos;applicabilité réglementaire</CardTitle>
               <p className="text-xs text-muted-foreground">
@@ -274,7 +291,7 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
               </li>
             ))}
           </ul>
-          <Card>
+          <Card id="section-nouveau-contact">
             <CardHeader><CardTitle className="text-base">Ajouter un contact</CardTitle></CardHeader>
             <CardContent className="grid gap-3 sm:grid-cols-2">
               <div><Label htmlFor="c-name">Nom</Label><Input id="c-name" value={newContact.name} onChange={(e) => setNewContact((c) => ({ ...c, name: e.target.value }))} /></div>

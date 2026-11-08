@@ -12,7 +12,7 @@ type Props = {
   applicabilityAssessed: boolean;
   hasContact: boolean;
   /** Bascule l'onglet du dossier (profil, contacts, comptes, politiques…). */
-  goToTab: (tab: string) => void;
+  goToTab: (tab: string, anchor?: string) => void;
 };
 
 type Step = {
@@ -20,7 +20,7 @@ type Step = {
   done: boolean;
   title: string;
   why: string;
-  action: { label: string; tab?: string; href?: string };
+  action: { label: string; tab?: string; anchor?: string; href?: string };
 };
 
 /** Parcours de mise en route d'un nouveau client, côté admin : chaque étape dit quoi faire et pourquoi, et se coche toute seule. */
@@ -61,10 +61,10 @@ export function ClientSetupGuide({ organizationId, profileComplete, applicabilit
   }, [organizationId]);
 
   const steps: Step[] = [
-    { key: 'profil', done: profileComplete, title: 'Cadrer la mission', why: 'Renseignez secteur, taille, effectif et surtout le périmètre de mission (ce qui est inclus et exclu). C’est la base de votre contrat et ce qui limite votre responsabilité : sans périmètre écrit, tout devient discutable.', action: { label: 'Compléter le profil', tab: 'profil' } },
-    { key: 'applic', done: applicabilityAssessed, title: 'Évaluer les réglementations applicables', why: 'NIS2, RGPD, ISO 27001 : indiquez ce qui s’applique. C’est indicatif, à confirmer avec un juriste : la transposition française de NIS2 n’est pas finalisée. Cela décide des référentiels suivis dans l’audit.', action: { label: 'Évaluer l’applicabilité', tab: 'profil' } },
-    { key: 'contact', done: hasContact, title: 'Identifier le contact principal', why: 'La personne qui décide et valide chez le client (souvent le dirigeant). Elle recevra les relances et validera les politiques.', action: { label: 'Ajouter un contact', tab: 'contacts' } },
-    { key: 'audit', done: facts.audit, title: 'Réaliser l’audit', why: 'Le questionnaire donne le score, la maturité et les points faibles. Choisissez ce client dans la liste « Client audité » pour que l’audit soit rattaché à son dossier.', action: { label: 'Lancer l’audit', href: '/strategie' } },
+    { key: 'profil', done: profileComplete, title: 'Cadrer la mission', why: 'Renseignez secteur, taille, effectif et surtout le périmètre de mission (ce qui est inclus et exclu). C’est la base de votre contrat et ce qui limite votre responsabilité : sans périmètre écrit, tout devient discutable.', action: { label: 'Compléter le profil', tab: 'profil', anchor: 'section-profil' } },
+    { key: 'applic', done: applicabilityAssessed, title: 'Évaluer les réglementations applicables', why: 'NIS2, RGPD, ISO 27001 : indiquez ce qui s’applique. C’est indicatif, à confirmer avec un juriste : la transposition française de NIS2 n’est pas finalisée. Cela décide des référentiels suivis dans l’audit.', action: { label: 'Évaluer l’applicabilité', tab: 'profil', anchor: 'section-applicabilite' } },
+    { key: 'contact', done: hasContact, title: 'Identifier le contact principal', why: 'La personne qui décide et valide chez le client (souvent le dirigeant). Elle recevra les relances et validera les politiques.', action: { label: 'Ajouter un contact', tab: 'contacts', anchor: 'section-nouveau-contact' } },
+    { key: 'audit', done: facts.audit, title: 'Réaliser l’audit', why: 'Le questionnaire donne le score, la maturité et les points faibles. Choisissez ce client dans la liste « Client audité » pour que l’audit soit rattaché à son dossier.', action: { label: 'Lancer l’audit', href: `/strategie?client=${organizationId}` } },
     { key: 'plan', done: facts.actions, title: 'Générer le plan d’action', why: 'Transforme l’audit en actions priorisées avec échéances. Vérifiez les responsables et les dates : ils sont proposés automatiquement, à ajuster selon la réalité du client.', action: { label: 'Ouvrir le plan d’action', href: `/dashboard/organizations/${organizationId}/action-plan` } },
     { key: 'controls', done: facts.control && facts.risk, title: 'Saisir contrôles et risques', why: 'Au moins un contrôle (avec son niveau de conformité) et un risque dans le registre. C’est ce qui rend le suivi mensuel et le rapport utiles.', action: { label: 'Saisir les contrôles', tab: 'controles' } },
     { key: 'policies', done: facts.policies, title: 'Préparer les politiques', why: 'Générez les documents depuis la bibliothèque : ce sont des brouillons à adapter. Remplissez les variables {{…}} et faites relire par un juriste avant tout envoi.', action: { label: 'Générer le dossier', tab: 'politiques' } },
@@ -125,7 +125,7 @@ export function ClientSetupGuide({ organizationId, profileComplete, applicabilit
                       {s.action.href ? (
                         <Button asChild size="sm"><Link href={s.action.href}>{s.action.label}<ArrowRight className="h-3.5 w-3.5" /></Link></Button>
                       ) : (
-                        <Button size="sm" onClick={() => { goToTab(s.action.tab!); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>{s.action.label}<ArrowRight className="h-3.5 w-3.5" /></Button>
+                        <Button size="sm" onClick={() => goToTab(s.action.tab!, s.action.anchor)}>{s.action.label}<ArrowRight className="h-3.5 w-3.5" /></Button>
                       )}
                     </div>
                   )}

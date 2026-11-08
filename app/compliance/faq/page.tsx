@@ -677,9 +677,9 @@ const FAQPage = () => {
                 <HelpCircle className="h-8 w-8 mx-auto text-orange-600" />
                 <h3 className="font-semibold">Contactez-nous</h3>
                 <p className="text-sm text-muted-foreground">Support expert personnalisé</p>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" asChild><Link href="/legal#contact">
                   Obtenir de l'aide
-                </Button>
+                </Link></Button>
               </div>
             </CardContent>
           </Card>

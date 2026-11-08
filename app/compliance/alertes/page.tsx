@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { toast } from 'sonner';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +39,7 @@ const AlertesPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedPriority, setSelectedPriority] = useState('all');
   const [showRead, setShowRead] = useState(false);
+  const [readIds, setReadIds] = useState<string[]>([]);
 
   // Données simulées pour les alertes
   const alerts = [
@@ -208,11 +210,11 @@ const AlertesPage = () => {
                           alert.description.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || alert.category === selectedCategory;
       const matchesPriority = selectedPriority === 'all' || alert.priority === selectedPriority;
-      const matchesReadStatus = showRead || !alert.read;
+      const matchesReadStatus = showRead || !(alert.read || readIds.includes(alert.id));
       
       return matchesSearch && matchesCategory && matchesPriority && matchesReadStatus;
     });
-  }, [searchTerm, selectedCategory, selectedPriority, showRead]);
+  }, [searchTerm, selectedCategory, selectedPriority, showRead, readIds]);
 
   const getPriorityColor = (priority: string) => {
     const colors = {
@@ -258,13 +260,47 @@ const AlertesPage = () => {
     console.log(`Toggle star for alert: ${alertId}`);
   };
 
+  // État de lecture conservé sur cet appareil (les alertes sont une veille statique, sans compte).
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('infracyb-alertes-lues');
+      if (saved) setReadIds(JSON.parse(saved));
+      const prefs = localStorage.getItem('infracyb-alertes-preferences');
+      if (prefs) setNotificationSettings(JSON.parse(prefs));
+    } catch { /* stockage indisponible : on garde les valeurs par défaut */ }
+  }, []);
+
   const markAsRead = (alertId: string) => {
-    // Simulation - ici vous implémenteriez la logique pour marquer comme lu
-    console.log(`Mark as read: ${alertId}`);
+    setReadIds((prev) => {
+      const next = prev.includes(alertId) ? prev : [...prev, alertId];
+      try { localStorage.setItem('infracyb-alertes-lues', JSON.stringify(next)); } catch { /* ignoré */ }
+      return next;
+    });
+    toast.success('Alerte archivée sur cet appareil.');
   };
 
-  const unreadCount = alerts.filter(a => !a.read).length;
-  const criticalCount = alerts.filter(a => a.priority === 'critical' && !a.read).length;
+  const shareAlert = async (alertTitle: string, url: string) => {
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: alertTitle, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        toast.success('Lien de l’alerte copié.');
+      }
+    } catch { /* partage annulé par l’utilisateur */ }
+  };
+
+  const saveNotificationSettings = () => {
+    try {
+      localStorage.setItem('infracyb-alertes-preferences', JSON.stringify(notificationSettings));
+      toast.success('Préférences enregistrées sur cet appareil. L’envoi d’alertes par e-mail, notification ou SMS n’est pas encore actif.');
+    } catch {
+      toast.error('Impossible d’enregistrer les préférences sur cet appareil.');
+    }
+  };
+
+  const unreadCount = alerts.filter(a => !(a.read || readIds.includes(a.id))).length;
+  const criticalCount = alerts.filter(a => a.priority === 'critical' && !(a.read || readIds.includes(a.id))).length;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -434,7 +470,7 @@ const AlertesPage = () => {
           {/* Liste des alertes */}
           <div className="space-y-4">
             {filteredAlerts.map((alert) => (
-              <Card key={alert.id} className={`hover:shadow-md transition-shadow ${!alert.read ? 'border-l-4 border-l-orange-500' : ''}`}>
+              <Card key={alert.id} className={`hover:shadow-md transition-shadow ${!(alert.read || readIds.includes(alert.id)) ? 'border-l-4 border-l-orange-500' : ''}`}>
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3 flex-1">
@@ -451,7 +487,7 @@ const AlertesPage = () => {
                             {alert.type}
                           </Badge>
                         </div>
-                        <CardTitle className={`text-lg ${!alert.read ? 'font-bold' : 'font-medium'}`}>
+                        <CardTitle className={`text-lg ${!(alert.read || readIds.includes(alert.id)) ? 'font-bold' : 'font-medium'}`}>
                           {alert.title}
                         </CardTitle>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
@@ -478,7 +514,7 @@ const AlertesPage = () => {
                       >
                         <Star className={`h-4 w-4 ${alert.starred ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
                       </Button>
-                      {!alert.read && (
+                      {!(alert.read || readIds.includes(alert.id)) && (
                         <Button
                           variant="ghost"
                           size="sm"
@@ -529,12 +565,12 @@ const AlertesPage = () => {
                           Consulter
                         </Link>
                       </Button>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => shareAlert(alert.title, alert.url)}>
                         <Share2 className="h-4 w-4 mr-2" />
                         Partager
                       </Button>
                     </div>
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" onClick={() => markAsRead(alert.id)} aria-label="Archiver l’alerte">
                       <Archive className="h-4 w-4" />
                     </Button>
                   </div>
@@ -651,7 +687,7 @@ const AlertesPage = () => {
               </div>
               
               <div className="mt-6 pt-6 border-t">
-                <Button>
+                <Button onClick={saveNotificationSettings}>
                   Sauvegarder les paramètres
                 </Button>
               </div>

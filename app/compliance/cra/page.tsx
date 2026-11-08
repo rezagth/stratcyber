@@ -300,18 +300,18 @@ const CRACompliancePage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              <Button variant="outline" size="sm" className="w-full justify-start" asChild><Link href="/strategie">
                 <Download className="h-4 w-4 mr-2" />
                 Checklist d'évaluation CRA
-              </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              </Link></Button>
+              <Button variant="outline" size="sm" className="w-full justify-start" asChild><Link href="/dashboard/policy-templates">
                 <Download className="h-4 w-4 mr-2" />
                 Template de documentation technique
-              </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              </Link></Button>
+              <Button variant="outline" size="sm" className="w-full justify-start" asChild><Link href="/dashboard/policy-templates">
                 <Download className="h-4 w-4 mr-2" />
                 Modèle de déclaration de conformité
-              </Button>
+              </Link></Button>
             </CardContent>
           </Card>
         </div>

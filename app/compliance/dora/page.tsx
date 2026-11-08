@@ -232,18 +232,18 @@ export default function DORADocumentation() {
                   <CardTitle className="text-lg">Actions rapides</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start" asChild><a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj" target="_blank" rel="noopener noreferrer">
                     <Download className="h-4 w-4 mr-2" />
                     Guide DORA complet
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  </a></Button>
+                  <Button variant="outline" className="w-full justify-start" asChild><Link href="/strategie">
                     <CheckCircle className="h-4 w-4 mr-2" />
                     Matrice d'auto-évaluation
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  </Link></Button>
+                  <Button variant="outline" className="w-full justify-start" asChild><Link href="/dashboard/policy-templates">
                     <Target className="h-4 w-4 mr-2" />
                     Template plan TLPT
-                  </Button>
+                  </Link></Button>
                 </CardContent>
               </Card>
 

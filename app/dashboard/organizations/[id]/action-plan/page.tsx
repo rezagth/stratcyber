@@ -147,7 +147,7 @@ export default function OrganizationActionPlanPage({ params }: { params: Promise
       <section className="mb-8">
         <h2 className="mb-2 text-lg font-medium">Générer depuis un audit</h2>
         {audits.length === 0 && (
-          <p className="text-sm text-muted-foreground">Aucun audit rattaché à ce client pour l&apos;instant. <a className="underline" href="/strategie">Lancer un audit</a> et choisir ce client.</p>
+          <p className="text-sm text-muted-foreground">Aucun audit rattaché à ce client pour l&apos;instant. <a className="underline" href={`/strategie?client=${organizationId}`}>Lancer un audit</a> et choisir ce client.</p>
         )}
         <ul className="space-y-2">
           {audits.map((audit) => (

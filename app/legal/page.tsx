@@ -117,7 +117,7 @@ export default function LegalPage() {
         </Card>
 
         {/* Contact */}
-        <Card>
+        <Card id="contact">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <span>📧</span>

@@ -282,18 +282,18 @@ export default function EBIOSDocumentation() {
                   <CardTitle className="text-lg">Ressources ANSSI</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start" asChild><a href="https://cyber.gouv.fr/la-methode-ebios-risk-manager" target="_blank" rel="noopener noreferrer">
                     <Download className="h-4 w-4 mr-2" />
                     Guide méthodologique
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  </a></Button>
+                  <Button variant="outline" className="w-full justify-start" asChild><a href="https://cyber.gouv.fr/la-methode-ebios-risk-manager" target="_blank" rel="noopener noreferrer">
                     <FileText className="h-4 w-4 mr-2" />
                     Boîte à outils
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  </a></Button>
+                  <Button variant="outline" className="w-full justify-start" asChild><Link href="/strategie">
                     <BarChart3 className="h-4 w-4 mr-2" />
                     Tables de risques
-                  </Button>
+                  </Link></Button>
                 </CardContent>
               </Card>
 

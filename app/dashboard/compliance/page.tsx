@@ -12,6 +12,7 @@ import {
   FileText,
   DollarSign
 } from 'lucide-react';
+import Link from 'next/link';
 
 interface ComplianceMetrics {
   rgpdScore: number;
@@ -185,8 +186,8 @@ export default function ComplianceDashboard() {
                   <Progress value={framework.score} className="h-2" />
                   <div className="flex justify-between text-sm text-muted-foreground">
                     <span>Prochaine échéance: {framework.nextDeadline}</span>
-                    <Button variant="outline" size="sm">
-                      Voir le plan d&apos;action
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/dashboard/roadmap">Voir le plan d&apos;action</Link>
                     </Button>
                   </div>
                 </div>
@@ -402,9 +403,11 @@ export default function ComplianceDashboard() {
                       </div>
                       <div className="flex flex-col space-y-2">
                         <Badge variant="outline">{report.type}</Badge>
-                        <Button size="sm" variant="outline">
-                          <FileText className="h-4 w-4 mr-1" />
-                          Télécharger
+                        <Button size="sm" variant="outline" asChild>
+                          <Link href="/dashboard/organizations">
+                            <FileText className="h-4 w-4 mr-1" />
+                            Télécharger
+                          </Link>
                         </Button>
                       </div>
                     </div>

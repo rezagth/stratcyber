@@ -173,18 +173,18 @@ export default function NIS2Documentation() {
                   <CardTitle className="text-lg">Actions rapides</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start" asChild><a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj" target="_blank" rel="noopener noreferrer">
                     <Download className="h-4 w-4 mr-2" />
                     Guide NIS2 complet
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  </a></Button>
+                  <Button variant="outline" className="w-full justify-start" asChild><Link href="/strategie">
                     <CheckCircle className="h-4 w-4 mr-2" />
                     Auto-évaluation conformité
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  </Link></Button>
+                  <Button variant="outline" className="w-full justify-start" asChild><Link href="/dashboard/policy-templates">
                     <AlertTriangle className="h-4 w-4 mr-2" />
                     Modèle notification incident
-                  </Button>
+                  </Link></Button>
                 </CardContent>
               </Card>
 

@@ -261,18 +261,18 @@ export default function ANSSIDocumentation() {
                   <CardTitle className="text-lg">Services gratuits</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start" asChild><a href="https://cyberscore.cyber.gouv.fr" target="_blank" rel="noopener noreferrer">
                     <Zap className="h-4 w-4 mr-2" />
                     Cyberscore - Autodiagnostic
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  </a></Button>
+                  <Button variant="outline" className="w-full justify-start" asChild><a href="https://secnumacademie.gouv.fr" target="_blank" rel="noopener noreferrer">
                     <Book className="h-4 w-4 mr-2" />
                     SecNumAcadémie - Formation
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  </a></Button>
+                  <Button variant="outline" className="w-full justify-start" asChild><a href="https://www.cert.ssi.gouv.fr" target="_blank" rel="noopener noreferrer">
                     <AlertTriangle className="h-4 w-4 mr-2" />
                     CERT-FR - Alertes sécurité
-                  </Button>
+                  </a></Button>
                 </CardContent>
               </Card>
 
@@ -414,9 +414,11 @@ export default function ANSSIDocumentation() {
                           <span className="text-muted-foreground">Mesures :</span>
                           <span className="font-semibold">{guide.measures} recommandations</span>
                         </div>
-                        <Button variant="outline" size="sm" className="w-full mt-3">
-                          <Download className="h-4 w-4 mr-2" />
-                          Télécharger le guide
+                        <Button variant="outline" size="sm" className="w-full mt-3" asChild>
+                          <a href="https://cyber.gouv.fr/publications" target="_blank" rel="noopener noreferrer">
+                            <Download className="h-4 w-4 mr-2" />
+                            Télécharger le guide
+                          </a>
                         </Button>
                       </CardContent>
                     </Card>
