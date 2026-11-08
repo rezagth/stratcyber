@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 type Org = {
   id: string; name: string; sector: string | null; size: string | null;
   score: number | null; maturity: string | null; overdueActions: number; expiringEvidence: number;
+  commercialStatus?: string | null; commercialOverdueDays?: number | null;
 };
 
 const tone = (v: number) => (v < 40 ? 'var(--destructive)' : v < 70 ? 'var(--warning)' : 'var(--success)');
@@ -36,8 +37,9 @@ export function AdminCockpit() {
   const overdue = orgs.reduce((s, o) => s + o.overdueActions, 0);
   const expiring = orgs.reduce((s, o) => s + o.expiringEvidence, 0);
   const noDiag = orgs.filter((o) => o.score === null).length;
-  const urgent = orgs.filter((o) => o.overdueActions > 0 || o.expiringEvidence > 0)
-    .sort((a, b) => b.overdueActions + b.expiringEvidence - (a.overdueActions + a.expiringEvidence));
+  const unpaid = (o: Org) => (o.commercialStatus === 'en_retard' ? 1 : 0);
+  const urgent = orgs.filter((o) => o.overdueActions > 0 || o.expiringEvidence > 0 || unpaid(o))
+    .sort((a, b) => unpaid(b) - unpaid(a) || b.overdueActions + b.expiringEvidence - (a.overdueActions + a.expiringEvidence));
 
   return (
     <div className="space-y-6">
@@ -86,7 +88,7 @@ export function AdminCockpit() {
             </div>
           </div>
 
-          <Panel title="À traiter en priorité" subtitle="Clients avec une échéance dépassée" icon={AlertTriangle}>
+          <Panel title="À traiter en priorité" subtitle="Échéances dépassées et paiements en retard" icon={AlertTriangle}>
             {urgent.length === 0 ? (
               <p className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="h-4 w-4 text-success" />Rien d&apos;urgent : aucune action en retard, aucune preuve qui expire.</p>
             ) : (
@@ -96,6 +98,7 @@ export function AdminCockpit() {
                     <Link href={`/dashboard/organizations/${o.id}`} className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm hover:text-primary">
                       <span className="font-medium">{o.name}</span>
                       <span className="flex flex-wrap items-center gap-1.5">
+                        {o.commercialStatus === 'en_retard' && <Badge variant="destructive">Paiement en retard{o.commercialOverdueDays ? ` (${o.commercialOverdueDays} j)` : ''}</Badge>}
                         {o.overdueActions > 0 && <Badge variant="destructive">{o.overdueActions} action{o.overdueActions > 1 ? 's' : ''} en retard</Badge>}
                         {o.expiringEvidence > 0 && <Badge variant="warning">{o.expiringEvidence} preuve{o.expiringEvidence > 1 ? 's' : ''} à renouveler</Badge>}
                         <ArrowRight className="h-4 w-4 text-muted-foreground" />

@@ -68,6 +68,13 @@ model Organization {
   iso27001Note      String?
   applicabilityAssessedAt DateTime?
 
+  // Lien avec le CRM InfraCyb (facturation) : identifiant du client côté CRM et statut commercial reçu.
+  // Information seulement : elle n'ouvre ni ne coupe aucun accès.
+  crmId                 String?   @unique
+  commercialStatus      String?   // 'a_jour' | 'en_retard' | 'resilie'
+  commercialOverdueDays Int?
+  commercialStatusAt    DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   users     User[]

@@ -28,7 +28,7 @@ export async function buildClientsCockpit() {
   const [organizations, audits, overdueActions, expiringEvidence, expiringSupplierEvidence] = await Promise.all([
     prisma.organization.findMany({
       orderBy: { createdAt: 'desc' },
-      select: { id: true, name: true, sector: true, size: true, createdAt: true },
+      select: { id: true, name: true, sector: true, size: true, createdAt: true, commercialStatus: true, commercialOverdueDays: true },
     }),
     prisma.audit.findMany({
       where: { organizationId: { not: null }, sharedWithClient: true },

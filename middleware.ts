@@ -4,7 +4,8 @@ import { getToken } from 'next-auth/jwt';
 
 // Routes /api accessibles sans session : NextAuth (login, session, csrf…) et l'inscription.
 // /api/cron/ n'a pas de session : la route vérifie elle-même CRON_SECRET et reste fermée sans lui.
-const PUBLIC_API_PREFIXES = ['/api/auth/', '/api/cron/'];
+// /api/integrations/ : la route vérifie elle-même la signature HMAC du CRM et reste fermée sans secret.
+const PUBLIC_API_PREFIXES = ['/api/auth/', '/api/cron/', '/api/integrations/'];
 
 /**
  * Premier filet : exige une session valide sur les pages protégées et sur toute /api non publique.
