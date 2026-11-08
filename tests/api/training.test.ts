@@ -13,7 +13,7 @@ vi.mock('@/lib/db', async () => {
   return { prisma: fakePrisma };
 });
 vi.mock('next-auth', () => ({ getServerSession: vi.fn() }));
-vi.mock('@/app/api/auth/[...nextauth]/route', () => ({ authOptions: {} }));
+vi.mock('@/lib/auth/options', () => ({ authOptions: {} }));
 
 const loginAs = (user: Parameters<typeof sessionFor>[0]) =>
   vi.mocked(getServerSession).mockResolvedValue(sessionFor(user));

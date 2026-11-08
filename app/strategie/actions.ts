@@ -6,7 +6,7 @@ import { computeAuditResult } from '../../lib/audit/scoring';
 import { rgpdQuestions, nis2Questions, doraQuestions, lmpQuestions, incidentQuestions, supplyChainQuestions, cloudQuestions, craQuestions, sectorSpecificQuestions } from '../../lib/audit/questions-extended';
 
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth/options";
 
 async function getSession() {
   const session = await getServerSession(authOptions);

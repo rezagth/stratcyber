@@ -14,7 +14,7 @@ vi.mock('@/lib/db', async () => {
   return { prisma: fakePrisma };
 });
 vi.mock('next-auth', () => ({ getServerSession: vi.fn() }));
-vi.mock('@/app/api/auth/[...nextauth]/route', () => ({ authOptions: {} }));
+vi.mock('@/lib/auth/options', () => ({ authOptions: {} }));
 
 const client = { id: 'c1', email: 'c1@exemple.fr', name: 'C', role: 'client', organizationId: 'org-x' };
 const loginAs = (u: unknown) => vi.mocked(getServerSession).mockResolvedValue(sessionFor(u as never));

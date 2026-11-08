@@ -3,7 +3,7 @@ import { prisma } from '@/lib/db';
 import { jsonError, withApiAuth } from '@/lib/auth/api-auth';
 import { logActivity } from '@/lib/activity-log';
 
-export const LOG_KINDS = ['decision', 'action', 'communication', 'note'] as const;
+const LOG_KINDS = ['decision', 'action', 'communication', 'note'] as const;
 const LOG_SELECT = { id: true, incidentId: true, kind: true, message: true, authorName: true, occurredAt: true, createdAt: true };
 
 /** Journal de crise d'un incident, du plus ancien au plus récent : administrateur uniquement. */
