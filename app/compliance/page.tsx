@@ -139,32 +139,18 @@ const complianceModules = [
 
   const managementTools = [
     {
-      title: 'Dashboard de Conformité',
-      description: 'Suivi en temps réel de votre posture de conformité avec KPIs et indicateurs avancés.',
-      icon: <TrendingUp className="h-6 w-6" />,
-      href: '/compliance/dashboard',
-      features: ['KPIs temps réel', 'Alertes personnalisées', 'Rapports automatisés']
-    },
-    {
-      title: 'Templates & Modèles',
-      description: 'Bibliothèque de templates professionnels pour accélérer votre mise en conformité.',
+      title: 'Modèles de politiques',
+      description: 'Générez et validez les politiques de sécurité de vos clients à partir de modèles à compléter.',
       icon: <FileText className="h-6 w-6" />,
-      href: '/compliance/templates',
-      features: ['12+ templates prêts', 'Multi-formats', 'Mise à jour régulière']
-    },
-    {
-      title: 'Alertes Réglementaires',
-      description: 'Veille automatisée des évolutions législatives et réglementaires en temps réel.',
-      icon: <AlertTriangle className="h-6 w-6" />,
-      href: '/compliance/alertes',
-      features: ['Veille 24/7', 'Notifications personnalisées', 'Analyse d\'impact']
+      href: '/dashboard/policy-templates',
+      features: ['Champs à compléter', 'Validation avant diffusion']
     },
     {
       title: 'Plans d\'Action',
-      description: 'Suivi opérationnel et gestion des actions correctives pour maintenir la conformité.',
+      description: 'Suivi des actions correctives par client, issues des audits.',
       icon: <CheckCircle className="h-6 w-6" />,
-      href: '/compliance/action-plan',
-      features: ['Actions correctives', 'Suivi des échéances', 'Tableaux de bord']
+      href: '/dashboard/organizations',
+      features: ['Actions priorisées', 'Suivi des échéances', 'Preuves de réalisation']
     }
   ];
 
@@ -211,34 +197,6 @@ const complianceModules = [
             <Globe className="h-5 w-5 mr-2" />
             Multi-réglementaire
           </Badge>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card className="text-center">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-primary">6</div>
-              <div className="text-sm text-muted-foreground">Réglementations</div>
-            </CardContent>
-          </Card>
-          <Card className="text-center">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-green-600">8+</div>
-              <div className="text-sm text-muted-foreground">Modules intégrés</div>
-            </CardContent>
-          </Card>
-          <Card className="text-center">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-orange-600">12+</div>
-              <div className="text-sm text-muted-foreground">Templates téléchargeables</div>
-            </CardContent>
-          </Card>
-          <Card className="text-center">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-purple-600">100+</div>
-              <div className="text-sm text-muted-foreground">Ressources expertes</div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Navigation rapide */}
@@ -390,46 +348,7 @@ const complianceModules = [
                 </Link>
             </CardContent>
           </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5" />
-                Alertes Réglementaires
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Link href="#" className="block text-primary hover:underline text-sm">
-                → Dernières évolutions législatives
-              </Link>
-              <Link href="#" className="block text-primary hover:underline text-sm">
-                → Jurisprudence récente
-              </Link>
-              <Link href="#" className="block text-primary hover:underline text-sm">
-                → Échéances importantes
-              </Link>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Lock className="h-5 w-5" />
-                Sécurité et Audit
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Link href="#" className="block text-primary hover:underline text-sm">
-                → Auto-évaluations
-              </Link>
-              <Link href="#" className="block text-primary hover:underline text-sm">
-                → Checklist de conformité
-              </Link>
-              <Link href="#" className="block text-primary hover:underline text-sm">
-                → Outils de diagnostic
-              </Link>
-            </CardContent>
-          </Card>
+
         </div>
       </section>
     </div>
