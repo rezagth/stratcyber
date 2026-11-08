@@ -13,8 +13,9 @@ export const GET = withApiAuth(
     const where = organizationScopeWhere(user);
     if (!where || !('organizationId' in where)) return jsonError('Accès interdit', 403);
 
+    // Un brouillon n'est jamais visible du client : seuls les documents envoyés « À valider » ou « Validé » le sont.
     const documents = await prisma.clientPolicyDocument.findMany({
-      where,
+      where: { ...where, status: { in: ['À valider', 'Validé'] } },
       orderBy: [{ type: 'asc' }, { version: 'desc' }],
       select: DOCUMENT_SELECT,
     });

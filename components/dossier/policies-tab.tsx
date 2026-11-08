@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import { CompliancePack } from '@/components/dossier/compliance-pack';
 
 type Template = { id: string; type: string; name: string; content: string; variables: string[] };
 type PolicyDocument = {
@@ -80,6 +81,8 @@ export function PoliciesTab({ organizationId }: { organizationId: string }) {
         Modèles à adapter, à faire relire par un juriste — ceci n&apos;est pas du conseil juridique.
       </p>
       {feedback && <p role="status" className="text-sm">{feedback}</p>}
+
+      <CompliancePack organizationId={organizationId} onGenerated={load} />
 
       <ul className="space-y-3">
         {Array.from(byType.entries()).map(([type, docs]) => {

@@ -1,7 +1,11 @@
 import { pickDefined } from '@/lib/api/whitelist';
 import { toNullableEnum, toNullableString } from '@/lib/api/validators';
 
-export const POLICY_TYPES = ['Confidentialité', 'PSSI', 'Sauvegarde', 'Accès', 'Incident', 'PCA'] as const;
+export const POLICY_TYPES = [
+  'Confidentialité', 'PSSI', 'Sauvegarde', 'Accès', 'Incident', 'PCA',
+  // Assistant de dossier de conformité (lib/policy/library-documents.ts)
+  'Charte informatique', 'Registre RGPD', 'Sous-traitance',
+] as const;
 // Statuts qu'un admin peut choisir directement : jamais 'Validé', qui ne s'obtient
 // qu'via la validation tracée du client (voir app/api/client/policies/[id]/route.ts).
 export const ADMIN_SETTABLE_STATUSES = ['Brouillon', 'À valider'] as const;

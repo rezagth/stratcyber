@@ -172,14 +172,32 @@ describe('cycle de vie et validation tracée (module E)', () => {
     expect((await DELETE_POLICY(req('/api/policies/doc-x', { method: 'DELETE' }), ctx({ id: 'doc-x' }))).status).toBe(403);
   });
 
-  it('le client lit uniquement la dernière version de chaque type', async () => {
+  it('le client ne voit jamais un brouillon : il garde la dernière version envoyée ou validée', async () => {
+    tables.clientPolicyDocument.find((d) => d.id === 'doc-x')!.status = 'Validé';
     tables.clientPolicyDocument.push({
       id: 'doc-x-v2', organizationId: 'org-x', templateId: null, type: 'PSSI', title: 'PSSI', content: 'v2',
       version: 2, status: 'Brouillon', validatedByName: null, validatedAt: null, createdAt: new Date(), updatedAt: new Date(),
     });
     loginAs(clientX);
-    const res = await CLIENT_POLICIES(req('/api/client/policies'), ctx({}));
-    const docs = await res.json();
+    const docs = await (await CLIENT_POLICIES(req('/api/client/policies'), ctx({}))).json();
+    expect(docs).toHaveLength(1);
+    expect(docs[0].id).toBe('doc-x');
+  });
+
+  it('le client ne reçoit rien tant que tous les documents sont des brouillons', async () => {
+    tables.clientPolicyDocument.find((d) => d.id === 'doc-x')!.status = 'Brouillon';
+    loginAs(clientX);
+    expect(await (await CLIENT_POLICIES(req('/api/client/policies'), ctx({}))).json()).toEqual([]);
+  });
+
+  it('le client lit la dernière version envoyée « À valider »', async () => {
+    tables.clientPolicyDocument.find((d) => d.id === 'doc-x')!.status = 'À valider';
+    tables.clientPolicyDocument.push({
+      id: 'doc-x-v2', organizationId: 'org-x', templateId: null, type: 'PSSI', title: 'PSSI', content: 'v2',
+      version: 2, status: 'À valider', validatedByName: null, validatedAt: null, createdAt: new Date(), updatedAt: new Date(),
+    });
+    loginAs(clientX);
+    const docs = await (await CLIENT_POLICIES(req('/api/client/policies'), ctx({}))).json();
     expect(docs).toHaveLength(1);
     expect(docs[0].id).toBe('doc-x-v2');
   });
