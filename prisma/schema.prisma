@@ -87,6 +87,7 @@ model Organization {
   risks     Risk[]
   incidents IncidentCase[]
   vulnerabilities ClientVulnerability[]
+  scanCampaigns ScanCampaign[]
   policyDocuments ClientPolicyDocument[]
   securityAnswers SecurityAnswer[]
   governanceMeetings GovernanceMeeting[]
@@ -1070,6 +1071,74 @@ model ClientVulnerability {
   updatedAt DateTime @updatedAt
 
   @@index([organizationId])
+}
+
+// Module S : campagne de scan externe non intrusif d'un client (DNS, certificat HTTPS, en-têtes web).
+// Aucun contrôle ne part sans l'autorisation écrite du client enregistrée ici (voir lib/scan/authorization.ts).
+// Administrateur uniquement.
+model ScanCampaign {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  name   String
+  status String  @default("Brouillon") // 'Brouillon' | 'Autorisée' | 'Terminée' | 'Annulée'
+  notes  String?
+
+  // Autorisation écrite du client : obligatoire avant tout contrôle.
+  authorizedByName String?   // nom du signataire côté client
+  authorizedByRole String?   // fonction (dirigeant, DSI...)
+  authorizationRef String?   // référence du document signé (nom du fichier, n° de lettre de mission)
+  authorizedAt     DateTime? // date de signature
+  windowStart      DateTime? // début de la période autorisée
+  windowEnd        DateTime? // fin de la période autorisée (jour inclus)
+
+  targets  ScanTarget[]
+  findings ScanFinding[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+// Domaine ou sous-domaine du périmètre autorisé : seuls ces noms peuvent être contrôlés.
+model ScanTarget {
+  id         String   @id @default(uuid())
+  campaignId String
+  campaign   ScanCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  host      String
+  checkDns  Boolean   @default(true) // contrôles DNS/messagerie : pour le domaine principal seulement
+  lastRunAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@unique([campaignId, host])
+}
+
+// Constat d'une campagne : automatique (contrôles externes) ou saisi à la main (outils lancés par l'admin).
+model ScanFinding {
+  id         String   @id @default(uuid())
+  campaignId String
+  campaign   ScanCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  targetHost String
+  checkId    String
+  source     String  @default("auto") // 'auto' | 'manuel'
+  severity   String  // 'Critique' | 'Haute' | 'Moyenne' | 'Info' | 'OK'
+  title      String
+  detail     String
+  evidence   String? // jamais de secret, de valeur de cookie ni de donnée personnelle
+  status     String  @default("Nouveau") // 'Nouveau' | 'Retenu' | 'Écarté'
+  vulnerabilityId String? // vulnérabilité du registre créée quand le constat est retenu
+  runAt      DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([campaignId, targetHost, checkId])
+  @@index([campaignId])
 }
 
 // Module E : catalogue global de modèles de politiques (confidentialité, PSSI,

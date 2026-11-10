@@ -19,6 +19,7 @@ import { VulnerabilitiesTab } from '@/components/dossier/vulnerabilities-tab';
 import { PoliciesTab } from '@/components/dossier/policies-tab';
 import { SecurityAnswersTab } from '@/components/dossier/security-answers-tab';
 import { SurfaceTab } from '@/components/dossier/surface-tab';
+import { ScanTab } from '@/components/dossier/scan-tab';
 import { GovernanceTab } from '@/components/dossier/governance-tab';
 import { SuppliersTab } from '@/components/dossier/suppliers-tab';
 import { BudgetTab } from '@/components/dossier/budget-tab';
@@ -178,6 +179,7 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
           <TabsTrigger value="politiques">Politiques</TabsTrigger>
           <TabsTrigger value="questionnaires">Questionnaires</TabsTrigger>
           <TabsTrigger value="domaine">Domaine</TabsTrigger>
+          <TabsTrigger value="scan">Scan</TabsTrigger>
           <TabsTrigger value="gouvernance">Gouvernance</TabsTrigger>
           <TabsTrigger value="fournisseurs">Fournisseurs</TabsTrigger>
           <TabsTrigger value="budget">Budget</TabsTrigger>
@@ -329,6 +331,10 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
 
         <TabsContent value="domaine">
           <SurfaceTab organizationId={id} />
+        </TabsContent>
+
+        <TabsContent value="scan">
+          <ScanTab organizationId={id} />
         </TabsContent>
 
         <TabsContent value="questionnaires">
