@@ -1,6 +1,7 @@
 import { AuditAnswer, AuditCategory, AuditResult, AuditQuestion, ComplianceScore, AUDIT_CATEGORIES } from '../../types/audit';
 import { auditQuestions } from './questions';
 import { DEFAULT_RECOMMENDATIONS } from './default-recommendations';
+import { isQuestionSourced, isConsultantQuestion } from './sources';
 import { rgpdQuestions, nis2Questions, doraQuestions, lmpQuestions, incidentQuestions, supplyChainQuestions, cloudQuestions, craQuestions, isoQuestions, ebiosQuestions, sectorSpecificQuestions } from './questions-extended';
 
 const maturityLevels = [
@@ -34,7 +35,7 @@ const recommendationsByCategory: Record<AuditCategory, string[]> = {
     "Former les nouveaux arrivants."
   ],
   RGPD: [
-    "Nommer un DPO.",
+    "Désigner un pilote RGPD : DPO si la désignation est obligatoire, sinon référent RGPD.",
     "Documenter les traitements de données."
   ],
   NIS2: [
@@ -104,7 +105,7 @@ const allAuditQuestions: AuditQuestion[] = [
   ...ebiosQuestions,
   // Flatten sector specific questions from all sectors
   ...Object.values(sectorSpecificQuestions).flat()
-];
+].filter(q => isQuestionSourced(q.id)); // « pas de source vérifiée, pas de calcul » (lib/audit/sources.ts)
 
 export function computeAuditResult(answers: AuditAnswer[]): AuditResult {
   let total = 0;
@@ -180,7 +181,8 @@ export function computeAuditResult(answers: AuditAnswer[]): AuditResult {
     if (!ans && isSectorSensitive) return;
 
     const hasAnswer = !!ans && typeof ans.answer === 'string' && ans.answer.trim() !== '';
-    const weight = q.weight || 1;
+    // Poids égal pour toutes les questions : les anciens poids (1 à 3) n'avaient aucune source. Score = moyenne des notes.
+    const weight = 1;
     // Une note hors de l'échelle 0–5 (ou non numérique, ou absente) ne doit jamais gonfler ni fausser le score.
     const rawScore = hasAnswer && typeof ans!.score === 'number' && Number.isFinite(ans!.score) ? ans!.score : 0;
     const score = Math.min(5, Math.max(0, rawScore));
@@ -338,6 +340,9 @@ export type ActionPlanItem = {
 /** Une question ne génère au plus que ses 2 actions les plus importantes : au-delà le plan devient illisible (ex. 3 actions par question RGPD). */
 export const MAX_ACTIONS_PER_QUESTION = 2;
 
+/** Suffixe des actions issues d'un point sans source officielle vérifiée (« à valider par le consultant »). */
+export const UNSOURCED_ACTION_MARK = ' (sans source officielle vérifiée, à valider par le consultant)';
+
 export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]): ActionPlanItem[] {
   const actionPlan: ActionPlanItem[] = [];
   
@@ -357,7 +362,8 @@ export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]):
     ...ebiosQuestions,
     // Add sector specific questions
     ...Object.values(sectorSpecificQuestions).flat()
-  ];
+  // Les points « à valider par le consultant » génèrent des actions (jamais de note), marquées sans source officielle.
+  ].filter(q => isQuestionSourced(q.id) || isConsultantQuestion(q.id));
   
   // Définir les propriétaires par catégorie
   const ownersByCategory: Record<AuditCategory, string> = {
@@ -403,7 +409,7 @@ export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]):
           }
           
           actionPlan.push({
-            action,
+            action: isConsultantQuestion(question.id) ? `${action}${UNSOURCED_ACTION_MARK}` : action,
             category: question.category,
             priority: 'Haute',
             deadline: '1 mois',
@@ -434,7 +440,7 @@ export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]):
           }
           
           actionPlan.push({
-            action,
+            action: isConsultantQuestion(question.id) ? `${action}${UNSOURCED_ACTION_MARK}` : action,
             category: question.category,
             priority: (answer.score ?? 0) <= 1 ? 'Haute' : 'Moyenne',
             deadline: (answer.score ?? 0) <= 1 ? '1 mois' : '3 mois',
@@ -465,7 +471,7 @@ export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]):
           }
           
           actionPlan.push({
-            action,
+            action: isConsultantQuestion(question.id) ? `${action}${UNSOURCED_ACTION_MARK}` : action,
             category: question.category,
             priority: (answer.score ?? 0) <= 1 ? 'Haute' : 'Moyenne',
             deadline: (answer.score ?? 0) <= 1 ? '1 mois' : '3 mois',

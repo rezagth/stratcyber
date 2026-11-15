@@ -1,5 +1,6 @@
 import type { AuditReportData } from '@/lib/audit-report/data';
 import { getProviderIdentity } from '@/lib/contract/provider';
+import { referencesForResponses, NOT_COVERED_SCOPE } from '@/lib/audit/sources';
 
 function esc(value: unknown): string {
   return String(value ?? '')
@@ -22,6 +23,37 @@ function table(headers: string[], rows: string[][]): string {
       <thead><tr>${headers.map((h) => `<th>${esc(h)}</th>`).join('')}</tr></thead>
       <tbody>${rows.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
     </table>`;
+}
+
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+const PLAN_BLOCKS = [
+  { label: "Sous 30 jours", max: 30 },
+  { label: 'De 31 à 60 jours', max: 60 },
+  { label: 'De 61 à 90 jours', max: 90 },
+  { label: 'Au-delà de 90 jours', max: Infinity },
+] as const;
+
+/**
+ * Répartit les actions en blocs 30 / 60 / 90 jours, comptés depuis la création du plan
+ * (date de création la plus ancienne des actions, à défaut celle de l'audit). Les blocs vides sont omis ;
+ * une action sans échéance est placée au-delà de 90 jours.
+ */
+export function planBlocks<T extends { dueDate?: Date | string | null }>(
+  items: T[],
+  auditCreatedAt: Date | string,
+): Array<{ label: string; items: T[] }> {
+  const created = items
+    .map((i) => (i as { createdAt?: Date | string | null }).createdAt)
+    .filter((d): d is Date | string => !!d)
+    .map((d) => new Date(d).getTime());
+  const ref = created.length > 0 ? Math.min(...created) : new Date(auditCreatedAt).getTime();
+  const blocks = PLAN_BLOCKS.map((b) => ({ label: b.label, max: b.max, items: [] as T[] }));
+  for (const item of items) {
+    const days = item.dueDate ? Math.ceil((new Date(item.dueDate).getTime() - ref) / DAY_MS) : Infinity;
+    (blocks.find((b) => days <= b.max) ?? blocks[blocks.length - 1]).items.push(item);
+  }
+  return blocks.filter((b) => b.items.length > 0).map(({ label, items }) => ({ label, items }));
 }
 
 const MAX_RESPONSES = 50;
@@ -98,6 +130,8 @@ export function buildAuditReportHtml(data: AuditReportData, summary: string[] = 
     <strong>déclarées par l'organisation auditée</strong>. Sauf mention contraire, les réponses n'ont pas été vérifiées techniquement.</p>
     <p style="margin-top:6px">Référentiels de lecture : bonnes pratiques de l'ANSSI (hygiène informatique) et réglementations applicables au profil déclaré.
     Les scores et niveaux de maturité sont <strong>indicatifs</strong> : ils servent à prioriser les actions, pas à certifier un niveau de sécurité.</p>
+    <p style="margin-top:6px">Le score est la moyenne des notes des questions adossées à un texte officiel vérifié (voir « Références vérifiées »), toutes de poids égal. Quelques points sans source officielle sont posés à part (« à valider par le consultant ») et ne comptent pas dans le score.</p>
+    <p style="margin-top:6px"><strong>Non couvert par ce questionnaire :</strong> ${esc(NOT_COVERED_SCOPE)}.</p>
     ${scan.checks > 0 ? `<p style="margin-top:6px">Les constats de la section « Constats vérifiés » proviennent d'un <strong>contrôle externe non intrusif</strong>
     (en-têtes HTTP, certificat, DNS et messagerie) réalisé avec l'autorisation écrite du client sur : ${esc(scan.hosts.join(', ') || 'domaines autorisés')}. Ils sont vérifiés techniquement ; les autres éléments restent déclaratifs.</p>` : ''}
     <p style="margin-top:6px">Ne sont <strong>pas</strong> couverts : tests d'intrusion, audit de configuration, audit de code source, analyse forensique.</p>
@@ -124,17 +158,38 @@ export function buildAuditReportHtml(data: AuditReportData, summary: string[] = 
   ${recommendations.length > 0 ? section('Recommandations', `<ol>${recommendations.map((r) => `<li>${esc(r)}</li>`).join('')}</ol>`) : ''}
 
   ${section("Plan d'action", actionItems.length > 0
-    ? table(['Action', 'Priorité', 'Responsable', 'Échéance', 'Preuve attendue'],
-        actionItems.map((a) => {
-          const { phase, proof } = parsePlanDescription((a as { description?: string | null }).description);
-          return [esc(a.title), esc(a.priority ?? '—'), esc(a.responsible ?? '—'),
-            `${esc(a.dueDate ? fmtDate(a.dueDate) : '—')}${phase ? `<br><span class="muted">${esc(phase)}</span>` : ''}`,
-            esc(proof ?? 'À définir avec le client')];
-        }))
+    ? planBlocks(actionItems, audit.createdAt).map((blk) => `
+        <p style="margin-top:10px"><strong>${esc(blk.label)}</strong> <span class="muted">(${esc(blk.items.length)} action${blk.items.length > 1 ? 's' : ''})</span></p>
+        ${table(['Action', 'Priorité', 'Responsable', 'Échéance', 'Preuve attendue'],
+          blk.items.map((a) => {
+            const { phase, proof } = parsePlanDescription((a as { description?: string | null }).description);
+            return [esc(a.title), esc(a.priority ?? '—'), esc(a.responsible ?? '—'),
+              `${esc(a.dueDate ? fmtDate(a.dueDate) : '—')}${phase ? `<br><span class="muted">${esc(phase)}</span>` : ''}`,
+              esc(proof ?? 'À définir avec le client')];
+          }))}`).join('')
     : plan.length === 0
       ? '<p class="muted">Aucune action enregistrée.</p>'
       : table(['Action', 'Priorité', 'Responsable', 'Durée estimée'],
           plan.map((p) => [esc(p.title), esc(p.priority ?? '—'), esc(p.owner ?? '—'), esc(p.estimatedDuration ?? '—')])))}
+
+  ${section('Dossier de preuves', `
+    <p class="muted">Ce dossier liste ce que l'audit a produit et ce qui doit être réuni pour prouver chaque action du plan. Il ne contient que des éléments réels : les colonnes vides sont à compléter au fur et à mesure (les preuves elles-mêmes se déposent dans l'Espace client InfraCyb, rubrique Preuves).</p>
+    <p style="margin-top:8px"><strong>Éléments produits par cet audit</strong></p>
+    <ul style="padding-left:18px">
+      <li>Questionnaire d'audit réalisé le ${esc(fmtDate(audit.createdAt))} : ${esc(responses.length)} réponse(s) enregistrée(s) (déclaratives, non vérifiées techniquement).</li>
+      ${scan.checks > 0
+        ? `<li>Contrôle externe non intrusif du ${esc(scan.lastRunAt ? fmtDate(scan.lastRunAt) : '—')} sur ${esc(scan.hosts.join(', ') || 'les domaines autorisés')} : ${esc(scan.checks)} vérification(s), ${esc(scan.findings.length)} constat(s) (section « Constats vérifiés »).</li>`
+        : '<li>Aucun contrôle externe réalisé pour cet audit : aucune preuve technique produite.</li>'}
+      <li>Références officielles des questions posées : section « Références vérifiées ».</li>
+    </ul>
+    ${actionItems.length > 0
+      ? `<p style="margin-top:8px"><strong>Preuves à réunir par action</strong></p>${table(['Action', 'Preuve attendue', 'Remise le', 'Référence ou emplacement'],
+          actionItems.map((a) => {
+            const { proof } = parsePlanDescription((a as { description?: string | null }).description);
+            return [esc(a.title), esc(proof ?? 'À définir avec le client'), '&nbsp;', '&nbsp;'];
+          }))}`
+      : '<p class="muted" style="margin-top:8px">Aucune action enregistrée : aucune preuve à réunir pour le moment.</p>'}
+  `)}
 
   ${detail === 'full' && compliance.length > 0 ? section('Niveau de préparation réglementaire (indicatif, hors attestation de conformité)', table(
     ['Réglementation', 'Score', 'Statut'],
@@ -146,6 +201,20 @@ export function buildAuditReportHtml(data: AuditReportData, summary: string[] = 
       responses.slice(0, MAX_RESPONSES).map((r) => [esc(r.question), esc(r.answer), esc(categoryLabel(r.category)), r.score === null ? '—' : `${esc(r.score)}/5`]))}
     ${responses.length > MAX_RESPONSES ? `<p class="muted">Et ${responses.length - MAX_RESPONSES} autres réponses.</p>` : ''}
   `) : ''}
+
+  ${(() => {
+    const { sources, unsourcedCount, consultantResponses } = referencesForResponses(responses);
+    if (sources.length === 0 && unsourcedCount === 0 && consultantResponses.length === 0) return '';
+    return section('Références vérifiées', `
+      <p class="muted">Chaque question posée repose sur un texte officiel lu à la date indiquée.</p>
+      ${sources.length > 0 ? `<ul style="padding-left:18px">${sources.map((src) =>
+        `<li>${esc(src.label)} — ${esc(src.url)} (vérifié le ${esc(fmtDate(src.verifiedOn))})${src.note ? `<br><span class="muted">${esc(src.note)}</span>` : ''}</li>`).join('')}</ul>` : ''}
+      ${consultantResponses.length > 0 ? `<p style="margin-top:10px"><strong>Points à valider par le consultant (sans source officielle vérifiée, hors score)</strong></p>
+        <p class="muted">Ces points sont déclaratifs : ils ne comptent pas dans le score et sont à valider par le consultant InfraCyb avant toute conclusion.</p>
+        ${table(['Question', 'Réponse'], consultantResponses.map((r) => [esc(r.question), esc(r.answer)]))}` : ''}
+      ${unsourcedCount > 0 ? `<p style="margin-top:6px"><strong>${esc(unsourcedCount)} réponse(s) de cet audit portent sur des questions sans source vérifiée</strong> (ancien questionnaire) : à ne pas considérer comme fondées sur un texte officiel.</p>` : ''}
+    `);
+  })()}
 
   ${section('Limites et avertissements', `
     <ul style="padding-left:18px">

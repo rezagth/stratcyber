@@ -2,6 +2,7 @@ import { CompanyProfile, AuditQuestion, RegulationScope } from '../../types/audi
 import { computeAuditResult, generateActionPlan } from './scoring';
 import { getQuestionsForProfile } from './questions-extended';
 import { baseQuestions } from './questions';
+import { isQuestionSourced, isConsultantQuestion } from './sources';
 
 /**
  * Détermine les réglementations applicables en fonction du profil de l'entreprise
@@ -57,7 +58,9 @@ export function generateQuestionsForProfile(profile: CompanyProfile): AuditQuest
   // Socle d'hygiène cyber (sauvegardes, MFA, correctifs, antivirus…) toujours posé,
   // puis questions réglementaires selon le profil et le secteur.
   const seen = new Set<string>();
+  // Règle « pas de source vérifiée, pas de question » : voir lib/audit/sources.ts.
   return [...baseQuestions, ...getQuestionsForProfile(regulations, profile.sector)].filter((q) => {
+    if (!isQuestionSourced(q.id) && !isConsultantQuestion(q.id)) return false;
     if (seen.has(q.id)) return false;
     seen.add(q.id);
     return true;

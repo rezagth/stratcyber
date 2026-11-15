@@ -30,7 +30,7 @@ export default function RGPDDocumentation() {
   };
 
   const checklistItems = [
-    { id: 'dpo', text: 'Désigner un Délégué à la Protection des Données (DPO)', critical: true },
+    { id: 'dpo', text: 'Désigner un DPO (obligatoire dans certains cas : organisme public, suivi à grande échelle, données sensibles) ou, à défaut, un référent RGPD', critical: false },
     { id: 'privacy-policy', text: 'Rédiger une politique de confidentialité claire', critical: true },
     { id: 'consent', text: 'Mettre en place un système de consentement valide', critical: true },
     { id: 'data-mapping', text: 'Cartographier les traitements de données personnelles', critical: true },

@@ -71,7 +71,7 @@ export async function buildAuditReportData(user: AuthedUser, auditId: string) {
   const actionItems = !isClient && audit.organizationId
     ? await prisma.actionPlanItem.findMany({
         where: { organizationId: audit.organizationId, auditId: audit.id },
-        select: { title: true, description: true, priority: true, responsible: true, dueDate: true },
+        select: { title: true, description: true, priority: true, responsible: true, dueDate: true, createdAt: true },
       })
     : [];
 
@@ -135,7 +135,7 @@ export async function buildAuditReportData(user: AuthedUser, auditId: string) {
     plan: parsePlan(audit.actionPlan ?? null),
     actionItems: [...actionItems].sort(
       (a, b) => PRIORITY_RANK(a.priority) - PRIORITY_RANK(b.priority) || (a.dueDate?.getTime() ?? Infinity) - (b.dueDate?.getTime() ?? Infinity)
-    ),
+    ) as Array<Omit<(typeof actionItems)[number], 'createdAt'> & { createdAt?: Date }>,
     categoryScores,
     scan: {
       findings: scanFindings,

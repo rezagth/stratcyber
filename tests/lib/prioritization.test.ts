@@ -50,8 +50,11 @@ describe('buildActionPlanFromAudit : le plan n\'est plus uniformément Haute', (
   it('produit plusieurs niveaux de priorité et des échéances différentes à partir de réponses négatives', async () => {
     const { auditQuestions } = await import('@/lib/audit/questions');
     const { rgpdQuestions } = await import('@/lib/audit/questions-extended');
+    const { isQuestionSourced } = await import('@/lib/audit/sources');
+    const { DEFAULT_RECOMMENDATIONS } = await import('@/lib/audit/default-recommendations');
     const responses = [...auditQuestions, ...rgpdQuestions]
-      .filter((q) => q.type === 'boolean' && q.actionRecommendations?.negativeAnswer?.length)
+      .filter((q) => isQuestionSourced(q.id) && q.type === 'boolean'
+        && (q.actionRecommendations ?? DEFAULT_RECOMMENDATIONS[q.id])?.negativeAnswer?.length)
       .map((q) => ({ question: q.id, answer: 'Non', score: 0 }));
     const plan = buildActionPlanFromAudit({ id: 'a', organizationId: 'o', createdAt: from, responses });
     expect(plan.length).toBeGreaterThan(5);

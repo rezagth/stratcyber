@@ -7,15 +7,14 @@ export const rgpdQuestions: AuditQuestion[] = [
   {
     id: 'rgpd1',
     category: 'RGPD',
-    question: "Un DPO est-il désigné et les obligations RGPD sont-elles respectées ?",
-    description: "DPO interne ou externe, registre des traitements, droits des personnes.",
+    question: "Une personne est-elle chargée de piloter la conformité RGPD (DPO ou référent) ?",
+    description: "Le DPO est obligatoire pour un organisme public, ou pour une entreprise dont l'activité de base impose un suivi régulier et systématique des personnes à grande échelle ou le traitement à grande échelle de données sensibles ou pénales. Dans les autres cas, la CNIL recommande fortement de désigner un pilote. Source : CNIL, « Désigner un pilote » (vérifié le 15/11/2026).",
     type: 'boolean',
     weight: 3,
     actionRecommendations: {
       negativeAnswer: [
-        "Désigner un Délégué à la Protection des Données (DPO) conformément aux exigences du RGPD.",
-        "Élaborer et diffuser une charte de protection des données personnelles.",
-        "Mettre en place un registre des traitements de données personnelles."
+        "Désigner un pilote de la conformité RGPD : un DPO indépendant si la désignation est obligatoire (organisme public, suivi régulier et systématique à grande échelle, données sensibles à grande échelle), sinon un référent RGPD (fortement recommandé par la CNIL).",
+        "Élaborer et diffuser une charte de protection des données personnelles."
       ]
     }
   },
@@ -37,120 +36,104 @@ export const rgpdQuestions: AuditQuestion[] = [
   {
     id: 'rgpd3',
     category: 'RGPD',
-    question: "Les analyses d'impact (AIPD) sont-elles réalisées pour les traitements sensibles ?",
-    description: "Conformément aux exigences du RGPD pour les traitements à risque élevé.",
+    question: "Une analyse d'impact (AIPD) est-elle réalisée pour les traitements susceptibles d'engendrer un risque élevé pour les personnes ?",
+    description: "Source : CNIL, « Ce qu'il faut savoir sur l'analyse d'impact relative à la protection des données (AIPD) » (vérifié le 15/11/2026). La CNIL publie les listes des traitements pour lesquels une AIPD est requise ou non.",
     type: 'boolean',
     weight: 3,
     actionRecommendations: {
       negativeAnswer: [
-        "Réaliser des Analyses d'Impact sur la Protection des Données (AIPD) pour les traitements à risque élevé.",
-        "Identifier les traitements de données qui nécessitent une AIPD selon le RGPD.",
-        "Mettre en place un processus pour évaluer régulièrement les risques liés aux traitements de données."
+        "Identifier, avec les listes publiées par la CNIL, les traitements qui nécessitent une analyse d'impact (AIPD) et la réaliser avant leur mise en œuvre."
       ]
     }
   },
   {
     id: 'rgpd4',
     category: 'RGPD',
-    question: "Les violations de données sont-elles notifiées dans les 72h à la CNIL ?",
-    description: "Procédure de notification des violations conforme à l'art. 33 RGPD.",
+    question: "Une procédure permet-elle de documenter toute violation de données et de la notifier à la CNIL sous 72 h lorsqu'elle engendre un risque pour les personnes ?",
+    description: "Source : CNIL, « Violations de données personnelles : les règles à suivre » (art. 33 et 34 RGPD, vérifié le 15/11/2026). Documentation interne dans tous les cas ; notification à la CNIL sous 72 h en cas de risque ; information des personnes en cas de risque élevé.",
     type: 'boolean',
     weight: 3,
     actionRecommendations: {
       negativeAnswer: [
-        "Mettre en place une procédure de notification des violations de données dans les 72h à la CNIL.",
-        "Former le personnel à identifier et signaler les violations de données.",
-        "Élaborer un plan de réponse aux violations de données conformément à l'article 33 du RGPD."
+        "Mettre en place une procédure de gestion des violations de données : registre interne de toutes les violations, notification à la CNIL sous 72 h en cas de risque, information des personnes en cas de risque élevé."
       ]
     }
   },
   {
     id: 'rgpd5',
     category: 'RGPD',
-    question: "Les consentements sont-ils collectés de manière licite et documentés ?",
-    description: "Consentement libre, spécifique, éclairé et univoque (art. 7 RGPD).",
+    question: "Une base légale (consentement, contrat, obligation légale, intérêt légitime…) est-elle identifiée pour chaque traitement de données personnelles ?",
+    description: "Source : CNIL, « Les bases légales » (lu le 15/11/2026) : tout traitement doit se fonder sur l'une des bases légales prévues par le RGPD, choisie avant la mise en œuvre. Le consentement n'est qu'une de ces bases ; la CNIL détaille les conditions de son recueil.",
     type: 'scale',
-    weight: 2,
+    weight: 1,
     actionRecommendations: {
       lowScore: [
-        "Mettre en place un système de gestion des consentements conforme à l'article 7 du RGPD.",
-        "Réviser les formulaires de collecte de consentement pour assurer leur conformité.",
-        "Implémenter des mécanismes pour permettre aux personnes de retirer facilement leur consentement."
+        "Identifier la base légale de chaque traitement (consentement, contrat, obligation légale, intérêt légitime…) avant sa mise en œuvre et la reporter dans le registre des traitements."
       ]
     }
   },
   {
     id: 'rgpd6',
     category: 'RGPD',
-    question: "Les droits des personnes (accès, rectification, effacement) sont-ils respectés ?",
-    description: "Procédures pour exercer les droits dans les délais légaux (1 mois).",
+    question: "Les personnes sont-elles informées de leurs droits et peuvent-elles les exercer facilement (accès, rectification, effacement…) ?",
+    description: "Source : CNIL, « Respecter les droits des personnes » (vérifié le 15/11/2026) : informer de façon concise, transparente et accessible, et permettre l'exercice des droits.",
     type: 'scale',
     weight: 2,
     actionRecommendations: {
       lowScore: [
-        "Mettre en place des procédures claires pour permettre aux personnes d'exercer leurs droits RGPD.",
-        "Former le personnel aux procédures de traitement des demandes des personnes concernées.",
-        "Implémenter un système de suivi des demandes d'exercice des droits dans les délais légaux."
+        "Informer les personnes de leurs droits (mentions d'information claires) et mettre en place une procédure pour répondre à leurs demandes d'exercice des droits."
       ]
     }
   },
   {
     id: 'rgpd7',
     category: 'RGPD',
-    question: "Les transferts internationaux de données sont-ils sécurisés ?",
-    description: "Clauses contractuelles types, décisions d'adéquation ou BCR.",
+    question: "Si des données personnelles sont transférées hors de l'Union européenne ou de l'EEE, le transfert est-il encadré par un outil juridique (décision d'adéquation, clauses contractuelles types, BCR…) ?",
+    description: "Source : CNIL, « Transférer des données hors de l'UE » (lu le 15/11/2026) : le transfert est possible à condition d'assurer un niveau de protection suffisant et approprié, par différents outils juridiques. Répondre « oui » si aucune donnée n'est transférée hors UE/EEE.",
     type: 'boolean',
-    weight: 2,
+    weight: 1,
     actionRecommendations: {
       negativeAnswer: [
-        "Mettre en place des garanties appropriées pour les transferts internationaux de données.",
-        "Utiliser des clauses contractuelles types approuvées par la Commission européenne.",
-        "Évaluer les pays de destination pour s'assurer d'un niveau adéquat de protection."
+        "Recenser les transferts de données hors de l'UE/EEE (outils hébergés hors UE, prestataires) et les encadrer par un outil prévu par le RGPD : décision d'adéquation, clauses contractuelles types ou BCR."
       ]
     }
   },
   {
     id: 'rgpd8',
     category: 'RGPD',
-    question: "La privacy by design est-elle appliquée dès la conception ?",
-    description: "Protection des données intégrée dès la conception des systèmes.",
+    question: "La sécurité et la protection des données personnelles sont-elles intégrées au plus tôt dans les projets informatiques ?",
+    description: "Source : CNIL, Guide de la sécurité des données personnelles, fiche 11 « Encadrer les développements informatiques » (intitulé lu le 15/11/2026) : intégrer sécurité et protection des données au plus tôt dans les projets.",
     type: 'scale',
-    weight: 2,
+    weight: 1,
     actionRecommendations: {
       lowScore: [
-        "Intégrer la protection de la vie privée dès la conception des nouveaux systèmes et processus.",
-        "Mettre en place des contrôles de sécurité par défaut dans les développements informatiques.",
-        "Former les équipes de développement aux principes de privacy by design."
+        "Intégrer la sécurité et la protection des données personnelles dès le début de chaque projet informatique (fiche 11 du guide de sécurité de la CNIL)."
       ]
     }
   },
   {
     id: 'rgpd9',
     category: 'RGPD',
-    question: "Les sous-traitants respectent-ils leurs obligations RGPD ?",
-    description: "Contrats de sous-traitance conformes à l'art. 28 RGPD.",
+    question: "Un contrat conforme à l'article 28 du RGPD est-il signé avec chaque sous-traitant qui traite des données personnelles pour votre compte ?",
+    description: "Source : CNIL, « Travailler avec un sous-traitant » et Guide de la sécurité des données personnelles, fiche 14 (lus le 15/11/2026) : le traitement par un sous-traitant est encadré par un contrat avec le responsable de traitement ; ne pas entamer la prestation sans contrat reprenant les exigences de l'article 28.",
     type: 'scale',
-    weight: 2,
+    weight: 1,
     actionRecommendations: {
       lowScore: [
-        "Vérifier et auditer régulièrement les sous-traitants pour leur conformité RGPD.",
-        "Mettre à jour les contrats de sous-traitance pour inclure toutes les obligations RGPD.",
-        "Établir des clauses de responsabilité claires avec les sous-traitants en matière de protection des données."
+        "Signer avec chaque sous-traitant un contrat reprenant les exigences de l'article 28 du RGPD (objet, durée, finalité, sécurité, sort des données en fin de contrat, notification des incidents)."
       ]
     }
   },
   {
     id: 'rgpd10',
     category: 'RGPD',
-    question: "Les durées de conservation des données sont-elles définies et respectées ?",
-    description: "Politique de rétention avec suppression automatique.",
+    question: "Une durée de conservation est-elle déterminée pour chaque type de données, en fonction de la finalité du traitement ?",
+    description: "Source : CNIL, « Les durées de conservation des données » (vérifié le 15/11/2026) : le responsable de traitement détermine la durée selon la finalité, sauf durée fixée par un texte.",
     type: 'scale',
     weight: 2,
     actionRecommendations: {
       lowScore: [
-        "Établir une politique claire de conservation des données avec des durées définies par type de données.",
-        "Implémenter des mécanismes de suppression automatique des données à l'expiration de leur durée de conservation.",
-        "Former le personnel aux règles de conservation des données et à l'importance du respect des délais."
+        "Définir pour chaque traitement une durée de conservation adaptée à sa finalité (ou fixée par un texte) et supprimer ou archiver les données à l'issue de cette durée."
       ]
     }
   }
@@ -474,15 +457,13 @@ export const craQuestions: AuditQuestion[] = [
   {
     id: 'cra_3',
     category: 'CRA',
-    question: "Les vulnérabilités sont-elles signalées et corrigées dans les délais requis ?",
-    description: "Processus de divulgation responsable et correction dans les 90 jours.",
+    question: "Un processus de gestion des vulnérabilités couvre-t-il toute la durée de vie du produit, avec signalement des vulnérabilités activement exploitées ?",
+    description: "Source : Commission européenne, page « Cyber Resilience Act » (vérifié le 15/11/2026) : gestion des vulnérabilités sur le cycle de vie du produit ; signalement des vulnérabilités activement exploitées obligatoire depuis le 11/09/2026 ; obligations principales à partir du 11/12/2027.",
     type: 'scale',
     weight: 3,
     actionRecommendations: {
       lowScore: [
-        "Mettre en place un processus de correction des vulnérabilités dans les délais requis selon le CRA.",
-        "Établir une équipe dédiée pour la gestion des vulnérabilités.",
-        "Implémenter un système de suivi pour s'assurer du respect des délais de correction."
+        "Mettre en place un processus de gestion des vulnérabilités sur toute la durée de vie du produit et préparer le signalement des vulnérabilités activement exploitées (obligation applicable depuis le 11/09/2026)."
       ]
     }
   },

@@ -7,6 +7,7 @@ import {
   sectorSpecificQuestions,
 } from '@/lib/audit/questions-extended';
 import { DEFAULT_RECOMMENDATIONS } from '@/lib/audit/default-recommendations';
+import { isQuestionSourced } from '@/lib/audit/sources';
 import type { AuditQuestion } from '@/types/audit';
 
 const all: AuditQuestion[] = [
@@ -36,11 +37,13 @@ describe('couverture du plan d’actions', () => {
     expect(plan.some((a) => /sauvegarde/i.test(a.action))).toBe(true);
   });
 
-  it('toutes les questions au pire → au moins une action par question', () => {
-    const answers = all.map((q) => ({
+  it('toutes les questions sourcées au pire → au moins une action par question', () => {
+    const sourced = all.filter((q) => isQuestionSourced(q.id));
+    expect(sourced.length).toBeGreaterThan(10);
+    const answers = sourced.map((q) => ({
       questionId: q.id, answer: q.type === 'boolean' ? 'non' : 'x', score: 0,
     }));
     const plan = generateActionPlan(computeAuditResult(answers), answers);
-    expect(plan.length).toBeGreaterThanOrEqual(all.length);
+    expect(plan.length).toBeGreaterThanOrEqual(sourced.length);
   });
 });
