@@ -6,6 +6,8 @@
  * actions dont le sens est quasi identique, dans la même famille de sujet.
  */
 
+import { UNSOURCED_ACTION_MARK } from './sources';
+
 const STOPWORDS = new Set([
   'le', 'la', 'les', 'un', 'une', 'des', 'du', 'de', 'd', 'l', 'et', 'ou', 'en', 'au', 'aux', 'a', 'pour',
   'par', 'sur', 'dans', 'avec', 'sans', 'chaque', 'tous', 'toutes', 'tout', 'son', 'sa', 'ses', 'leur',
@@ -41,7 +43,8 @@ export function dedupeActions<T extends { category: string; action: string }>(
 ): T[] {
   const kept: { item: T; tokens: Set<string> }[] = [];
   for (const item of items) {
-    const tokens = new Set(normalizeTokens(item.action));
+    // La mention commune « sans source officielle… » ne doit pas rapprocher artificiellement deux actions.
+    const tokens = new Set(normalizeTokens(item.action.split(UNSOURCED_ACTION_MARK).join('')));
     const duplicate = kept.some(
       (k) => k.item.action === item.action || similarity(tokens, k.tokens) >= threshold
     );

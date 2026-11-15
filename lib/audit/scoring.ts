@@ -1,7 +1,8 @@
 import { AuditAnswer, AuditCategory, AuditResult, AuditQuestion, ComplianceScore, AUDIT_CATEGORIES } from '../../types/audit';
 import { auditQuestions } from './questions';
 import { DEFAULT_RECOMMENDATIONS } from './default-recommendations';
-import { isQuestionSourced, isConsultantQuestion } from './sources';
+import { isQuestionSourced, isConsultantQuestion, UNSOURCED_ACTION_MARK } from './sources';
+export { UNSOURCED_ACTION_MARK };
 import { rgpdQuestions, nis2Questions, doraQuestions, lmpQuestions, incidentQuestions, supplyChainQuestions, cloudQuestions, craQuestions, isoQuestions, ebiosQuestions, sectorSpecificQuestions } from './questions-extended';
 
 const maturityLevels = [
@@ -340,8 +341,6 @@ export type ActionPlanItem = {
 /** Une question ne génère au plus que ses 2 actions les plus importantes : au-delà le plan devient illisible (ex. 3 actions par question RGPD). */
 export const MAX_ACTIONS_PER_QUESTION = 2;
 
-/** Suffixe des actions issues d'un point sans source officielle vérifiée (« à valider par le consultant »). */
-export const UNSOURCED_ACTION_MARK = ' (sans source officielle vérifiée, à valider par le consultant)';
 
 export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]): ActionPlanItem[] {
   const actionPlan: ActionPlanItem[] = [];

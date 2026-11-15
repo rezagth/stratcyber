@@ -223,6 +223,9 @@ export function isQuestionSourced(id: string): boolean {
  */
 export const CONSULTANT_QUESTION_IDS = ['g2', 'h4', 'grc1', 'grc2', 's1', 's2'] as const;
 
+/** Suffixe des actions issues d'un point sans source officielle vérifiée (« à valider par le consultant »). */
+export const UNSOURCED_ACTION_MARK = ' (sans source officielle vérifiée, à valider par le consultant)';
+
 export function isConsultantQuestion(id: string): boolean {
   return (CONSULTANT_QUESTION_IDS as readonly string[]).includes(id);
 }
