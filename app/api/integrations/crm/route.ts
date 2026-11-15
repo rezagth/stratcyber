@@ -82,5 +82,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ id: existing.id, pendingContract: true });
   }
 
+  // Trace d'un contrat envoyé depuis le CRM : on note seulement la référence et le montant dans le dossier.
+  if (body.event === 'contract.sent') {
+    const reference = typeof body.reference === 'string' && /^[\w-]{1,60}$/.test(body.reference) ? body.reference : null;
+    if (!reference) return bad('Référence invalide');
+    const cents = typeof body.amountHtCents === 'number' && Number.isInteger(body.amountHtCents) && body.amountHtCents >= 0 && body.amountHtCents < 100_000_000 ? body.amountHtCents : null;
+    const existing = await prisma.organization.findFirst({ where: { crmId }, select: { id: true } });
+    if (!existing) return bad('Client inconnu', 404);
+    await prisma.decisionLogEntry.create({
+      data: {
+        organizationId: existing.id,
+        title: 'Contrat envoyé',
+        description: `Contrat ${reference}${cents !== null ? ` (${(cents / 100).toLocaleString('fr-FR')} € HT)` : ''} envoyé au client depuis le CRM.`,
+        decidedAt: new Date(),
+      },
+    });
+    return NextResponse.json({ id: existing.id, traced: true });
+  }
+
   return bad('Événement inconnu');
 }

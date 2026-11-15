@@ -94,4 +94,14 @@ describe('intégration CRM', () => {
     expect(tables.decisionLogEntry.some((d) => d.title === 'Mission démarrée dans le CRM')).toBe(true);
     expect((await call({ event: 'mission.start', crmId: 'inconnu' })).status).toBe(404);
   });
+
+  it('contract.sent laisse une trace (référence et montant) dans le dossier', async () => {
+    await call({ event: 'client.upsert', crmId: 'c8', name: 'Client Trace' });
+    const res = await call({ event: 'contract.sent', crmId: 'c8', reference: 'CTR-20261115-CLIENT', amountHtCents: 69000 });
+    expect(res.status).toBe(200);
+    const d = tables.decisionLogEntry.find((x) => x.title === 'Contrat envoyé');
+    expect(String(d?.description)).toContain('CTR-20261115-CLIENT');
+    expect((await call({ event: 'contract.sent', crmId: 'c8', reference: '<x>' })).status).toBe(400);
+    expect((await call({ event: 'contract.sent', crmId: 'inconnu', reference: 'CTR-1' })).status).toBe(404);
+  });
 });
