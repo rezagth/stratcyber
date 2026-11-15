@@ -85,4 +85,13 @@ describe('intégration CRM', () => {
     expect(verifyCrmSignature(SECRET, 'abc', sig, 'x')).toBe(false);
     expect(verifyCrmSignature('autre', ts, sig, 'x')).toBe(false);
   });
+
+  it('mission.start crée un rappel dans le dossier sans envoyer de contrat', async () => {
+    await call({ event: 'client.upsert', crmId: 'c9', name: 'Client Neuf' });
+    const res = await call({ event: 'mission.start', crmId: 'c9' });
+    expect(res.status).toBe(200);
+    expect((await res.json()).pendingContract).toBe(true);
+    expect(tables.decisionLogEntry.some((d) => d.title === 'Mission démarrée dans le CRM')).toBe(true);
+    expect((await call({ event: 'mission.start', crmId: 'inconnu' })).status).toBe(404);
+  });
 });

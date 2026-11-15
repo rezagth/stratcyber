@@ -154,6 +154,9 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
           <Link href={`/dashboard/organizations/${id}/action-plan`}>
             <Button variant="outline">Plan d&apos;action →</Button>
           </Link>
+          <Link href={`/dashboard/organizations/${id}/contrat`}>
+            <Button variant="outline">Contrat de mission →</Button>
+          </Link>
           <DeleteClientButton organizationId={id} organizationName={org.name} />
         </div>
       </div>
