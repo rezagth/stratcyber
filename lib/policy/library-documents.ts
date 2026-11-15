@@ -384,4 +384,136 @@ Pour le responsable de traitement :          Pour le sous-traitant :
 {{dirigeant}}                                 [Nom et fonction du signataire]
 ${FOOTER}`,
   },
+  {
+    id: 'droits-personnes',
+    type: 'Droits des personnes',
+    name: "Procédure d'exercice des droits des personnes (RGPD)",
+    description: 'Comment recevoir, vérifier, traiter et tracer une demande d’accès, de rectification, d’effacement, etc.',
+    content: `PROCÉDURE D'EXERCICE DES DROITS DES PERSONNES
+{{entreprise}} - applicable à compter du {{date_effet}}
+Contact pour les demandes : {{contact_donnees}}
+
+1. OBJET
+Toute personne dont {{entreprise}} traite les données (client, prospect, salarié, candidat, visiteur du site) peut demander l'accès à ses données, leur rectification, leur effacement, la limitation du traitement, la portabilité, et s'opposer à un traitement. Cette procédure explique comment ces demandes sont reçues et traitées.
+
+2. DROITS CONCERNÉS
+- Accès : obtenir une copie des données et des informations sur leur traitement.
+- Rectification : corriger des données inexactes ou incomplètes.
+- Effacement : demander la suppression, dans les cas prévus par le RGPD.
+- Limitation : geler temporairement l'usage des données.
+- Opposition : refuser un traitement, et refuser à tout moment la prospection commerciale.
+- Portabilité : récupérer ses données dans un format courant, lorsque le traitement repose sur le consentement ou le contrat et qu'il est automatisé.
+
+3. RÉCEPTION D'UNE DEMANDE
+Une demande peut arriver par tout canal (courriel, courrier, téléphone, formulaire, réseaux sociaux). Toute personne de l'entreprise qui la reçoit la transmet le jour même à {{contact_donnees}}, sans y répondre elle-même sur le fond. La date de réception est notée : c'est le point de départ du délai.
+
+4. VÉRIFICATION DE L'IDENTITÉ
+Si un doute existe sur l'identité du demandeur, on demande uniquement les éléments nécessaires pour la confirmer, de façon proportionnée. Ne pas demander une pièce d'identité systématiquement. Jamais de donnée supplémentaire inutile.
+
+5. TRAITEMENT ET DÉLAIS
+- Accusé de réception rapide.
+- Réponse dans un délai d'un mois à compter de la réception de la demande. Si la demande est complexe ou nombreuses, ce délai peut être prolongé de deux mois, en en informant la personne dans le premier mois avec le motif.
+- La réponse est gratuite, sauf demande manifestement infondée ou excessive.
+- En cas de refus, la personne est informée du motif et de la possibilité de saisir la CNIL.
+- Les destinataires des données (dont les sous-traitants, par exemple {{prestataire_it}} et {{hebergeur_donnees}}) sont informés des rectifications ou effacements, lorsque c'est applicable.
+
+6. SUIVI
+Chaque demande est consignée dans un registre des demandes : date de réception, nature du droit, identité vérifiée oui/non, date de réponse, décision, motif en cas de refus. Ce registre est conservé {{duree_conservation_donnees}}.
+
+7. REVUE
+Cette procédure est revue au moins une fois par an par {{dirigeant}} ou son délégué, et testée sur un cas fictif.
+
+Fait à {{ville}}, le {{date_effet}}
+{{dirigeant}}
+${FOOTER}`,
+  },
+  {
+    id: 'violation-donnees',
+    type: 'Violation de données',
+    name: 'Procédure et registre des violations de données personnelles',
+    description: 'Que faire en cas de perte, vol ou fuite de données personnelles : évaluer, notifier la CNIL, informer, tracer.',
+    content: `PROCÉDURE EN CAS DE VIOLATION DE DONNÉES PERSONNELLES
+{{entreprise}} - applicable à compter du {{date_effet}}
+Contact interne : {{contact_securite}} - Contact protection des données : {{contact_donnees}}
+
+1. DÉFINITION
+Une violation de données personnelles est une atteinte à leur sécurité : perte, vol, destruction, altération, divulgation ou accès non autorisé, accidentels ou malveillants (ordinateur volé, courriel envoyé au mauvais destinataire, rançongiciel, compte piraté, base exposée).
+
+2. SIGNALER IMMÉDIATEMENT
+Toute personne qui constate ou soupçonne une violation le signale sans délai à {{contact_securite}}. Ne pas supprimer de preuves, ne pas éteindre brutalement les machines sans consigne, ne pas communiquer à l'extérieur.
+
+3. CONTENIR ET ÉVALUER
+{{referent_securite}} avec l'appui de {{rssi}} :
+a) arrête ou limite l'incident (changement de mots de passe, déconnexion, isolement du poste) ;
+b) note ce qui s'est passé, les données et les personnes concernées, le nombre approximatif ;
+c) évalue le risque pour les personnes : faible, probable, élevé (identité, coordonnées bancaires, santé, mots de passe, données de mineurs, volume, facilité d'identification).
+
+4. NOTIFICATION À LA CNIL
+Si la violation est susceptible d'engendrer un risque pour les droits et libertés des personnes, elle est notifiée à la CNIL dès que possible et, si possible, au plus tard 72 heures après en avoir pris connaissance (article 33 du RGPD), via le téléservice de notification de la CNIL. Si toutes les informations ne sont pas disponibles, la notification est faite par étapes. Si la notification dépasse 72 heures, le retard est motivé.
+Si le risque est faible, la violation n'est pas notifiée mais elle est consignée au registre.
+
+5. INFORMATION DES PERSONNES
+Si le risque est élevé pour les personnes, elles sont informées dans les meilleurs délais, en termes clairs : nature de la violation, conséquences probables, mesures prises, conseils pour se protéger, contact {{contact_donnees}} (article 34 du RGPD).
+
+6. SOUS-TRAITANTS
+Lorsqu'un sous-traitant ({{prestataire_it}}, {{hebergeur_donnees}}) est concerné, il avertit {{entreprise}} sans délai, conformément à l'accord de sous-traitance. Le délai de 72 heures court à partir du moment où {{entreprise}} en a connaissance.
+
+7. REGISTRE DES VIOLATIONS
+Toute violation, notifiée ou non, est inscrite au registre :
+- Date et heure de découverte, date présumée de survenue
+- Description des faits et cause
+- Données et nombre de personnes concernées
+- Conséquences probables et niveau de risque retenu
+- Mesures prises pour y remédier
+- Notification à la CNIL : oui/non, date, justification si non
+- Information des personnes : oui/non, date
+- Leçons tirées et actions de prévention
+
+8. APRÈS L'INCIDENT
+Un retour d'expérience est fait sous un mois : cause racine, correction, mise à jour des mesures de sécurité et information des équipes. En cas de fraude, d'extorsion ou de piratage, un dépôt de plainte est envisagé.
+
+9. REVUE ET EXERCICE
+Procédure revue chaque année par {{dirigeant}}, et testée au moins une fois par an par un exercice simulé.
+
+Fait à {{ville}}, le {{date_effet}}
+{{dirigeant}}
+${FOOTER}`,
+  },
+  {
+    id: 'conservation-donnees',
+    type: 'Conservation',
+    name: 'Politique de durées de conservation des données',
+    description: 'Combien de temps garder chaque catégorie de données, puis archiver ou supprimer.',
+    content: `POLITIQUE DE DURÉES DE CONSERVATION DES DONNÉES
+{{entreprise}} - applicable à compter du {{date_effet}}
+Responsable : {{contact_donnees}}
+
+1. PRINCIPE
+Les données personnelles ne sont conservées que le temps nécessaire à la finalité pour laquelle elles ont été collectées (principe de limitation de la conservation, RGPD). Passé ce délai, elles sont supprimées ou anonymisées, ou archivées avec accès restreint lorsqu'une obligation légale l'impose.
+
+2. LES TROIS TEMPS DE LA CONSERVATION
+- Base active : les données servent au quotidien, accès aux équipes concernées.
+- Archivage intermédiaire : les données ne servent plus au quotidien mais doivent être gardées (obligation légale, preuve, contentieux possible) ; accès limité aux personnes habilitées.
+- Suppression ou anonymisation à l'échéance.
+
+3. DURÉES APPLIQUÉES
+Durées retenues par {{entreprise}} : {{duree_conservation_donnees}}.
+Pour chaque catégorie (clients, prospects, salariés, candidats non retenus, journaux de connexion, vidéosurveillance, sauvegardes), les durées sont fixées d'après la finalité et les obligations légales applicables, à confirmer au cas par cas : [compléter la durée légale ou usuelle de chaque ligne et sa justification].
+
+4. MISE EN ŒUVRE
+- Une revue d'épuration est faite au moins une fois par an par {{referent_securite}} sur chaque outil (messagerie, logiciel de gestion, espaces partagés, sauvegardes).
+- Les suppressions sont tracées (date, périmètre, personne).
+- Les sauvegardes expirent selon leur durée propre ; une donnée supprimée peut subsister dans les sauvegardes jusqu'à leur expiration.
+- Les supports et équipements mis au rebut sont effacés de façon sûre.
+
+5. DEMANDES DES PERSONNES
+Une demande d'effacement est traitée selon la procédure d'exercice des droits.
+
+6. REVUE
+Cette politique est revue chaque année et à chaque nouveau traitement. {{dirigeant}} la valide.
+
+Fait à {{ville}}, le {{date_effet}}
+{{dirigeant}}
+${FOOTER}`,
+  },
 ];

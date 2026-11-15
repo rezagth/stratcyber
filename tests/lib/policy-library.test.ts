@@ -16,10 +16,11 @@ describe('bibliothèque de modèles de conformité', () => {
     }
   });
 
-  it('couvre les neuf documents attendus, un seul par type (le versionnement se fait par type)', () => {
+  it('couvre les douze documents attendus, un seul par type (le versionnement se fait par type)', () => {
     expect(POLICY_LIBRARY.map((d) => d.id).sort()).toEqual([
-      'acces-mots-de-passe', 'charte-informatique', 'confidentialite', 'incident', 'pca-pra',
-      'pssi', 'registre-rgpd', 'sauvegarde', 'sous-traitance-rgpd',
+      'acces-mots-de-passe', 'charte-informatique', 'confidentialite', 'conservation-donnees',
+      'droits-personnes', 'incident', 'pca-pra', 'pssi', 'registre-rgpd', 'sauvegarde',
+      'sous-traitance-rgpd', 'violation-donnees',
     ]);
     const types = POLICY_LIBRARY.map((d) => d.type);
     expect(new Set(types).size).toBe(types.length);
@@ -59,6 +60,11 @@ describe('bibliothèque de modèles de conformité', () => {
     expect(incident).toContain('72 heures');
     expect(incident).toContain('24 heures');
     expect(incident).toContain('article 33');
+  });
+
+  it('la procédure de violation mentionne 72 heures, les articles 33 et 34 et le registre', () => {
+    const v = getLibraryDocument('violation-donnees')!.content;
+    for (const needle of ['72 heures', 'article 33', 'article 34', 'REGISTRE DES VIOLATIONS']) expect(v).toContain(needle);
   });
 
   it('se remplit entièrement quand toutes les questions ont une réponse', () => {

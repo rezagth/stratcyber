@@ -52,7 +52,7 @@ const complianceModules = [
       description: 'Directive européenne renforcée sur la sécurité des réseaux et systèmes d\'information pour les secteurs critiques.',
       icon: <Network className="h-8 w-8" />,
       color: 'orange',
-      status: 'Applicable depuis octobre 2024',
+      status: 'Directive en vigueur ; transposition française en cours',
       scope: 'Secteurs essentiels et importants EU',
       priority: 'Élevée',
       features: [
@@ -92,7 +92,7 @@ const complianceModules = [
       scope: 'International - Toutes organisations',
       priority: 'Importante',
       features: [
-        '114 contrôles de sécurité',
+        '93 mesures de sécurité (Annexe A, version 2022)',
         'Certification par organisme accrédité',
         'Amélioration continue (PDCA)',
         'Avantage concurrentiel reconnu'

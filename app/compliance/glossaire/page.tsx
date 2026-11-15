@@ -132,7 +132,7 @@ const GlossairePage = () => {
     },
     {
       term: 'Contrôles de sécurité',
-      definition: 'Mesures de protection appliquées pour traiter les risques de sécurité de l\'information (114 contrôles dans l\'Annexe A).',
+      definition: 'Mesures de protection appliquées pour traiter les risques de sécurité de l\'information (93 mesures dans l\'Annexe A (version 2022)).',
       category: 'ISO 27001',
       regulation: 'ISO 27001',
       relatedTerms: ['Annexe A', 'Déclaration d\'applicabilité', 'Efficacité des contrôles']

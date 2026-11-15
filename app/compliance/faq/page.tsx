@@ -260,7 +260,7 @@ const FAQPage = () => {
 - Rédaction des politiques et procédures
 
 **PHASE 3 - DÉPLOIEMENT (6-12 mois) :**
-- Implémentation des 114 contrôles sélectionnés
+- Implémentation des mesures sélectionnées
 - Déploiement technique et organisationnel
 - Formation et sensibilisation des équipes
 

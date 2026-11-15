@@ -248,7 +248,7 @@ export default function ISO27001Documentation() {
         <TabsContent value="controls" id="controls">
           <Card>
             <CardHeader>
-              <CardTitle>Les 114 Contrôles ISO 27001:2022</CardTitle>
+              <CardTitle>Les 93 mesures de l'Annexe A (ISO 27001:2022)</CardTitle>
               <CardDescription>
                 Contrôles organisés en 4 domaines principaux avec 93 mesures spécifiques
               </CardDescription>
