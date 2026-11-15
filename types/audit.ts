@@ -58,6 +58,8 @@ export type CompanyProfile = {
   isFinancial: boolean;
   hasPersonalData: boolean;
   hasCriticalInfra: boolean;
+  /** Fabricant / éditeur de produits numériques (déclenche le Cyber Resilience Act) */
+  isProductManufacturer?: boolean;
   applicableRegulations: RegulationScope[];
 };
 

@@ -66,6 +66,11 @@ export async function buildAuditReportData(user: AuthedUser, auditId: string) {
       })
     : [];
 
+  // Nom du client audité (affiché en page de garde du rapport).
+  const organization = audit.organizationId
+    ? await prisma.organization.findFirst({ where: { id: audit.organizationId }, select: { name: true } })
+    : null;
+
   const responses = 'responses' in audit && Array.isArray(audit.responses) ? audit.responses : [];
   const compliance = 'complianceScores' in audit && Array.isArray(audit.complianceScores) ? audit.complianceScores : [];
 
@@ -80,6 +85,7 @@ export async function buildAuditReportData(user: AuthedUser, auditId: string) {
   }));
 
   return {
+    organizationName: organization?.name ?? null,
     detail: isClient ? ('summary' as const) : ('full' as const),
     audit: {
       id: audit.id,

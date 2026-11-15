@@ -1,6 +1,7 @@
 import { CompanyProfile, AuditQuestion, RegulationScope } from '../../types/audit';
 import { computeAuditResult, generateActionPlan } from './scoring';
 import { getQuestionsForProfile } from './questions-extended';
+import { baseQuestions } from './questions';
 
 /**
  * Détermine les réglementations applicables en fonction du profil de l'entreprise
@@ -28,8 +29,10 @@ export function getRegulationScopes(profile: CompanyProfile): RegulationScope[] 
     scopes.push('DORA');
   }
   
-  // CRA pour tous les secteurs
-  scopes.push('CRA');
+  // CRA : uniquement pour les fabricants / éditeurs de produits numériques
+  if (profile.isProductManufacturer) {
+    scopes.push('CRA');
+  }
   
   // LPM pour les opérateurs d'importance vitale
   if (profile.isOIV) {
@@ -51,8 +54,14 @@ export function generateQuestionsForProfile(profile: CompanyProfile): AuditQuest
   // Déterminer les réglementations applicables
   const regulations = getRegulationScopes(profile);
   
-  // Obtenir les questions selon les réglementations et le secteur
-  return getQuestionsForProfile(regulations, profile.sector);
+  // Socle d'hygiène cyber (sauvegardes, MFA, correctifs, antivirus…) toujours posé,
+  // puis questions réglementaires selon le profil et le secteur.
+  const seen = new Set<string>();
+  return [...baseQuestions, ...getQuestionsForProfile(regulations, profile.sector)].filter((q) => {
+    if (seen.has(q.id)) return false;
+    seen.add(q.id);
+    return true;
+  });
 }
 
 // Exporter les fonctions existantes pour compatibilité

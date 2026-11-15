@@ -26,8 +26,8 @@ export function getApplicableRegulations(profile: CompanyProfile): RegulationSco
     regulations.push('LPM');
   }
 
-  // CRA - Produits numériques avec éléments numériques
-  if (profile.sector === 'Numérique' || profile.hasCriticalInfra) {
+  // CRA - uniquement pour les fabricants / éditeurs de produits numériques
+  if (profile.isProductManufacturer) {
     regulations.push('CRA');
   }
 
@@ -136,6 +136,7 @@ export function createDefaultProfile(): CompanyProfile {
     isFinancial: false,
     hasPersonalData: true, // La plupart des entreprises traitent des données personnelles
     hasCriticalInfra: false,
+    isProductManufacturer: false,
     applicableRegulations: ['RGPD']
   };
 }

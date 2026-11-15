@@ -27,7 +27,7 @@ const MAX_RESPONSES = 50;
 
 /** Construit le rapport d'audit en HTML, prêt à être rendu en PDF. Toutes les valeurs sont échappées. */
 export function buildAuditReportHtml(data: AuditReportData, summary: string[] = []): string {
-  const { audit, recommendations, plan, actionItems, categoryScores, compliance, responses, detail } = data;
+  const { audit, organizationName, recommendations, plan, actionItems, categoryScores, compliance, responses, detail } = data;
   const score = audit.score ?? 0;
 
   return `
@@ -65,8 +65,18 @@ export function buildAuditReportHtml(data: AuditReportData, summary: string[] = 
 <body>
   <div class="header">
     <h1>Rapport d'audit de cybersécurité</h1>
-    <p>Audit du ${esc(fmtDate(audit.createdAt))}</p>
+    ${organizationName ? `<p><strong>Client : ${esc(organizationName)}</strong></p>` : ''}
+    <p>Audit du ${esc(fmtDate(audit.createdAt))} — réalisé par InfraCyb</p>
+    <p style="margin-top:6px;font-size:10px;opacity:.9">Document confidentiel — destiné exclusivement au client mentionné ci-dessus</p>
   </div>
+
+  ${section('Périmètre et méthode', `
+    <p>Audit <strong>organisationnel de maturité en cybersécurité</strong>, fondé sur un questionnaire et sur les informations
+    <strong>déclarées par l'organisation auditée</strong>. Sauf mention contraire, les réponses n'ont pas été vérifiées techniquement.</p>
+    <p style="margin-top:6px">Référentiels de lecture : bonnes pratiques de l'ANSSI (hygiène informatique) et réglementations applicables au profil déclaré.
+    Les scores et niveaux de maturité sont <strong>indicatifs</strong> : ils servent à prioriser les actions, pas à certifier un niveau de sécurité.</p>
+    <p style="margin-top:6px">Ne sont <strong>pas</strong> couverts : tests d'intrusion, audit de configuration, audit de code source, analyse forensique.</p>
+  `, true)}
 
   ${section('Synthèse', `
     <div class="stats">
@@ -90,7 +100,7 @@ export function buildAuditReportHtml(data: AuditReportData, summary: string[] = 
       : table(['Action', 'Priorité', 'Responsable', 'Durée estimée'],
           plan.map((p) => [esc(p.title), esc(p.priority ?? '—'), esc(p.owner ?? '—'), esc(p.estimatedDuration ?? '—')])))}
 
-  ${detail === 'full' && compliance.length > 0 ? section('Conformité réglementaire', table(
+  ${detail === 'full' && compliance.length > 0 ? section('Niveau de préparation réglementaire (indicatif, hors attestation de conformité)', table(
     ['Réglementation', 'Score', 'Statut'],
     compliance.map((c) => [esc(c.regulation), `${esc(Math.round(c.score))} %`, esc(c.status)])
   )) : ''}
@@ -101,7 +111,17 @@ export function buildAuditReportHtml(data: AuditReportData, summary: string[] = 
     ${responses.length > MAX_RESPONSES ? `<p class="muted">Et ${responses.length - MAX_RESPONSES} autres réponses.</p>` : ''}
   `) : ''}
 
-  <div class="footer">Rapport généré le ${esc(fmtDate(new Date()))} par StratCyber</div>
+  ${section('Limites et avertissements', `
+    <ul style="padding-left:18px">
+      <li>Cette prestation n'est <strong>pas une prestation qualifiée par l'ANSSI</strong> (PASSI, PACS). Elle ne remplace pas un audit qualifié lorsqu'une réglementation ou une autorité l'exige (par exemple pour les opérateurs d'importance vitale ou les entités soumises à des obligations spécifiques).</li>
+      <li>Ce rapport <strong>n'est pas une attestation de conformité</strong> (RGPD, NIS2, DORA, ISO 27001 ou autre) ni un avis juridique. L'applicabilité de chaque texte au client doit être confirmée, notamment pour NIS2 dont la transposition en droit français dépend de la loi en cours d'adoption.</li>
+      <li>Le rapport reflète la situation <strong>à la date de l'audit</strong>, d'après les éléments communiqués. Il ne garantit ni l'exhaustivité des constats, ni l'absence de vulnérabilité ou d'incident, ni le résultat des actions recommandées.</li>
+      <li>Les données personnelles échangées pour l'audit sont traitées par InfraCyb uniquement pour la réalisation de la mission, dans le cadre du contrat conclu avec le client (article 28 du RGPD) et avec une confidentialité stricte.</li>
+      <li>Ce document contient des informations sensibles sur la sécurité du client : ne pas le diffuser en dehors des personnes habilitées et le conserver de façon sécurisée.</li>
+    </ul>
+  `, true)}
+
+  <div class="footer">Rapport généré le ${esc(fmtDate(new Date()))} par InfraCyb — confidentiel</div>
 </body>
 </html>`;
 }

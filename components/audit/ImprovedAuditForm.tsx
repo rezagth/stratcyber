@@ -24,6 +24,7 @@ const profileSchema = z.object({
   isFinancial: z.boolean().optional(),
   hasPersonalData: z.boolean(),
   hasCriticalInfra: z.boolean().optional(),
+  isProductManufacturer: z.boolean().optional(),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -36,6 +37,7 @@ const defaultProfile: CompanyProfile = {
   isFinancial: false,
   hasPersonalData: true,
   hasCriticalInfra: false,
+  isProductManufacturer: false,
   applicableRegulations: [],
 };
 
@@ -81,6 +83,7 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
   // Choix du client pour lequel l'audit est réalisé (liste disponible pour l'administrateur seulement).
   const [clients, setClients] = useState<Array<{ id: string; name: string }>>([]);
   const [organizationId, setOrganizationId] = useState('');
+  const [profileNotice, setProfileNotice] = useState<string | null>(null);
   const chooseClientRef = useRef<(id: string) => Promise<void>>(async () => {});
   useEffect(() => {
     fetch('/api/organizations')
@@ -103,6 +106,7 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
   // Choisir un client préremplit le secteur et la taille connus de son dossier (modifiables ensuite).
   async function chooseClient(id: string) {
     setOrganizationId(id);
+    setProfileNotice(null);
     if (!id) return;
     try {
       const res = await fetch(`/api/organizations/${id}`);
@@ -111,9 +115,21 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
       if (typeof org?.sector === 'string' && org.sector in sectorIcons) {
         profileForm.setValue('sector', org.sector as ProfileFormData['sector'], { shouldDirty: true });
       }
-      if (['TPE', 'PME', 'ETI', 'GE'].includes(org?.size)) {
+      const sectorKnown = typeof org?.sector === 'string' && org.sector in sectorIcons;
+      let sizeKnown = ['TPE', 'PME', 'ETI', 'GE'].includes(org?.size);
+      if (sizeKnown) {
         profileForm.setValue('size', org.size as ProfileFormData['size'], { shouldDirty: true });
+      } else if (typeof org?.headcount === 'number' && org.headcount > 0) {
+        // Taille déduite de l'effectif (seuils INSEE) quand le dossier n'a pas de taille.
+        const h = org.headcount as number;
+        profileForm.setValue('size', h < 10 ? 'TPE' : h < 250 ? 'PME' : h < 5000 ? 'ETI' : 'GE', { shouldDirty: true });
+        sizeKnown = true;
       }
+      setProfileNotice(
+        sectorKnown && sizeKnown
+          ? null
+          : "Le dossier de ce client n'a pas de secteur ou de taille renseignés : vérifiez-les ci-dessous (et complétez l'onglet Profil du dossier)."
+      );
     } catch {
       // Le préremplissage est un confort : en cas d'échec, le formulaire reste utilisable à la main.
     }
@@ -164,6 +180,7 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
       isOSE: data.isOSE || false,
       isFinancial: data.isFinancial || false,
       hasCriticalInfra: data.hasCriticalInfra || false,
+      isProductManufacturer: data.isProductManufacturer || false,
       applicableRegulations: [] // temporaire
     };
     
@@ -301,6 +318,7 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
                       {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                     <p className="text-xs text-muted-foreground">Rattache l'audit au dossier du client pour générer son plan d'action.</p>
+                    {profileNotice && <p role="status" className="text-xs text-amber-600">{profileNotice}</p>}
                   </div>
                 )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -377,7 +395,8 @@ export default function ImprovedAuditForm({ initialProfile }: ImprovedAuditFormP
                       { name: 'isFinancial', label: 'Secteur financier (banque, assurance)', icon: '💰' },
                       { name: 'isOIV', label: 'Opérateur d\'Importance Vitale (OIV)', icon: '🏛️' },
                       { name: 'isOSE', label: 'Opérateur de Services Essentiels (OSE)', icon: '⚡' },
-                      { name: 'hasCriticalInfra', label: 'Infrastructure critique', icon: '🔧' }
+                      { name: 'hasCriticalInfra', label: 'Infrastructure critique', icon: '🔧' },
+                      { name: 'isProductManufacturer', label: 'Fabricant ou éditeur de produits numériques (CRA)', icon: '📦' }
                     ].map((characteristic) => (
                       <Controller
                         key={characteristic.name}

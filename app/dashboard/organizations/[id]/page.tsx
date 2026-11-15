@@ -28,6 +28,7 @@ import { MonthlyReportButton } from '@/components/monthly-report-button';
 import { ClientAccountsTab } from '@/components/dossier/client-accounts-tab';
 import { ClientSynthesis } from '@/components/dossier/client-synthesis';
 import { ClientSetupGuide } from '@/components/dossier/client-setup-guide';
+import { DeleteClientButton } from '@/components/dossier/delete-client-button';
 
 type Organization = {
   id: string; name: string; sector: string | null; size: string | null;
@@ -153,6 +154,7 @@ export default function OrganizationDossierPage({ params }: { params: Promise<{ 
           <Link href={`/dashboard/organizations/${id}/action-plan`}>
             <Button variant="outline">Plan d&apos;action →</Button>
           </Link>
+          <DeleteClientButton organizationId={id} organizationName={org.name} />
         </div>
       </div>
 

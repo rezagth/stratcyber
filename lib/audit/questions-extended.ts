@@ -792,8 +792,10 @@ export function getQuestionsForProfile(regulations: RegulationScope[], sector: C
   questions = questions.concat(supplyChainQuestions);
   questions = questions.concat(cloudQuestions);
   
-  // Questions CRA (toujours incluses)
-  questions = questions.concat(craQuestions);
+  // Questions CRA : uniquement pour les fabricants / éditeurs de produits numériques
+  if (regulations.includes('CRA')) {
+    questions = questions.concat(craQuestions);
+  }
 
   // Questions spécifiques au secteur
   const sectorQuestions = sectorSpecificQuestions[sector] || [];

@@ -105,7 +105,8 @@ describe('gabarit HTML du rapport d\'audit', () => {
     const summary = await buildAuditReportData(client('org-x'), 'audit-a');
     const summaryHtml = buildAuditReportHtml(summary!);
     expect(summaryHtml).not.toContain('Détail des réponses');
-    expect(summaryHtml).not.toContain('NIS2');
+    expect(summaryHtml).not.toContain('Niveau de préparation réglementaire');
+    expect(summaryHtml).not.toContain('>NIS2<');
     expect(summaryHtml).toContain('Activer la MFA');
   });
 
@@ -117,6 +118,21 @@ describe('gabarit HTML du rapport d\'audit', () => {
     expect(html).toContain('break-after: avoid');
     expect(html).toContain('thead { display: table-header-group; }');
     expect(html).toContain('tr { break-inside: avoid; }');
-    expect(html.match(/class="section keep"/g)).toHaveLength(1);
+    // synthèse + périmètre/méthode + limites/avertissements : blocs courts qui ne se coupent pas
+    expect(html.match(/class="section keep"/g)).toHaveLength(3);
+  });
+});
+
+describe('mentions de conformité du rapport', () => {
+  it('affiche le client, la marque InfraCyb, le périmètre et les limites', async () => {
+    const data = await buildAuditReportData(userA as never, 'audit-a');
+    const html = buildAuditReportHtml(data!);
+    expect(html).toContain('Client X');
+    expect(html).toContain('InfraCyb');
+    expect(html).not.toContain('StratCyber');
+    expect(html).toContain('Périmètre et méthode');
+    expect(html).toContain('Limites et avertissements');
+    expect(html).toContain('pas une prestation qualifiée par l');
+    expect(html).toContain('Document confidentiel');
   });
 });

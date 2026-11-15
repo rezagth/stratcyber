@@ -1,5 +1,6 @@
 import { computeAuditResult, generateActionPlan } from './scoring';
 import { planActions } from './prioritization';
+import { dedupeActions } from './dedupe-actions';
 
 type AuditForGeneration = {
   id: string;
@@ -40,15 +41,10 @@ export function buildActionPlanFromAudit(audit: AuditForGeneration): GeneratedAc
   const result = computeAuditResult(answers);
   const rawPlan = generateActionPlan(result, answers);
 
-  const seen = new Set<string>();
   const items: GeneratedActionPlanItem[] = [];
 
-  const unique = rawPlan.filter((raw) => {
-    const dedupeKey = `${raw.category}::${raw.action}`;
-    if (seen.has(dedupeKey)) return false;
-    seen.add(dedupeKey);
-    return true;
-  });
+  // Dédoublonnage sémantique : plusieurs questions recommandent la même action reformulée.
+  const unique = dedupeActions(rawPlan);
 
   // Priorité et échéance viennent des règles de prioritisation (voir prioritization.ts), pas de la
   // valeur unique de l'ancien générateur d'aperçu.
