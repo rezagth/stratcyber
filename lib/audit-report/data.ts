@@ -1,6 +1,15 @@
 import { prisma } from '@/lib/db';
 import { clientAuditWhere } from '@/lib/auth/access';
 import type { AuthedUser } from '@/lib/auth/api-auth';
+import { isActionable, severityRank } from '@/lib/scan/severity';
+
+export type AuditReportScanFinding = {
+  host: string;
+  severity: string;
+  title: string;
+  detail: string;
+  runAt: Date;
+};
 
 export type AuditReportPlanItem = {
   title: string;
@@ -62,7 +71,7 @@ export async function buildAuditReportData(user: AuthedUser, auditId: string) {
   const actionItems = !isClient && audit.organizationId
     ? await prisma.actionPlanItem.findMany({
         where: { organizationId: audit.organizationId, auditId: audit.id },
-        select: { title: true, priority: true, responsible: true, dueDate: true },
+        select: { title: true, description: true, priority: true, responsible: true, dueDate: true },
       })
     : [];
 
@@ -70,6 +79,32 @@ export async function buildAuditReportData(user: AuthedUser, auditId: string) {
   const organization = audit.organizationId
     ? await prisma.organization.findFirst({ where: { id: audit.organizationId }, select: { name: true } })
     : null;
+
+  // Constats VÉRIFIÉS par le contrôle externe non intrusif (campagnes de scan autorisées par écrit).
+  // Le rapport complet reçoit tout constat non écarté ; le rapport du client seulement les constats
+  // « Retenus », c'est-à-dire ceux que son espace client expose déjà comme vulnérabilités.
+  let scanFindings: AuditReportScanFinding[] = [];
+  let scanChecks = 0;
+  if (audit.organizationId) {
+    const campaigns = await prisma.scanCampaign.findMany({
+      where: { organizationId: audit.organizationId, status: { not: 'Annulée' } },
+      select: { id: true },
+    });
+    if (campaigns.length > 0) {
+      const rows = await prisma.scanFinding.findMany({
+        where: {
+          campaignId: { in: campaigns.map((c) => c.id) },
+          status: isClient ? 'Retenu' : { not: 'Écarté' },
+        },
+        select: { targetHost: true, severity: true, title: true, detail: true, runAt: true },
+      });
+      scanChecks = rows.length;
+      scanFindings = rows
+        .filter((r) => isActionable(r.severity))
+        .map((r) => ({ host: r.targetHost, severity: r.severity, title: r.title, detail: r.detail, runAt: r.runAt }))
+        .sort((a, b) => severityRank(a.severity) - severityRank(b.severity) || a.host.localeCompare(b.host));
+    }
+  }
 
   const responses = 'responses' in audit && Array.isArray(audit.responses) ? audit.responses : [];
   const compliance = 'complianceScores' in audit && Array.isArray(audit.complianceScores) ? audit.complianceScores : [];
@@ -102,6 +137,12 @@ export async function buildAuditReportData(user: AuthedUser, auditId: string) {
       (a, b) => PRIORITY_RANK(a.priority) - PRIORITY_RANK(b.priority) || (a.dueDate?.getTime() ?? Infinity) - (b.dueDate?.getTime() ?? Infinity)
     ),
     categoryScores,
+    scan: {
+      findings: scanFindings,
+      checks: scanChecks,
+      hosts: [...new Set(scanFindings.map((f) => f.host))].sort(),
+      lastRunAt: scanFindings.reduce<Date | null>((latest, f) => (!latest || f.runAt > latest ? f.runAt : latest), null),
+    },
     compliance: compliance.map((c) => ({ regulation: c.regulation, score: c.score, status: c.status })),
     responses: responses.map((r) => ({
       question: r.question,

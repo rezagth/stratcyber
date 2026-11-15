@@ -26,9 +26,28 @@ function table(headers: string[], rows: string[][]): string {
 
 const MAX_RESPONSES = 50;
 
+/** Libellés lisibles des domaines internes (le client ne doit pas lire « GRC » ou « SupplyChain »). */
+const CATEGORY_LABELS: Record<string, string> = {
+  GRC: 'Gouvernance, risques et conformité',
+  SupplyChain: "Chaîne d'approvisionnement",
+  ISO27001: 'ISO 27001',
+  EBIOS: 'EBIOS',
+  Secteur: 'Spécifique au secteur',
+};
+export const categoryLabel = (c: string) => CATEGORY_LABELS[c] ?? c;
+
+/** Extrait la preuve attendue et la phase de la description générée avec chaque action du plan. */
+export function parsePlanDescription(description: string | null | undefined): { phase: string | null; proof: string | null } {
+  const text = description ?? '';
+  const proof = /Preuve attendue\s*:\s*([^]*?)\.?\s*$/.exec(text)?.[1]?.trim() ?? null;
+  const phase = /Phase\s*([12])\s*:/.exec(text)?.[1] ?? null;
+  return { phase: phase ? `Phase ${phase}` : null, proof };
+}
+
 /** Construit le rapport d'audit en HTML, prêt à être rendu en PDF. Toutes les valeurs sont échappées. */
 export function buildAuditReportHtml(data: AuditReportData, summary: string[] = []): string {
   const { audit, organizationName, recommendations, plan, actionItems, categoryScores, compliance, responses, detail } = data;
+  const scan = data.scan ?? { findings: [], checks: 0, hosts: [], lastRunAt: null };
   const score = audit.score ?? 0;
   // Mentions légales du prestataire (variables INFRACYB_*) : affichées seulement si renseignées.
   const prov = getProviderIdentity();
@@ -79,6 +98,8 @@ export function buildAuditReportHtml(data: AuditReportData, summary: string[] = 
     <strong>déclarées par l'organisation auditée</strong>. Sauf mention contraire, les réponses n'ont pas été vérifiées techniquement.</p>
     <p style="margin-top:6px">Référentiels de lecture : bonnes pratiques de l'ANSSI (hygiène informatique) et réglementations applicables au profil déclaré.
     Les scores et niveaux de maturité sont <strong>indicatifs</strong> : ils servent à prioriser les actions, pas à certifier un niveau de sécurité.</p>
+    ${scan.checks > 0 ? `<p style="margin-top:6px">Les constats de la section « Constats vérifiés » proviennent d'un <strong>contrôle externe non intrusif</strong>
+    (en-têtes HTTP, certificat, DNS et messagerie) réalisé avec l'autorisation écrite du client sur : ${esc(scan.hosts.join(', ') || 'domaines autorisés')}. Ils sont vérifiés techniquement ; les autres éléments restent déclaratifs.</p>` : ''}
     <p style="margin-top:6px">Ne sont <strong>pas</strong> couverts : tests d'intrusion, audit de configuration, audit de code source, analyse forensique.</p>
   `, true)}
 
@@ -91,14 +112,25 @@ export function buildAuditReportHtml(data: AuditReportData, summary: string[] = 
   `, true)}
 
   ${detail === 'full' && categoryScores.length > 0 ? section('Analyse par domaine', categoryScores.map((c) => `
-    <div class="domain"><strong>${esc(c.category)}</strong> — ${esc(c.percent)} %<div class="bar"><div style="width:${Math.max(0, Math.min(100, c.percent))}%"></div></div></div>
+    <div class="domain"><strong>${esc(categoryLabel(c.category))}</strong> — ${esc(c.percent)} %<div class="bar"><div style="width:${Math.max(0, Math.min(100, c.percent))}%"></div></div></div>
   `).join('')) : ''}
+
+  ${scan.findings.length > 0 ? section('Constats vérifiés par contrôle externe non intrusif', `
+    <p class="muted">Contrôle réalisé le ${esc(scan.lastRunAt ? fmtDate(scan.lastRunAt) : '—')}, uniquement sur les domaines autorisés par écrit par le client. Aucun test d'intrusion.</p>
+    ${table(['Domaine', 'Gravité', 'Constat', 'Détail'],
+      scan.findings.map((f) => [esc(f.host), esc(f.severity), esc(f.title), esc(f.detail)]))}
+  `) : ''}
 
   ${recommendations.length > 0 ? section('Recommandations', `<ol>${recommendations.map((r) => `<li>${esc(r)}</li>`).join('')}</ol>`) : ''}
 
   ${section("Plan d'action", actionItems.length > 0
-    ? table(['Action', 'Priorité', 'Responsable', 'Échéance'],
-        actionItems.map((a) => [esc(a.title), esc(a.priority ?? '—'), esc(a.responsible ?? '—'), esc(a.dueDate ? fmtDate(a.dueDate) : '—')]))
+    ? table(['Action', 'Priorité', 'Responsable', 'Échéance', 'Preuve attendue'],
+        actionItems.map((a) => {
+          const { phase, proof } = parsePlanDescription((a as { description?: string | null }).description);
+          return [esc(a.title), esc(a.priority ?? '—'), esc(a.responsible ?? '—'),
+            `${esc(a.dueDate ? fmtDate(a.dueDate) : '—')}${phase ? `<br><span class="muted">${esc(phase)}</span>` : ''}`,
+            esc(proof ?? 'À définir avec le client')];
+        }))
     : plan.length === 0
       ? '<p class="muted">Aucune action enregistrée.</p>'
       : table(['Action', 'Priorité', 'Responsable', 'Durée estimée'],
@@ -111,7 +143,7 @@ export function buildAuditReportHtml(data: AuditReportData, summary: string[] = 
 
   ${detail === 'full' && responses.length > 0 ? section('Détail des réponses', `
     ${table(['Question', 'Réponse', 'Domaine', 'Score'],
-      responses.slice(0, MAX_RESPONSES).map((r) => [esc(r.question), esc(r.answer), esc(r.category), r.score === null ? '—' : `${esc(r.score)}/5`]))}
+      responses.slice(0, MAX_RESPONSES).map((r) => [esc(r.question), esc(r.answer), esc(categoryLabel(r.category)), r.score === null ? '—' : `${esc(r.score)}/5`]))}
     ${responses.length > MAX_RESPONSES ? `<p class="muted">Et ${responses.length - MAX_RESPONSES} autres réponses.</p>` : ''}
   `) : ''}
 
