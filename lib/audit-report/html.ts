@@ -1,4 +1,5 @@
 import type { AuditReportData } from '@/lib/audit-report/data';
+import { getProviderIdentity } from '@/lib/contract/provider';
 
 function esc(value: unknown): string {
   return String(value ?? '')
@@ -29,6 +30,9 @@ const MAX_RESPONSES = 50;
 export function buildAuditReportHtml(data: AuditReportData, summary: string[] = []): string {
   const { audit, organizationName, recommendations, plan, actionItems, categoryScores, compliance, responses, detail } = data;
   const score = audit.score ?? 0;
+  // Mentions légales du prestataire (variables INFRACYB_*) : affichées seulement si renseignées.
+  const prov = getProviderIdentity();
+  const legalLine = [prov.legalName, prov.siret ? `SIRET ${prov.siret}` : null, prov.address, prov.email].filter(Boolean).join(' — ');
 
   return `
 <!DOCTYPE html>
@@ -121,6 +125,7 @@ export function buildAuditReportHtml(data: AuditReportData, summary: string[] = 
     </ul>
   `, true)}
 
+  ${legalLine ? `<div class="footer">${esc(legalLine)}</div>` : ''}
   <div class="footer">Rapport généré le ${esc(fmtDate(new Date()))} par InfraCyb — confidentiel</div>
 </body>
 </html>`;

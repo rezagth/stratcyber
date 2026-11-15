@@ -135,4 +135,18 @@ describe('mentions de conformité du rapport', () => {
     expect(html).toContain('pas une prestation qualifiée par l');
     expect(html).toContain('Document confidentiel');
   });
+
+  it('affiche les mentions légales du prestataire quand elles sont configurées', async () => {
+    process.env.INFRACYB_LEGAL_NAME = 'InfraCyb Test';
+    process.env.INFRACYB_SIRET = '12345678900012';
+    try {
+      const data = await buildAuditReportData(userA as never, 'audit-a');
+      const html = buildAuditReportHtml(data!);
+      expect(html).toContain('InfraCyb Test');
+      expect(html).toContain('SIRET 12345678900012');
+    } finally {
+      delete process.env.INFRACYB_LEGAL_NAME;
+      delete process.env.INFRACYB_SIRET;
+    }
+  });
 });

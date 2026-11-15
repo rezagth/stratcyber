@@ -335,6 +335,9 @@ export type ActionPlanItem = {
 
 
 
+/** Une question ne génère au plus que ses 2 actions les plus importantes : au-delà le plan devient illisible (ex. 3 actions par question RGPD). */
+export const MAX_ACTIONS_PER_QUESTION = 2;
+
 export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]): ActionPlanItem[] {
   const actionPlan: ActionPlanItem[] = [];
   
@@ -385,7 +388,7 @@ export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]):
       if (question.type === 'boolean' && 
           (answer.answer.toLowerCase() === 'non' || answer.answer.toLowerCase() === 'no' || answer.answer.toLowerCase() === 'false') &&
           recos.negativeAnswer) {
-        recos.negativeAnswer.forEach((action) => {
+        recos.negativeAnswer.slice(0, MAX_ACTIONS_PER_QUESTION).forEach((action) => {
           let owner = ownersByCategory[question.category] || 'Direction';
           
           // Ajuster le propriétaire pour certaines actions spécifiques
@@ -416,7 +419,7 @@ export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]):
           answer.score !== undefined && 
           answer.score <= 2 &&
           recos.lowScore) {
-        recos.lowScore.forEach((action) => {
+        recos.lowScore.slice(0, MAX_ACTIONS_PER_QUESTION).forEach((action) => {
           let owner = ownersByCategory[question.category] || 'Direction';
           
           // Ajuster le propriétaire pour certaines actions spécifiques
@@ -447,7 +450,7 @@ export function generateActionPlan(result: AuditResult, answers: AuditAnswer[]):
           answer.score !== undefined && 
           answer.score <= 2 &&
           recos.lowScore) {
-        recos.lowScore.forEach((action) => {
+        recos.lowScore.slice(0, MAX_ACTIONS_PER_QUESTION).forEach((action) => {
           let owner = ownersByCategory[question.category] || 'Direction';
           
           // Ajuster le propriétaire pour certaines actions spécifiques
