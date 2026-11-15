@@ -51,7 +51,19 @@ export const POST = withApiAuth<{ id: string }>(
       durationDays,
       startDate,
       scope: text(body.scope, 4000) ?? org.missionScope?.trim() ?? null,
-      provider: getProviderIdentity(),
+      // Identité du prestataire : champs saisis à la main (prioritaires) sinon variables d'environnement.
+      provider: (() => {
+        const env = getProviderIdentity();
+        const o = body.provider && typeof body.provider === 'object' ? body.provider : {};
+        return {
+          legalName: text(o.legalName, 200) ?? env.legalName,
+          representative: text(o.representative, 200) ?? env.representative,
+          siret: text(o.siret, 20) ?? env.siret,
+          address: text(o.address, 300) ?? env.address,
+          email: text(o.email, 200) ?? env.email,
+          insurer: text(o.insurer, 200) ?? env.insurer,
+        };
+      })(),
     };
     const doc = buildContract(input);
 

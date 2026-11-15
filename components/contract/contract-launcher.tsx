@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { ContractDoc } from '@/lib/contract/template';
+import { contractToHtml, contractToText, type ContractDoc } from '@/lib/contract/template';
 
 type Contact = { id: string; name: string; email: string | null; isPrimary: boolean };
 const CHECKLIST = [
@@ -23,10 +23,18 @@ export function ContractLauncher({ organizationId }: { organizationId: string })
   const [form, setForm] = useState({
     priceHT: '', durationDays: '5', startDate: '', scope: '', clientSignatoryName: '', clientSignatoryRole: '', clientSiret: '', clientAddress: '', contactId: '',
   });
+  const [prov, setProv] = useState({ legalName: '', representative: '', siret: '', address: '', email: '', insurer: '' });
   const [doc, setDoc] = useState<ContractDoc | null>(null);
   const [confirm, setConfirm] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('infracyb-contract-provider');
+      if (saved) setProv((p) => ({ ...p, ...JSON.parse(saved) }));
+    } catch { /* confort seulement */ }
+  }, []);
 
   useEffect(() => {
     fetch(`/api/organizations/${organizationId}`).then((r) => (r.ok ? r.json() : null)).then((o) => {
@@ -51,7 +59,7 @@ export function ContractLauncher({ organizationId }: { organizationId: string })
       const res = await fetch(`/api/organizations/${organizationId}/contract`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, action, confirm: action === 'send' ? confirm : undefined }),
+        body: JSON.stringify({ ...form, provider: prov, action, confirm: action === 'send' ? confirm : undefined }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -63,7 +71,24 @@ export function ContractLauncher({ organizationId }: { organizationId: string })
     } finally {
       setBusy(false);
     }
-  }, [form, confirm, organizationId]);
+  }, [form, prov, confirm, organizationId]);
+
+  const saveProv = () => { try { localStorage.setItem('infracyb-contract-provider', JSON.stringify(prov)); } catch { /* ignoré */ } };
+  const setP = (k: keyof typeof prov) => (e: React.ChangeEvent<HTMLInputElement>) => setProv((p) => ({ ...p, [k]: e.target.value }));
+
+  function download() {
+    if (!doc) return;
+    const blob = new Blob(['<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>' + doc.reference + '</title></head><body>' + contractToHtml(doc) + '</body></html>'], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = doc.reference + '.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+  async function copy() {
+    if (!doc) return;
+    try { await navigator.clipboard.writeText(contractToText(doc)); setMessage('Contrat copié dans le presse-papiers.'); } catch { setMessage('Copie impossible : utilise le téléchargement.'); }
+  }
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 px-4 py-8">
@@ -73,6 +98,19 @@ export function ContractLauncher({ organizationId }: { organizationId: string })
         <h1 className="mt-2 text-2xl font-semibold">Lancer la mission — {orgName}</h1>
         <p className="text-sm text-muted-foreground">Modèle à faire relire par un juriste avant la première signature. Rien n’est envoyé sans ta confirmation.</p>
       </div>
+
+      <Card className="print:hidden">
+        <CardHeader><CardTitle className="text-base">Prestataire (toi) — champs à la main</CardTitle></CardHeader>
+        <CardContent className="grid gap-3 sm:grid-cols-2">
+          <div><Label htmlFor="p-name">Raison sociale</Label><Input id="p-name" value={prov.legalName} onChange={setP('legalName')} onBlur={saveProv} /></div>
+          <div><Label htmlFor="p-rep">Représentant</Label><Input id="p-rep" value={prov.representative} onChange={setP('representative')} onBlur={saveProv} /></div>
+          <div><Label htmlFor="p-siret">SIRET</Label><Input id="p-siret" value={prov.siret} onChange={setP('siret')} onBlur={saveProv} /></div>
+          <div><Label htmlFor="p-mail">E-mail de contact</Label><Input id="p-mail" value={prov.email} onChange={setP('email')} onBlur={saveProv} /></div>
+          <div className="sm:col-span-2"><Label htmlFor="p-addr">Adresse</Label><Input id="p-addr" value={prov.address} onChange={setP('address')} onBlur={saveProv} /></div>
+          <div className="sm:col-span-2"><Label htmlFor="p-ins">Assureur RC pro</Label><Input id="p-ins" value={prov.insurer} onChange={setP('insurer')} onBlur={saveProv} /></div>
+          <p className="sm:col-span-2 text-xs text-muted-foreground">Mémorisé dans ce navigateur pour les prochains contrats.</p>
+        </CardContent>
+      </Card>
 
       <Card className="print:hidden">
         <CardHeader><CardTitle className="text-base">Conditions de la mission</CardTitle></CardHeader>
@@ -96,6 +134,8 @@ export function ContractLauncher({ organizationId }: { organizationId: string })
           <div className="sm:col-span-2 flex flex-wrap gap-2">
             <Button onClick={() => run('preview')} disabled={busy}>Générer / actualiser le contrat</Button>
             {doc && <Button variant="outline" onClick={() => window.print()}>Imprimer / enregistrer en PDF</Button>}
+            {doc && <Button variant="outline" onClick={download}>Télécharger (.html, ouvrable dans Word)</Button>}
+            {doc && <Button variant="outline" onClick={copy}>Copier le texte</Button>}
           </div>
         </CardContent>
       </Card>
@@ -106,7 +146,7 @@ export function ContractLauncher({ organizationId }: { organizationId: string })
         <>
           {doc.missing.length > 0 && (
             <p role="alert" className="rounded-md border border-amber-300 p-3 text-sm text-amber-700 print:hidden">
-              À compléter avant envoi : {doc.missing.join(', ')}. (Les infos du prestataire viennent des variables d’environnement INFRACYB_*.)
+              À compléter avant envoi : {doc.missing.join(', ')}. (Remplis-les à la main ci-dessus.)
             </p>
           )}
           <article id="contract-doc" className="space-y-3 bg-white p-8 text-sm leading-relaxed text-black shadow-sm print:shadow-none">
@@ -124,7 +164,7 @@ export function ContractLauncher({ organizationId }: { organizationId: string })
           </article>
 
           <Card className="print:hidden">
-            <CardHeader><CardTitle className="text-base">Envoyer au client</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base">Envoi par e-mail (facultatif — tu peux aussi envoyer le fichier toi-même)</CardTitle></CardHeader>
             <CardContent className="space-y-3 text-sm">
               <label className="flex items-start gap-2">
                 <input type="checkbox" checked={confirm} onChange={(e) => setConfirm(e.target.checked)} className="mt-1" />

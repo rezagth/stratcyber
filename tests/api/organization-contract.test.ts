@@ -111,3 +111,15 @@ describe('POST /api/organizations/[id]/contract', () => {
     expect((await call({ ...FULL, startDate: 'demain' })).status).toBe(400);
   });
 });
+
+describe('identité du prestataire saisie à la main', () => {
+  it('prime sur les variables d’environnement et apparaît dans l’aperçu', async () => {
+    login(admin);
+    for (const k of Object.keys(FULL_ENV)) delete process.env[k];
+    const res = await call({ action: 'preview', provider: { legalName: 'InfraCyb Main', siret: '11122233300044' } });
+    const doc = (await res.json()).doc;
+    expect(JSON.stringify(doc)).toContain('InfraCyb Main');
+    expect(JSON.stringify(doc)).toContain('11122233300044');
+    expect(doc.missing).toContain('Représentant du prestataire');
+  });
+});
