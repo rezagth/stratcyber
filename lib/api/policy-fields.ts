@@ -6,6 +6,7 @@ export const POLICY_TYPES = [
   // Assistant de dossier de conformité (lib/policy/library-documents.ts)
   'Charte informatique', 'Registre RGPD', 'Sous-traitance',
   'Droits des personnes', 'Violation de données', 'Conservation',
+  'Usage de l’IA', 'Télétravail',
 ] as const;
 // Statuts qu'un admin peut choisir directement : jamais 'Validé', qui ne s'obtient
 // qu'via la validation tracée du client (voir app/api/client/policies/[id]/route.ts).

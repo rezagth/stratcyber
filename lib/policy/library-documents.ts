@@ -516,4 +516,97 @@ Fait à {{ville}}, le {{date_effet}}
 {{dirigeant}}
 ${FOOTER}`,
   },
+  {
+    id: 'usage-ia',
+    type: 'Usage de l’IA',
+    name: "Charte d'usage des outils d'intelligence artificielle",
+    description: 'Quels outils d’IA sont autorisés, quelles données ne jamais y mettre, comment vérifier les résultats.',
+    content: `CHARTE D'USAGE DES OUTILS D'INTELLIGENCE ARTIFICIELLE
+{{entreprise}} - applicable à compter du {{date_effet}}
+Référent : {{referent_securite}} - Contact : {{contact_securite}}
+
+Note : cette charte repose sur du bon sens de sécurité et sur les principes généraux du RGPD (minimisation, sécurité, sous-traitance). Aucune source officielle spécifique n'a été vérifiée pour ce document : point à valider par le consultant.
+
+1. OBJET
+Encadrer l'usage des assistants et outils d'IA générative (chatbots, traduction, rédaction, génération d'images, assistants de code, transcription de réunions) par les collaborateurs de {{entreprise}}.
+
+2. OUTILS AUTORISÉS
+Seuls les outils validés par {{referent_securite}} peuvent être utilisés pour le travail : [liste des outils autorisés, version et type de compte professionnel]. Tout autre outil, y compris sur un compte personnel, est interdit pour des contenus professionnels. Une demande d'ajout d'outil passe par {{contact_securite}}.
+
+3. CE QU'ON NE SAISIT JAMAIS DANS UN OUTIL NON VALIDÉ
+- données personnelles de clients, salariés, candidats ou prospects ;
+- informations confidentielles de l'entreprise ou de ses clients (contrats, tarifs, plans, code source non public) ;
+- mots de passe, clés d'accès, jetons, identifiants ;
+- documents couverts par un engagement de confidentialité.
+Dans un outil validé, on saisit le minimum nécessaire et on anonymise dès que possible.
+
+4. VÉRIFICATION DES RÉSULTATS
+Une réponse d'IA peut être fausse, incomplète ou inventée. Toute information utilisée est vérifiée avant diffusion. Une décision qui concerne une personne (recrutement, sanction, crédit, évaluation) ne repose jamais uniquement sur un outil d'IA. La personne qui utilise l'outil reste responsable du résultat.
+
+5. TRANSPARENCE
+Les contenus produits avec une IA et destinés à l'extérieur sont relus par un humain. Lorsqu'un client ou un partenaire l'exige, l'usage de l'IA lui est indiqué.
+
+6. PRESTATAIRES ET CONTRATS
+Avant de valider un outil, on vérifie : où sont hébergées les données, si elles servent à entraîner le modèle, la durée de conservation, la possibilité de désactiver l'historique, la présence d'un accord de sous-traitance lorsque des données personnelles sont concernées.
+
+7. INCIDENTS
+Une donnée saisie par erreur dans un outil non autorisé est signalée aussitôt à {{contact_securite}}, qui évalue s'il y a violation de données (voir la procédure dédiée).
+
+8. REVUE
+Charte revue au moins tous les six mois, les outils évoluant vite. {{dirigeant}} la valide.
+
+Fait à {{ville}}, le {{date_effet}}
+{{dirigeant}}
+${FOOTER}`,
+  },
+  {
+    id: 'teletravail-appareils',
+    type: 'Télétravail',
+    name: 'Politique de télétravail et d’usage des appareils personnels',
+    description: 'Règles de sécurité en télétravail, en déplacement et pour les appareils personnels utilisés au travail.',
+    content: `POLITIQUE DE TÉLÉTRAVAIL ET D'USAGE DES APPAREILS PERSONNELS
+{{entreprise}} - applicable à compter du {{date_effet}}
+Référent : {{referent_securite}} - Contact : {{contact_securite}} - Urgence : {{telephone_urgence}}
+
+Note : ces règles reprennent des mesures de sécurité courantes (accès, mises à jour, chiffrement, sauvegardes). Aucune source officielle spécifique n'a été vérifiée pour ce document : point à valider par le consultant.
+
+1. OBJET ET PÉRIMÈTRE
+Fixer les règles de sécurité quand les collaborateurs de {{entreprise}} travaillent hors des locaux (domicile, déplacement, lieu public) et quand un appareil personnel est utilisé pour le travail.
+
+2. ÉQUIPEMENT
+- Préférer l'équipement fourni par l'entreprise. Un appareil personnel n'est utilisé que s'il est autorisé par {{referent_securite}} et respecte les conditions du point 5.
+- Le matériel professionnel n'est pas prêté à un tiers, y compris à la famille.
+
+3. ACCÈS À DISTANCE
+- Accès aux ressources de l'entreprise uniquement par les moyens validés, avec double authentification.
+- Pas de connexion à des services professionnels depuis un ordinateur public ou partagé.
+- Wi-Fi du domicile protégé par un mot de passe robuste ; Wi-Fi public évité, ou utilisé uniquement avec le moyen d'accès sécurisé validé.
+
+4. LIEU DE TRAVAIL
+- Écran verrouillé dès qu'on s'éloigne ; écran non visible par des tiers dans un lieu public.
+- Documents papier confidentiels rangés ; pas d'impression de données sensibles à domicile, ou détruites de façon sûre.
+- Conversations confidentielles tenues hors de portée d'oreilles extérieures et d'assistants vocaux.
+
+5. APPAREILS PERSONNELS (si autorisés)
+- Système et applications à jour, protection contre les logiciels malveillants active, verrouillage par code ou biométrie, stockage chiffré.
+- Compte professionnel séparé du compte personnel ; aucune donnée de l'entreprise copiée dans des services personnels.
+- L'entreprise peut effacer à distance les données professionnelles de l'appareil en cas de perte ou de départ ; elle n'accède pas aux données personnelles.
+- Appareil débridé ou non à jour : accès refusé.
+
+6. PERTE OU VOL
+Perte ou vol d'un équipement : signalement immédiat à {{contact_securite}} ou au {{telephone_urgence}}, changement des mots de passe concernés, verrouillage ou effacement à distance si possible. Si des données personnelles sont concernées, appliquer la procédure de violation de données.
+
+7. SAUVEGARDE
+Les fichiers de travail sont enregistrés sur les espaces de l'entreprise et non uniquement sur l'appareil.
+
+8. DÉPART OU FIN DE MISSION
+Matériel restitué, accès supprimés le jour du départ, données professionnelles effacées des appareils personnels.
+
+9. REVUE
+Politique revue chaque année par {{dirigeant}}.
+
+Fait à {{ville}}, le {{date_effet}}
+{{dirigeant}}
+${FOOTER}`,
+  },
 ];
